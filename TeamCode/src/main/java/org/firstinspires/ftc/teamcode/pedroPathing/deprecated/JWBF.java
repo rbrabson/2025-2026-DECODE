@@ -1,8 +1,7 @@
-package org.firstinspires.ftc.teamcode.pedroPathing; // make sure this aligns with class location
+package org.firstinspires.ftc.teamcode.pedroPathing.deprecated; // make sure this aligns with class location
 
 
 import static org.firstinspires.ftc.teamcode.pedroPathing.Drawing.drawPoseHistory;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 
 import android.util.Size;
@@ -36,6 +35,7 @@ import org.firstinspires.ftc.vision.opencv.PredominantColorProcessor;
 
 
 import java.util.List;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 
 @Autonomous(name="JWBF")
@@ -74,7 +74,7 @@ public class JWBF extends OpMode {
     private double pos3Intake = 0.8045; // .5404
     private double pos1Shoot = 0.0829; // .6444
     private double pos2Shoot = 0.2856; // .4381
-    private double pos3Shoot = 0.494; // .2331k≥≥≥≥≥≥≥≥≥≥≥≥
+    private double pos3Shoot = 0.494; // .2331kâ‰¥â‰¥â‰¥â‰¥â‰¥â‰¥â‰¥â‰¥â‰¥â‰¥â‰¥â‰¥
     private double TurretPosition = 0; // may need to change
     private int turretExtremeLeft = 1700; // may need to change
     private int turretExtremeRight = -350; // may need to change
@@ -1070,3 +1070,4 @@ public class JWBF extends OpMode {
 
 
 }
+

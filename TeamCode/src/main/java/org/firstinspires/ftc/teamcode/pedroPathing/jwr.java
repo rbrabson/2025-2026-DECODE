@@ -35,6 +35,7 @@ import org.firstinspires.ftc.vision.opencv.ImageRegion;
 import org.firstinspires.ftc.vision.opencv.PredominantColorProcessor;
 import android.util.Size;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 
 
@@ -46,6 +47,7 @@ import com.pedropathing.geometry.Pose;
 
 
 @TeleOp(name="ColdJohnWickRed")
+@Disabled
 public class jwr extends LinearOpMode {
 
 
@@ -1224,6 +1226,5 @@ Far {
   Ta
 }
 */
-
 
 

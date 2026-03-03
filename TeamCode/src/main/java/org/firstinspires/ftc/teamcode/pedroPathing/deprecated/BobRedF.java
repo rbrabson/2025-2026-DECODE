@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.pedroPathing; // make sure this aligns with class location
+package org.firstinspires.ftc.teamcode.pedroPathing.deprecated; // make sure this aligns with class location
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
@@ -11,33 +11,54 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
-@Autonomous(name = "BobRedC")
+@Autonomous(name = "BobRedF")
 @Disabled
-public class BobRedC extends OpMode {
+public class BobRedF extends OpMode {
 
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
 
     private int pathState;
 
-    private final Pose startPose = new Pose(122.29565217391304, 125.00869565217391, Math.toRadians(37));
-    private Path scorePreload;
+    private final Pose startPose = new Pose(80.13913043478261, 7.9304347826086925, Math.toRadians(90));
+    private PathChain Path1 , Path2;
     private PathChain grabPickup1, scorePickup1, grabPickup2, scorePickup2, grabPickup3, scorePickup3;
 
     public void buildPaths() {
         /* This is our scorePreload path. We are using a BezierLine, which is a straight line. */
-        scorePreload = new Path(new BezierCurve(
-                new Pose(122.296, 125.009),
-                new Pose(86.000, 94.000),
-                new Pose(96.000, 72.000)));
-        scorePreload.setLinearHeadingInterpolation(Math.toRadians(37), Math.toRadians(0));
+        Path1 = follower
+                .pathBuilder()
+                .addPath(
+                        new BezierCurve(
+                                new Pose(80.139, 7.930),
+                                new Pose(72.000, 87.652),
+                                new Pose(121.043, 126.470)
+                        )
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(36))
+                .build();
+
+        Path2 = follower
+                .pathBuilder()
+                .addPath(
+
+
+
+                        new BezierCurve(
+                                new Pose(121.043, 126.470),
+                                new Pose(66.365, 103.930),
+                                new Pose(95.791, 72.000)
+                        )
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(36), Math.toRadians(0))
+                .build();
 
     }
 
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
-                //Shoot ball here
+                follower.followPath(Path1);
                 setPathState(1);
                 break;
             case 1:
@@ -53,7 +74,7 @@ public class BobRedC extends OpMode {
                     /* Score Preload */
 
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
-                    follower.followPath(scorePreload);
+                    //Shoot ball here please SID//
                     setPathState(2);
                 }
                 break;
@@ -63,10 +84,10 @@ public class BobRedC extends OpMode {
                     /* Grab Sample */
 
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
-                    follower.followPath(scorePickup1,true);
+                    follower.followPath(Path2);
                 }
                 break;
-                    }
+        }
     }
 
     /** These change the states of the paths and actions. It will also reset the timers of the individual switches **/

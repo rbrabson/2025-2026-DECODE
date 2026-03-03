@@ -5,7 +5,7 @@
 
 
 
-package org.firstinspires.ftc.teamcode.pedroPathing;
+package org.firstinspires.ftc.teamcode.pedroPathing.deprecated;
 
 
 import com.qualcomm.hardware.limelightvision.LLResult;
@@ -27,7 +27,6 @@ import org.firstinspires.ftc.vision.opencv.ImageRegion;
 import org.firstinspires.ftc.vision.opencv.PredominantColorProcessor;
 import android.util.Size;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 
 import com.pedropathing.follower.Follower;
@@ -40,6 +39,7 @@ import com.pedropathing.util.Timer;
 
 import java.util.List;
 import java.util.Objects;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 
 @TeleOp(name="ColdJohnWickBlue")
@@ -77,7 +77,7 @@ public class jwb extends LinearOpMode {
     private double pos3Intake = 0.2651; // .5404
     private double pos1Shoot = 0.9829; // .6444
     private double pos2Shoot = 0.7803; // .4381
-    private double pos3Shoot = 0.5706; // .2331k≥≥≥≥≥≥≥≥≥≥≥≥
+    private double pos3Shoot = 0.5706; // .2331kâ‰¥â‰¥â‰¥â‰¥â‰¥â‰¥â‰¥â‰¥â‰¥â‰¥â‰¥â‰¥
     private double TurretPosition = 0; // may need to change
     private int turretExtremeLeft = 1700-SharedClass.turretPose; // may need to change
     private int turretExtremeRight = -350-SharedClass.turretPose; // may need to change
@@ -1012,3 +1012,4 @@ Far {
    Ta
 }
 */
+

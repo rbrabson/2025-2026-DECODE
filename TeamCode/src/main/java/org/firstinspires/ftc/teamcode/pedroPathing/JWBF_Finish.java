@@ -8,6 +8,7 @@ package org.firstinspires.ftc.teamcode.pedroPathing; // make sure this aligns wi
 
 
 import static org.firstinspires.ftc.teamcode.pedroPathing.Drawing.drawPoseHistory;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 
 
@@ -74,6 +75,7 @@ import java.util.List;
 
 
 @Autonomous(name="JWBF(Will Finish)")
+@Disabled
 public class JWBF_Finish extends OpMode {
 
 
@@ -1614,7 +1616,6 @@ public class JWBF_Finish extends OpMode {
 
 
 }
-
 
 
 

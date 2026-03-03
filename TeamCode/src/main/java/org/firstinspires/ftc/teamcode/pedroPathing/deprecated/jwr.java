@@ -5,11 +5,19 @@
 
 
 
-package org.firstinspires.ftc.teamcode.pedroPathing;
+
+
+
+
+
+
+
+package org.firstinspires.ftc.teamcode.pedroPathing.deprecated;
+
+
 
 
 import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -27,24 +35,22 @@ import org.firstinspires.ftc.vision.opencv.ImageRegion;
 import org.firstinspires.ftc.vision.opencv.PredominantColorProcessor;
 import android.util.Size;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+
+
 
 
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.Path;
-import com.pedropathing.paths.PathChain;
-import com.pedropathing.util.Timer;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 
-import java.util.List;
-import java.util.Objects;
 
 
-@TeleOp(name="ColdJohnWickBlue")
+@TeleOp(name="ColdJohnWickRed")
 @Disabled
-public class jwb extends LinearOpMode {
+public class jwr extends LinearOpMode {
+
+
 
 
     private Follower follower;
@@ -60,6 +66,8 @@ public class jwb extends LinearOpMode {
     private Servo hoodExtension, indexer, hinge;
 
 
+
+
     private final double BlueHoodX = 14;
     private final double BlueHoodY = 129;
     private final double closeX = 48;
@@ -68,7 +76,11 @@ public class jwb extends LinearOpMode {
     double fixedCloseDist = Math.sqrt(Math.pow(BlueHoodX-closeX, 2)+Math.pow(BlueHoodY-closeY, 2));
 
 
+
+
     private DcMotor intake;
+
+
 
 
     private double increment = 0.2085;
@@ -77,7 +89,7 @@ public class jwb extends LinearOpMode {
     private double pos3Intake = 0.2651; // .5404
     private double pos1Shoot = 0.9829; // .6444
     private double pos2Shoot = 0.7803; // .4381
-    private double pos3Shoot = 0.5706; // .2331k≥≥≥≥≥≥≥≥≥≥≥≥
+    private double pos3Shoot = 0.5706; // .2331kâ‰¥â‰¥â‰¥â‰¥â‰¥â‰¥â‰¥â‰¥â‰¥â‰¥â‰¥â‰¥
     private double TurretPosition = 0; // may need to change
     private int turretExtremeLeft = 1700-SharedClass.turretPose; // may need to change
     private int turretExtremeRight = -350-SharedClass.turretPose; // may need to change
@@ -102,6 +114,8 @@ public class jwb extends LinearOpMode {
     double hoodPos = 0;
 
 
+
+
     // Elapsed Times
     ElapsedTime rightTriggerDuration = new ElapsedTime();
     ElapsedTime intakeDelay = new ElapsedTime();
@@ -114,6 +128,8 @@ public class jwb extends LinearOpMode {
     ElapsedTime turretInterval = new ElapsedTime();
 
 
+
+
     ElapsedTime xTime = new ElapsedTime();
     ElapsedTime bTime = new ElapsedTime();
     ElapsedTime yTime = new ElapsedTime();
@@ -124,7 +140,11 @@ public class jwb extends LinearOpMode {
     ElapsedTime tracked = new ElapsedTime();
 
 
+
+
     private boolean flag = true;
+
+
 
 
     public static int count(String str, Character targetChar) {
@@ -144,15 +164,21 @@ public class jwb extends LinearOpMode {
         }
 
 
+
+
     }
     public void turretTracker(boolean track) {
         if (!track) return;
 
 
-        double targetAngleDeg = ((Math.toDegrees(Math.atan((By - follower.getPose().getY()) / (Bx-follower.getPose().getX()))) % 180) + 180) % 180;
+
+
+        double targetAngleDeg = ((Math.toDegrees(Math.atan((144 - follower.getPose().getY()) / (144-follower.getPose().getX()))) % 180) + 180) % 180;
         double robotHeadingDeg = Math.toDegrees(follower.getHeading());
         double turretAngleDeg = targetAngleDeg - (robotHeadingDeg - 90);
         turretPose = (int) (turretAngleDeg * m);
+
+
 
 
         if (turretPose-SharedClass.turretPose > turretExtremeLeft || turretPose-SharedClass.turretPose < turretExtremeRight) {
@@ -160,20 +186,32 @@ public class jwb extends LinearOpMode {
         }
 
 
+
+
         LLResult result1 = limelight.getLatestResult();
+
+
 
 
         double kP = 9;          // tune this
         double deadband = 1;    // degrees// encoder ticks per loop
 
 
+
+
         if (result1 != null && result1.isValid()) {
+
+
 
 
             telemetry.addData("Error", result1.getTx());
 
 
+
+
             double error = result1.getTx();
+
+
 
 
             if (Math.abs(error) < deadband) {
@@ -182,9 +220,17 @@ public class jwb extends LinearOpMode {
             }
 
 
+
+
         }
         turret.setTargetPosition(turretPose-SharedClass.turretPose);
     }
+
+
+
+
+
+
 
 
 
@@ -236,6 +282,14 @@ public class jwb extends LinearOpMode {
                                 }
                             }
                         }
+
+
+
+
+
+
+
+
 
 
 
@@ -439,6 +493,14 @@ public class jwb extends LinearOpMode {
 
 
 
+
+
+
+
+
+
+
+
                 if (stopShooting) {
                     iteration = 0;
                     indexerState = 0;
@@ -446,6 +508,14 @@ public class jwb extends LinearOpMode {
                     centerControl = false;
                     shooting = false;
                 }
+
+
+
+
+
+
+
+
 
 
 
@@ -489,6 +559,14 @@ public class jwb extends LinearOpMode {
                                 flag = true;
                             }
                         }
+
+
+
+
+
+
+
+
 
 
 
@@ -558,11 +636,17 @@ public class jwb extends LinearOpMode {
     }
 
 
+
+
     public void runOpMode() {
 
 
+
+
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(SharedClass.xPos, SharedClass.yPos, SharedClass.yaw));
+        follower.setStartingPose(new Pose(SharedClass.xPos, SharedClass.yPos, Math.toRadians(SharedClass.yaw)));
+
+
 
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
@@ -577,8 +661,16 @@ public class jwb extends LinearOpMode {
 
 
 
+
+
+
+
+
+
+
+
         PredominantColorProcessor colorSensor = new PredominantColorProcessor.Builder()
-                .setRoi(ImageRegion.asUnityCenterCoordinates(0.2, -0.7, 0.4, -0.8))
+                .setRoi(ImageRegion.asUnityCenterCoordinates(0.2, -0.5, 0.4, -0.8))
                 .setSwatches(
                         PredominantColorProcessor.Swatch.ARTIFACT_GREEN,
                         PredominantColorProcessor.Swatch.ARTIFACT_PURPLE,
@@ -587,6 +679,8 @@ public class jwb extends LinearOpMode {
                         PredominantColorProcessor.Swatch.YELLOW,
                         PredominantColorProcessor.Swatch.BLUE)
                 .build();
+
+
 
 
         VisionPortal portal = new VisionPortal.Builder()
@@ -598,18 +692,28 @@ public class jwb extends LinearOpMode {
 
 
 
+
+
+
+
         frontLeftMotor = hardwareMap.get(DcMotor.class, "flm");
         frontRightMotor = hardwareMap.get(DcMotor.class, "frm");
         backLeftMotor = hardwareMap.get(DcMotor.class, "blm");
         backRightMotor = hardwareMap.get(DcMotor.class, "brm");
 
 
+
+
         DcMotor light = hardwareMap.get(DcMotor.class, "l");
         light.setPower(1);
 
 
+
+
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+
 
 
         turret = hardwareMap.get(DcMotor.class, "turret");
@@ -621,6 +725,8 @@ public class jwb extends LinearOpMode {
         turret.setPower(1);
 
 
+
+
         shooter1 = hardwareMap.get(DcMotorEx.class, "shoot1");
         shooter1.setDirection(DcMotorSimple.Direction.REVERSE);
         shooter1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(160, 0, 0, 15)); // (160, 15)
@@ -629,14 +735,24 @@ public class jwb extends LinearOpMode {
 
 
 
+
+
+
+
         indexer = hardwareMap.get(Servo.class, "index");
+
+
 
 
         hinge = hardwareMap.get(Servo.class, "h");
 
 
+
+
         intake = hardwareMap.get(DcMotor.class, "intake");
         intake.setDirection(DcMotorSimple.Direction.REVERSE);
+
+
 
 
         IMU imu = hardwareMap.get(IMU.class, "imu");
@@ -644,6 +760,8 @@ public class jwb extends LinearOpMode {
                 RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
                 RevHubOrientationOnRobot.UsbFacingDirection.UP));
         imu.initialize(parameters);
+
+
 
 
         boolean intakeToggle = false;
@@ -659,40 +777,54 @@ public class jwb extends LinearOpMode {
         int counting = 0;
 
 
+
+
         String manual_shoot = "";
-       /*
-       Hood:
-           2 Motors shooter wheel
-           1 Servo that controls hood extension
-           Limelight camera attached on top of the hooded shooter
-       Turret:
-           2 Standard Servos to control the turret
-       Indexer:
-           Controlled by a Standard Servo
-           Regular camera with color detection ability
-       Hinge:
-           Standard Servo
-       Intake:
-           1 continuous rotation melonbotics super servo
-       Drivetrain:
-           4 motors
-       */
+      /*
+      Hood:
+          2 Motors shooter wheel
+          1 Servo that controls hood extension
+          Limelight camera attached on top of the hooded shooter
+      Turret:
+          2 Standard Servos to control the turret
+      Indexer:
+          Controlled by a Standard Servo
+          Regular camera with color detection ability
+      Hinge:
+          Standard Servo
+      Intake:
+          1 continuous rotation melonbotics super servo
+      Drivetrain:
+          4 motors
+      */
+
+
 
 
         hinge.setPosition(0.09);
         hoodExtension.setPosition(0);
 
 
+
+
         waitForStart();
+
+
 
 
         if (isStopRequested()) return;
 
 
+
+
         while (opModeIsActive()) {
 
 
+
+
             follower.update();
+
+
 
 
             char green = 'G';
@@ -700,12 +832,18 @@ public class jwb extends LinearOpMode {
             char x1 = 'X';
 
 
+
+
             double y = -gamepad1.left_stick_y;
             double x = gamepad1.left_stick_x;
             double rx = gamepad1.right_stick_x;
 
 
+
+
             distance = Math.sqrt(Math.pow(0-follower.getPose().getX(), 2) + (Math.pow(144-follower.getPose().getY(), 2)));
+
+
 
 
             if (gamepad1.options) {
@@ -713,14 +851,22 @@ public class jwb extends LinearOpMode {
             }
 
 
+
+
             double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+
+
 
 
             double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
             double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
 
 
+
+
             rotX = rotX * 1.1;  // Counteract imperfect strafing
+
+
 
 
             double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
@@ -730,10 +876,14 @@ public class jwb extends LinearOpMode {
             double backRightPower = (rotY + rotX - rx) / denominator;
 
 
+
+
             frontLeftMotor.setPower(frontLeftPower);
             backLeftMotor.setPower(backLeftPower);
             frontRightMotor.setPower(frontRightPower);
             backRightMotor.setPower(backRightPower);
+
+
 
 
             if (gamepad1.leftBumperWasPressed() || gamepad2.leftBumperWasPressed()) {
@@ -741,12 +891,18 @@ public class jwb extends LinearOpMode {
             }
 
 
+
+
             turretTracker(turret123);
+
+
 
 
             if ((gamepad1.yWasPressed() || gamepad2.yWasPressed())) {
                 swit = !swit;
             }
+
+
 
 
             if (swit) {
@@ -758,16 +914,17 @@ public class jwb extends LinearOpMode {
             }
 
 
+
+
             hoodExtension.setPosition(hoodPos);
-            //hoodPos//
-            /*if (gamepad1.dpad_left) {
+            if (gamepad1.dpad_left) {
                 hoodPos -= 0.05;
             }
             if (gamepad1.dpad_right) {
                 hoodPos += 0.05;
             }
 
-             */
+
 
 
             if ((gamepad1.aWasPressed() || gamepad2.aWasPressed()) && count(pattern, green) >= 1) {
@@ -782,8 +939,12 @@ public class jwb extends LinearOpMode {
             //}
 
 
+
+
             if (!manual_shoot.isEmpty() && !shooting) {
                 shooting2 = true;
+
+
 
 
                 if (positionControl) {
@@ -796,8 +957,12 @@ public class jwb extends LinearOpMode {
                 }
 
 
+
+
                 if (position == 0) {
                     indexer.setPosition(pos1Shoot);
+
+
 
 
                     if (indexerTime2.milliseconds() > 500) {
@@ -816,12 +981,16 @@ public class jwb extends LinearOpMode {
                             }
                         }
                     }
+
+
 
 
                 } else if (position == 1) {
                     indexer.setPosition(pos2Shoot);
 
 
+
+
                     if (indexerTime2.milliseconds() > 500) {
                         if (flag) {
                             hinge.setPosition(0.4);
@@ -840,8 +1009,12 @@ public class jwb extends LinearOpMode {
                     }
 
 
+
+
                 } else if (position == 2) {
                     indexer.setPosition(pos3Shoot);
+
+
 
 
                     if (indexerTime2.milliseconds() > 500) {
@@ -850,9 +1023,13 @@ public class jwb extends LinearOpMode {
                         }
 
 
+
+
                         if (hingeTime2.milliseconds() > 675) {
                             hinge.setPosition(0.09);
                             flag = false;
+
+
 
 
                             if (hinge22.milliseconds() > 850) {
@@ -865,6 +1042,8 @@ public class jwb extends LinearOpMode {
                         }
                     }
                 }
+
+
 
 
                 if (condition) {
@@ -876,8 +1055,12 @@ public class jwb extends LinearOpMode {
                                     + pattern.substring(position + 1);
 
 
+
+
                     manual_shoot = manual_shoot.substring(1);
                 }
+
+
 
 
                 if (manual_shoot.isEmpty()) {
@@ -885,6 +1068,8 @@ public class jwb extends LinearOpMode {
                     centerControl = false;
                     intakeBool = true;
                 }
+
+
 
 
             } else {
@@ -896,7 +1081,13 @@ public class jwb extends LinearOpMode {
 
 
 
+
+
+
+
             // HAVE TO FIX!!!!!!!!!!!!!!!!!
+
+
 
 
             if (!intakeBool) {
@@ -904,9 +1095,13 @@ public class jwb extends LinearOpMode {
             }
 
 
+
+
             if ((gamepad1.rightBumperWasPressed() || gamepad2.rightBumperWasPressed())) {
                 shooting = true;
             }
+
+
 
 
             automated_shoot(shooting);
@@ -920,7 +1115,11 @@ public class jwb extends LinearOpMode {
             PredominantColorProcessor.Result result = colorSensor.getAnalysis();
 
 
+
+
 // Reset latch once ball leaves ROI
+
+
 
 
             if ((count(pattern, x1) == 0 || ((gamepad1.left_trigger > 0.5 || gamepad2.left_trigger > 0.5) && leftTrigger.milliseconds() > 500)) && !centerControl) {
@@ -942,7 +1141,11 @@ public class jwb extends LinearOpMode {
             }
 
 
+
+
             indexerState = pattern.indexOf("X");
+
+
 
 
             if (!shooting && !shooting2 && !centerControl && indexerState != -1) {
@@ -957,6 +1160,8 @@ public class jwb extends LinearOpMode {
                         indexer.setPosition(pos3Intake);
                         break;
                 }
+
+
 
 
                 if (intakeDelay.milliseconds() > 750) {
@@ -981,6 +1186,8 @@ public class jwb extends LinearOpMode {
                 }
 
 
+
+
             }
             telemetry.addData("Pattern", pattern);
             telemetry.addData("Result:", result.closestSwatch);
@@ -990,25 +1197,35 @@ public class jwb extends LinearOpMode {
             telemetry.addData("Current Robot Y: ", follower.getPose().getY());
             telemetry.addData("Heading: ", Math.toDegrees(follower.getHeading()));
             telemetry.addData("Distance", distance);
-            telemetry.addData("Velocity", shooter1.getVelocity());
             telemetry.update();
 
 
+
+
         }
+
+
 
 
     }
 } // Have to check code again
 
 
+
+
 /*
 Close {
-   Close --> Ta: 4.4 , Angle:
-   Far --> Ta: 0.50-0.53, Angle: 0.05
+  Close --> Ta: 4.4 , Angle:
+  Far --> Ta: 0.50-0.53, Angle: 0.05
 }
+
+
 
 
 Far {
-   Ta
+  Ta
 }
 */
+
+
+

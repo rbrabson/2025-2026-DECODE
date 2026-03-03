@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.pedroPathing; // make sure this aligns with class location
+package org.firstinspires.ftc.teamcode.pedroPathing.deprecated; // make sure this aligns with class location
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
@@ -11,14 +11,14 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import java.util.List;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 
-@Autonomous(name = "Tom_Blue_F", group = "Tom")
+@Autonomous(name = "Tom_Blue_C", group = "Tom")
 @Disabled
-public class Tom_Blue_F extends OpMode {
+public class Tom_Red_C extends OpMode {
     private String ballPattern = "none";
     private boolean hasAligned = false;
     private Limelight3A limelight;
@@ -28,48 +28,32 @@ public class Tom_Blue_F extends OpMode {
 
     private int pathState;
 
-    private final Pose startPose = new Pose(56, 8, Math.toRadians(90));
-    private final Pose ShootPose = new Pose(47.84530386740332, 95.66850828729281, Math.toRadians(134));
-    private final Pose ShootPose1 = new Pose(58.5, 13.723756906077352,Math.toRadians(118));
-    private final Pose pickup1Pose = new Pose(40.57458563535911, 84.07734806629837, Math.toRadians(180));
-    private final Pose pickup2Pose = new Pose(41.33149171270718, 59.674033149171294, Math.toRadians(180));
-    private final Pose pickup3Pose = new Pose(42.563535911602216, 35.005524861878456, Math.toRadians(180));
-    private final Pose pickup4Pose = new Pose(17.58011049723757, 8.889502762430936, Math.toRadians(180));
+    private final Pose startPose = new Pose(110.69613259668509, 135.6906077348066, Math.toRadians(90));
+    private final Pose ShootPose = new Pose(96.57458563535913, 95.8674033149171, Math.toRadians(44)); //Try to implement april tag locking for heading and
+    private final Pose pickup1Pose = new Pose(102.62983425414362, 83.10497237569064, Math.toRadians(0));
+    private final Pose pickup2Pose = new Pose(100.75690607734808, 58.889502762430936, Math.toRadians(0));
+    private final Pose pickup3Pose = new Pose(101.21546961325969, 34.607734806629836, Math.toRadians(0));
 
-    private final Pose intake1Pose = new Pose(23.96132596685084, 84.060773480663, Math.toRadians(180));
-    private final Pose intake2Pose = new Pose(24.386740331491723, 59.83425414364642, Math.toRadians(180));
-    private final Pose intake3Pose = new Pose(24.41436464088398, 34.97237569060775, Math.toRadians(180));
-    private final Pose intake4Pose = new Pose(8.596685082872927, 8.5, Math.toRadians(180));
-    private final Pose endpose = new Pose(32.03314917127072, 72.18232044198896, Math.toRadians(90));
+    private final Pose intake1Pose = new Pose(119.49723756906077, 83.09944751381215, Math.toRadians(0));
+    private final Pose intake2Pose = new Pose(120.10497237569061, 58.707182320441994, Math.toRadians(0));
+    private final Pose intake3Pose = new Pose(120.45856353591161, 34.68508287292818, Math.toRadians(0));
+    private final Pose endpose = new Pose(112.08287292817678, 72.17679558011054, Math.toRadians(90));
 
-    private final Pose Ctrl1 = new Pose(55.969613259668506, 48.85635359116024);
-    private final Pose Ctrl2 = new Pose(64.58839779005525, 51.93646408839779);
-    private final Pose Ctrl3 = new Pose(71.04972375690608, 30.70718232044198);
-    private final Pose Ctrl4 = new Pose(42.07734806629835, 10.207182320441992);
+    private final Pose Ctrl1 = new Pose(78.71823204419888, 83.99999999999999);
+    private final Pose Ctrl2 = new Pose(78.37292817679558, 59.17955801104973);
+    private final Pose Ctrl3 = new Pose(76.40883977900553, 40.27624309392262);
 
 
-    private final Pose Gate = new Pose(15.22651933701656,72.3259668508287,Math.toRadians(90));
+    private final Pose Gate = new Pose(129.3922651933702,73.98895027624306,Math.toRadians(90));
 
-    private PathChain scorePreload, grabPickup4, intakePickup4, scorePickup4,  grabPickup1, intakePickup1, HittingGate ,scorePickup1, grabPickup2, intakePickup2, scorePickup2, grabPickup3, intakePickup3, scorePickup3, ending;
+    private PathChain scorePreload, grabPickup1, intakePickup1, HittingGate ,scorePickup1, grabPickup2, intakePickup2, scorePickup2, grabPickup3, intakePickup3, scorePickup3, ending;
 
     public void buildPaths() {
         scorePreload = follower.pathBuilder()
-                .addPath(new BezierLine(startPose, ShootPose1))
-                .setLinearHeadingInterpolation(startPose.getHeading(), ShootPose1.getHeading())
+                .addPath(new BezierLine(startPose, ShootPose))
+                .setLinearHeadingInterpolation(startPose.getHeading(), ShootPose.getHeading())
                 .build();
 
-        grabPickup4 = follower.pathBuilder()
-                .addPath(new BezierCurve(ShootPose, Ctrl4,  pickup4Pose))
-                .setLinearHeadingInterpolation(ShootPose.getHeading(), pickup4Pose.getHeading())
-                .build();
-        intakePickup4 = follower.pathBuilder()
-                .addPath(new BezierLine(pickup4Pose, intake4Pose))
-                .setLinearHeadingInterpolation(pickup4Pose.getHeading(), intake4Pose.getHeading())
-                .build();
-        scorePickup4 = follower.pathBuilder()
-                .addPath(new BezierLine(intake4Pose, ShootPose1))
-                .setLinearHeadingInterpolation(intake4Pose.getHeading(),ShootPose1.getHeading())
-                .build();
 
         grabPickup1 = follower.pathBuilder()
                 .addPath(new BezierCurve(ShootPose, Ctrl1, pickup1Pose))
@@ -78,7 +62,7 @@ public class Tom_Blue_F extends OpMode {
 
         intakePickup1 = follower.pathBuilder()
                 .addPath(new BezierLine(pickup1Pose, intake1Pose))
-                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .setLinearHeadingInterpolation(pickup1Pose.getHeading(), intake1Pose.getHeading())
                 .build();
 
         HittingGate = follower.pathBuilder()
@@ -98,7 +82,7 @@ public class Tom_Blue_F extends OpMode {
 
         intakePickup2 = follower.pathBuilder()
                 .addPath(new BezierLine(pickup2Pose, intake2Pose))
-                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .setLinearHeadingInterpolation(pickup2Pose.getHeading(), intake2Pose.getHeading())
                 .build();
 
         scorePickup2 = follower.pathBuilder()
@@ -112,7 +96,7 @@ public class Tom_Blue_F extends OpMode {
                 .build();
         intakePickup3 = follower.pathBuilder()
                 .addPath(new BezierLine(pickup3Pose, intake3Pose))
-                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .setLinearHeadingInterpolation(pickup3Pose.getHeading(), intake3Pose.getHeading())
                 .build();
 
 
@@ -136,43 +120,47 @@ public class Tom_Blue_F extends OpMode {
                 handleAlignAndShoot(2);
                 break;
             case 2:
-                follower.followPath(grabPickup4);
+                follower.followPath(grabPickup1);
                 setPathState(3);
+                break;
             case 3:
-                //Add the intake code
+                //SID Pretty please add intake code
                 setPathState(4);
             case 4:
-                follower.followPath(intakePickup4);
+                follower.followPath(intakePickup1);
                 setPathState(5);
+                break;
             case 5:
-                follower.followPath(scorePickup4);
+                follower.followPath(HittingGate);
                 setPathState(6);
+                break;
             case 6:
-                handleAlignAndShoot(7);
+                follower.followPath(scorePickup1);
+                break;
             case 7:
-                follower.followPath(grabPickup1);
-                setPathState(8);
+                handleAlignAndShoot(8);
                 break;
             case 8:
-                //SID Pretty please add intake code
+                follower.followPath(grabPickup2);
                 setPathState(9);
+                break;
             case 9:
-                follower.followPath(intakePickup1);
+                //SID PRETTY PLEASE ADD INTAKE CODE
                 setPathState(10);
                 break;
             case 10:
-                follower.followPath(HittingGate);
+                follower.followPath(intakePickup2);
                 setPathState(11);
                 break;
             case 11:
-                follower.followPath(scorePickup1);
+                follower.followPath(scorePickup2);
                 setPathState(12);
                 break;
             case 12:
                 handleAlignAndShoot(13);
                 break;
             case 13:
-                follower.followPath(grabPickup2);
+                follower.followPath(grabPickup3);
                 setPathState(14);
                 break;
             case 14:
@@ -180,38 +168,18 @@ public class Tom_Blue_F extends OpMode {
                 setPathState(15);
                 break;
             case 15:
-                follower.followPath(intakePickup2);
+                follower.followPath(intakePickup3);
                 setPathState(16);
                 break;
             case 16:
-                follower.followPath(scorePickup2);
+                follower.followPath(scorePickup3);
                 setPathState(17);
                 break;
             case 17:
                 handleAlignAndShoot(18);
                 break;
             case 18:
-                follower.followPath(grabPickup3);
-                setPathState(19);
-                break;
-            case 19:
-                //SID PRETTY PLEASE ADD INTAKE CODE
-                setPathState(20);
-                break;
-            case 20:
-                follower.followPath(intakePickup3);
-                setPathState(21);
-                break;
-            case 21:
-                follower.followPath(scorePickup3);
-                setPathState(22);
-                break;
-            case 22:
-                handleAlignAndShoot(23);
-                break;
-            case 23:
                 follower.followPath(ending);
-                setPathState(-1);
                 break;
         }
     }

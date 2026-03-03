@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.pedroPathing; // make sure this aligns with class location
 
 import static org.firstinspires.ftc.teamcode.pedroPathing.Drawing.drawPoseHistory;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import android.util.Size;
 
@@ -33,6 +34,7 @@ import java.util.List;
 
 
 @Autonomous(name="JWBC")
+@Disabled
 public class JWBC extends OpMode {
 
     private Follower follower;
@@ -987,7 +989,6 @@ public class JWBC extends OpMode {
     public void stop() {}
 
 }
-
 
 
 

@@ -11,11 +11,13 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import java.util.List;
 
 
 @Autonomous(name = "Tom_Blue_C", group = "Tom")
+@Disabled
 public class Tom_Red_C extends OpMode {
     private String ballPattern = "none";
     private boolean hasAligned = false;
