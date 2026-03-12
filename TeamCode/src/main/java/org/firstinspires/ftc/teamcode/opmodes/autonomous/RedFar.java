@@ -1,0 +1,68 @@
+package org.firstinspires.ftc.teamcode.opmodes.autonomous;
+
+import com.pedropathing.geometry.Pose;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+
+import org.firstinspires.ftc.teamcode.enums.Alliance;
+import org.firstinspires.ftc.teamcode.opmodes.autonomous.pathing.AutonomousPathing;
+import org.firstinspires.ftc.teamcode.opmodes.autonomous.pathing.RedFarPathing;
+import org.firstinspires.ftc.teamcode.hardware.Flywheel;
+
+/**
+ * This is the OpMode for the Red Far autonomous routine. It initializes the robot, follower, and path,
+ * and runs the autonomous actions in the loop. The robot will start at a specific pose, follow a series
+ * of paths to score preloads and pick up additional game elements, and will also check for motif detection
+ * to adjust its behavior accordingly.
+ */
+@Autonomous(name = "Red Far", group = "Active")
+public class RedFar extends AutonomousOpMode {
+    /**
+     * This method returns the autonomous path to be followed during this routine.
+     *
+     * @return an instance of the RedFarAutonomous class.
+     */
+    @Override
+    protected AutonomousPathing getPath() {
+        return new RedFarPathing(follower, robot.intake, robot.shooter, robot.transfer);
+    }
+
+    /**
+     * This method returns the flywheel velocity for the opmode.
+     *
+     * @return the flywheel velocity to be set for this autonomous routine. In this case, it
+     *         returns the velocity for far-range shooting.
+     */
+    @Override
+    protected double getFlywheelVelocity() {
+        return Flywheel.VELOCITY_FAR;
+    }
+
+    /**
+     * This method returns the starting pose for the robot.
+     *
+     * @return the starting pose of the robot for this autonomous routine.
+     */
+    @Override
+    protected Pose getStartingPose() {
+        return RedFarPathing.startPose;
+    }
+
+    /**
+     * This method returns the team's alliance.
+     *
+     * @return the base for this autonomous routine, which is used to set the turret base values for
+     * the shooter.
+     */
+    @Override
+    protected Alliance getAlliance() {
+        return Alliance.RED;
+    }
+
+    /**
+     * This method switches the Limelight camera to the pipeline used to detect the red goal.
+     */
+    @Override
+    protected void switchToShootingPipeline() {
+        robot.limelight.switchToRedGoal();
+    }
+}
