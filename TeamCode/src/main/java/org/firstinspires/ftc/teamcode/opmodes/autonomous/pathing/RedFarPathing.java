@@ -123,7 +123,8 @@ public class RedFarPathing implements AutonomousPathing {
                 .build();
 
         // Build the behavior tree to run the paths
-        Node root = new Sequence(new FollowPath(follower, scorePreload),
+        Node root = new Sequence(
+                new FollowPath(follower, scorePreload),
                 new ShootArtifacts(follower, shooter, intake, transfer),
 
                 new FollowPath(follower, grabPickup4),
