@@ -1,11 +1,12 @@
 package org.firstinspires.ftc.teamcode.opmodes.tests;
 
 import com.pedropathing.geometry.Pose;
+import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
@@ -53,22 +54,14 @@ public class CalibrateShooterCoefficients extends OpMode {
     private static final Pose BLUE_GOAL = new Pose(0, 72, Math.PI / 2.0);
     private static final Pose RED_GOAL = new Pose(144, 72, Math.PI / 2.0);
 
-    private final Gamepad prevGamepad1 = new Gamepad();
-
     private DcMotorEx flywheel;
     private Servo hood;
     private Limelight limelight;
     private Alliance selectedAlliance = null;
 
     private double targetRPM = 0.0;
-    private double hoodPos = 0.50;
+    private double hoodPos = 0.0;
     private double distanceIn = 72.0;
-
-    // Add PID variables
-    private double kP = 0.1;
-    private double kI = 0.0;
-    private double kD = 0.0;
-    private static final double PID_STEP = 0.01;
 
     /**
      * Initializes hardware and telemetry for shooter calibration. Sets up flywheel,
@@ -79,9 +72,11 @@ public class CalibrateShooterCoefficients extends OpMode {
         flywheel = hardwareMap.get(DcMotorEx.class, FLYWHEEL_NAME);
         hood = hardwareMap.get(Servo.class, HOOD_NAME);
         limelight = new Limelight(hardwareMap, telemetry);
+        limelight.switchToRedGoal(); // Default to red, can be changed by user
 
-        flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        flywheel.setVelocity(0.0);
+        flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
+        flywheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        flywheel.setPower(0);
         hood.setPosition(hoodPos);
 
         telemetry.addLine("Dpad L/R: Velocity, Dpad U/D: Hood");
@@ -97,60 +92,43 @@ public class CalibrateShooterCoefficients extends OpMode {
      */
     @Override
     public void loop() {
-        if (gamepad1.x && !prevGamepad1.x) {
+        if (gamepad1.xWasPressed()) {
             selectedAlliance = Alliance.BLUE;
             limelight.switchToBlueGoal();
             initializePose();
         }
-        if (gamepad1.b && !prevGamepad1.b) {
+        if (gamepad1.bWasPressed()) {
             selectedAlliance = Alliance.RED;
             limelight.switchToRedGoal();
             initializePose();
         }
 
-        if (gamepad1.right_bumper && !prevGamepad1.right_bumper) {
+        if (gamepad1.rightBumperWasPressed()) {
             distanceIn = Range.clip(distanceIn + DISTANCE_STEP_IN, MIN_DISTANCE_IN, MAX_DISTANCE_IN);
         }
-        if (gamepad1.left_bumper && !prevGamepad1.left_bumper) {
+        if (gamepad1.leftBumperWasPressed()) {
             distanceIn = Range.clip(distanceIn - DISTANCE_STEP_IN, MIN_DISTANCE_IN, MAX_DISTANCE_IN);
         }
 
-        if (gamepad1.dpad_right && !prevGamepad1.dpad_right) {
+        if (gamepad1.dpadRightWasPressed()) {
             targetRPM = Range.clip(targetRPM + RPM_STEP, MIN_RPM, MAX_RPM);
         }
-        if (gamepad1.dpad_left && !prevGamepad1.dpad_left) {
+        if (gamepad1.dpadLeftWasPressed()) {
             targetRPM = Range.clip(targetRPM - RPM_STEP, MIN_RPM, MAX_RPM);
         }
 
-        if (gamepad1.dpad_up && !prevGamepad1.dpad_up) {
+        if (gamepad1.dpadUpWasPressed()) {
             hoodPos = Range.clip(hoodPos + HOOD_STEP, MIN_HOOD, MAX_HOOD);
             hood.setPosition(hoodPos);
         }
-        if (gamepad1.dpad_down && !prevGamepad1.dpad_down) {
+        if (gamepad1.dpadDownWasPressed()) {
             hoodPos = Range.clip(hoodPos - HOOD_STEP, MIN_HOOD, MAX_HOOD);
             hood.setPosition(hoodPos);
-        }
-
-        // In loop(), add controls for PID tuning
-        if (gamepad1.y && !prevGamepad1.y) {
-            kP += PID_STEP;
-        }
-        if (gamepad1.a && !prevGamepad1.a) {
-            kP = Math.max(0, kP - PID_STEP);
-        }
-        if (gamepad1.right_stick_button && !prevGamepad1.right_stick_button) {
-            kD += PID_STEP;
-        }
-        if (gamepad1.left_stick_button && !prevGamepad1.left_stick_button){
-            kD = Math.max(0, kD - PID_STEP);
         }
 
         flywheel.setVelocity(rpmToTicksPerSecond(targetRPM));
 
         String allianceText = selectedAlliance == null ? "NONE" : selectedAlliance.name();
-
-        // Apply PID coefficients to flywheel
-        flywheel.setVelocityPIDFCoefficients(kP, kI, kD, 0);
 
         // Calculate error
         double measuredRPM = ticksPerSecondToRPM(flywheel.getVelocity());
@@ -162,16 +140,11 @@ public class CalibrateShooterCoefficients extends OpMode {
         telemetry.addData("Distance (in)", "%.2f", distanceIn);
         telemetry.addData("Target RPM", "%.2f", targetRPM);
         telemetry.addData("Measured RPM", "%.2f", measuredRPM);
+        telemetry.addData("RPM Error", "%.2f", rpmError);
         telemetry.addData("Hood", "%.4f", hoodPos);
         telemetry.addData("CSV", csv);
-        telemetry.addData("kP", "%.3f", kP);
-        telemetry.addData("kI", "%.3f", kI);
-        telemetry.addData("kD", "%.3f", kD);
-        telemetry.addData("RPM Error", "%.2f", rpmError);
 
         telemetry.update();
-
-        prevGamepad1.copy(gamepad1);
     }
 
     /**
@@ -179,11 +152,12 @@ public class CalibrateShooterCoefficients extends OpMode {
      * selected alliance and current position.
      */
     private void initializePose() {
-        if (selectedAlliance == null)
+        if (selectedAlliance == null) {
             return;
+        }
 
         // Get Limelight vision result directly
-        com.qualcomm.hardware.limelightvision.LLResult visionResult = limelight.getSensor().getLatestResult();
+        LLResult visionResult = limelight.getSensor().getLatestResult();
         boolean visionValid = false;
         Pose poseToUse = new Pose(0, 0, 0);
         if (visionResult != null && visionResult.isValid() && visionResult.getBotpose() != null) {
