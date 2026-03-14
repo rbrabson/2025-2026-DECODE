@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.mechanisms.Transfer;
  * The ShootArtifactProcessor class manages the interaction between multiple mechanisms to manage the flow
  * of artifacts from the intake, through the transfer mechanism, and into the shooter for scoring.
  */
-public class ShootArtifactProcessor implements InputProcessor {
+public class ShootArtifactProcessor implements UserInputProcessor {
     private final Intake intake;
     private final Transfer transfer;
     private final Shooter shooter;

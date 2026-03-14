@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.mechanisms.Intake;
 /**
  * The IntakeInput class manages the control of the intake mechanism based on gamepad inputs.
  */
-public class IntakeProcessor implements InputProcessor {
+public class IntakeProcessor implements UserInputProcessor {
     private final static long INTAKE_TOGGLE_DELAY = 500;
     private final Intake intake;
     private final Telemetry telemetry;

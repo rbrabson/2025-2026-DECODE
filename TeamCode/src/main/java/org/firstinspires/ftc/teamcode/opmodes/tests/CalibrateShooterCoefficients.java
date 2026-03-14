@@ -11,21 +11,21 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.enums.Alliance;
+import org.firstinspires.ftc.teamcode.hardware.Flywheel;
 import org.firstinspires.ftc.teamcode.sensors.Limelight;
 
 import java.util.Locale;
 
 /**
- * OpMode for interactively calibrating shooter flywheel velocity and hood
- * position coefficients.
+ * OpMode for interactively calibrating shooter flywheel RPM and hood position coefficients.
  * <p>
- * Allows the user to select alliance, adjust flywheel velocity, hood position,
+ * Allows the user to select alliance, adjust flywheel RPM, hood position,
  * and simulated distance to goal. The current configuration is displayed as a
  * CSV for easy data collection.
  * <p>
  * Controls:
  * <ul>
- * <li>Dpad Left/Right: Decrease/Increase flywheel velocity</li>
+ * <li>Dpad Left/Right: Decrease/Increase flywheel RPM</li>
  * <li>Dpad Up/Down: Raise/Lower hood position</li>
  * <li>LB/RB: Decrease/Increase distance to goal</li>
  * <li>X/B: Select Blue/Red alliance and reset pose</li>
@@ -38,9 +38,9 @@ public class CalibrateShooterCoefficients extends OpMode {
     private static final String FLYWHEEL_NAME = "flywheel";
     private static final String HOOD_NAME = "hood";
 
-    private static final double MIN_VELOCITY = 0.0;
-    private static final double MAX_VELOCITY = 4000.0;
-    private static final double VELOCITY_STEP = 25.0;
+    private static final double MIN_RPM = 0.0;
+    private static final double MAX_RPM = Flywheel.RPM_MAX;
+    private static final double RPM_STEP = 5.0;
 
     private static final double MIN_HOOD = 0.0;
     private static final double MAX_HOOD = 1.0;
@@ -60,7 +60,7 @@ public class CalibrateShooterCoefficients extends OpMode {
     private Limelight limelight;
     private Alliance selectedAlliance = null;
 
-    private double targetVelocity = 0.0;
+    private double targetRPM = 0.0;
     private double hoodPos = 0.50;
     private double distanceIn = 72.0;
 
@@ -110,10 +110,10 @@ public class CalibrateShooterCoefficients extends OpMode {
         }
 
         if (gamepad1.dpad_right && !prevGamepad1.dpad_right) {
-            targetVelocity = Range.clip(targetVelocity + VELOCITY_STEP, MIN_VELOCITY, MAX_VELOCITY);
+            targetRPM = Range.clip(targetRPM + RPM_STEP, MIN_RPM, MAX_RPM);
         }
         if (gamepad1.dpad_left && !prevGamepad1.dpad_left) {
-            targetVelocity = Range.clip(targetVelocity - VELOCITY_STEP, MIN_VELOCITY, MAX_VELOCITY);
+            targetRPM = Range.clip(targetRPM - RPM_STEP, MIN_RPM, MAX_RPM);
         }
 
         if (gamepad1.dpad_up && !prevGamepad1.dpad_up) {
@@ -125,16 +125,16 @@ public class CalibrateShooterCoefficients extends OpMode {
             hood.setPosition(hoodPos);
         }
 
-        flywheel.setVelocity(targetVelocity);
-        double measuredVelocity = flywheel.getVelocity();
+        flywheel.setVelocity(rpmToTicksPerSecond(targetRPM));
+        double measuredRPM = ticksPerSecondToRPM(flywheel.getVelocity());
 
         String allianceText = selectedAlliance == null ? "NONE" : selectedAlliance.name();
-        String csv = String.format(Locale.US, "%s,%.2f,%.2f,%.4f", allianceText, distanceIn, measuredVelocity, hoodPos);
+        String csv = String.format(Locale.US, "%s,%.2f,%.2f,%.4f", allianceText, distanceIn, measuredRPM, hoodPos);
 
         telemetry.addData("Alliance", allianceText);
         telemetry.addData("Distance (in)", "%.2f", distanceIn);
-        telemetry.addData("Target Velocity", "%.2f", targetVelocity);
-        telemetry.addData("Measured Velocity", "%.2f", measuredVelocity);
+        telemetry.addData("Target RPM", "%.2f", targetRPM);
+        telemetry.addData("Measured RPM", "%.2f", measuredRPM);
         telemetry.addData("Hood", "%.4f", hoodPos);
         telemetry.addData("CSV", csv);
         telemetry.update();
@@ -186,5 +186,25 @@ public class CalibrateShooterCoefficients extends OpMode {
         if (flywheel != null) {
             flywheel.setVelocity(0.0);
         }
+    }
+
+    /**
+     * Converts RPM to motor velocity in ticks per second.
+     *
+     * @param rpm Desired RPM of the flywheel
+     * @return Equivalent motor velocity in ticks per second
+     */
+    private static double rpmToTicksPerSecond(double rpm) {
+        return (rpm * Flywheel.TICKS_PER_REV) / 60.0;
+    }
+
+    /**
+     * Converts motor velocity in ticks per second to RPM.
+     *
+     * @param ticksPerSecond Motor velocity in ticks per second
+     * @return Equivalent RPM of the flywheel
+     */
+    private static double ticksPerSecondToRPM(double ticksPerSecond) {
+        return (ticksPerSecond * 60.0) / Flywheel.TICKS_PER_REV;
     }
 }

@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.enums.Alliance;
-import org.firstinspires.ftc.teamcode.inputprocessors.InputProcessor;
+import org.firstinspires.ftc.teamcode.inputprocessors.UserInputProcessor;
 import org.firstinspires.ftc.teamcode.inputprocessors.IntakeProcessor;
 import org.firstinspires.ftc.teamcode.inputprocessors.MecanumDriveProcessor;
 import org.firstinspires.ftc.teamcode.inputprocessors.ShootArtifactProcessor;
@@ -33,7 +33,7 @@ public abstract class TeleopOpMode extends OpMode {
     private final Timer timer = new Timer();
     protected Follower follower;
     protected Robot robot;
-    private List<InputProcessor> inputHandlers;
+    private List<UserInputProcessor> inputHandlers;
     private List<Mechanism> mechanisms;
 
     private FusedLocalizer localizer;
@@ -137,7 +137,7 @@ public abstract class TeleopOpMode extends OpMode {
 
         // Update each input handler with the current gamepad values. Each handler will handle
         // the logic for controlling its respective mechanism based on the gamepad inputs.
-        for (InputProcessor controller : inputHandlers) {
+        for (UserInputProcessor controller : inputHandlers) {
             controller.process(currentGamepad1, currentGamepad2);
         }
 

@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
  * processor must implement the execute method, which takes in the current state of gamepad1 and
  * gamepad2 and performs the necessary actions to control the robot's mechanisms.
  */
-public interface InputProcessor {
+public interface UserInputProcessor {
 
     /**
      * Executes the input processor's logic based on the current state of gamepad1 and gamepad2.

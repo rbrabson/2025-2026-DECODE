@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.sensors.Limelight;
  * ShooterProcessor handles the input processing for the shooter mechanism, including toggling automation,
  * adjusting flywheel speed, and providing feedback on turret alignment.
  */
-public class ShooterProcessor implements InputProcessor {
+public class ShooterProcessor implements UserInputProcessor {
     private static final double HOOD_INCREMENT = 0.05;
     private static final double ACCEPTABLE_TURRET_ERROR = 1.0;
 
