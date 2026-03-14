@@ -69,9 +69,9 @@ public class ShooterProcessor implements InputProcessor {
         if (yPressed && !yLatched) {
             flywheelSpeedLow = !flywheelSpeedLow;
             if (flywheelSpeedLow) {
-                shooter.setFlywheelRPMToTeleopLow();
+                shooter.setFlywheelRPMToTeleOpLow();
             } else {
-                shooter.setFlywheelRPMToTeleopHigh();
+                shooter.setFlywheelRPMToTeleOpHigh();
             }
         }
         yLatched = yPressed;

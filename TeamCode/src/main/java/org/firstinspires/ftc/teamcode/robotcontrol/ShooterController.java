@@ -2,8 +2,12 @@ package org.firstinspires.ftc.teamcode.robotcontrol;
 
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.teamcode.hardware.Flywheel;
+
 /**
- * ShooterController uses cubic regression coefficients to predict flywheel velocity and hood position * based on distance. It also includes a low-pass filter for distance measurements and an * automatic shot tuning mechanism.
+ * ShooterController uses cubic regression coefficients to predict flywheel RPM and
+ * hood position * based on distance. It also includes a low-pass filter for distance measurements
+ * and an * automatic shot tuning mechanism.
  */
 public class ShooterController {
     // Distance filter
@@ -13,14 +17,10 @@ public class ShooterController {
     private static final double MIN_SHOT_DISTANCE = 0.0;
     private static final double MAX_SHOT_DISTANCE = 200.0;
 
-    // Output limits in RPM
-    private static final double MIN_RPM = 0.0;
-    private static final double MAX_RPM = 6000.0; // Example max RPM
-
     // Automatic shot tuning in RPM
     private static final double RPM_OFFSET_STEP = 50.0;
-    private static final double MIN_RPM_OFFSET = -500.0;
-    private static final double MAX_RPM_OFFSET = 500.0;
+    private static final double MIN_RPM_OFFSET = -Flywheel.RPM_MAX / 2.0;
+    private static final double MAX_RPM_OFFSET = Flywheel.RPM_MAX / 2.0;
 
     // Flywheel cubic coefficients
     private static final double FA = -0.001660;
@@ -51,7 +51,7 @@ public class ShooterController {
     // Artifact flight constant (seconds per inch)
     private static final double FLIGHT_TIME_PER_INCH = 0.002;
 
-    // Flywheel velocity correction factor for robot motion compensation
+    // Flywheel RPM correction factor for robot motion compensation
     public static final double FLYWHEEL_CORRECTION = 5.0;
 
     private double rpmOffset = 0.0;
@@ -93,7 +93,7 @@ public class ShooterController {
 
         rpm -= robotVelocityTowardTarget * FLYWHEEL_CORRECTION;
         rpm += rpmOffset;
-        return Range.clip(rpm, MIN_RPM, MAX_RPM);
+        return Range.clip(rpm, -Flywheel.RPM_MAX, Flywheel.RPM_MAX);
     }
 
     /**

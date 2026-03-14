@@ -23,7 +23,7 @@ import java.util.Objects;
 public class Flywheel {
     // Motor encoder
     public static final double TICKS_PER_REV = 384;
-    private static final double RPM_MAX = 435;
+    public static final double RPM_MAX = 435;
 
     // RPM presets : (ticksPerSec * 60) / TICKS_PER_REV
     public static final double RPM_LOW = 183; // 1170 ticks per second
