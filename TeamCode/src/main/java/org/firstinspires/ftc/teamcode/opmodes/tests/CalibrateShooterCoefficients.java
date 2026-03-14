@@ -64,6 +64,12 @@ public class CalibrateShooterCoefficients extends OpMode {
     private double hoodPos = 0.50;
     private double distanceIn = 72.0;
 
+    // Add PID variables
+    private double kP = 0.1;
+    private double kI = 0.0;
+    private double kD = 0.0;
+    private static final double PID_STEP = 0.01;
+
     /**
      * Initializes hardware and telemetry for shooter calibration. Sets up flywheel,
      * hood, and localizer. Displays control instructions.
@@ -125,10 +131,31 @@ public class CalibrateShooterCoefficients extends OpMode {
             hood.setPosition(hoodPos);
         }
 
+        // In loop(), add controls for PID tuning
+        if (gamepad1.y && !prevGamepad1.y) {
+            kP += PID_STEP;
+        }
+        if (gamepad1.a && !prevGamepad1.a) {
+            kP = Math.max(0, kP - PID_STEP);
+        }
+        if (gamepad1.right_stick_button && !prevGamepad1.right_stick_button) {
+            kD += PID_STEP;
+        }
+        if (gamepad1.left_stick_button && !prevGamepad1.left_stick_button){
+            kD = Math.max(0, kD - PID_STEP);
+        }
+
         flywheel.setVelocity(rpmToTicksPerSecond(targetRPM));
-        double measuredRPM = ticksPerSecondToRPM(flywheel.getVelocity());
 
         String allianceText = selectedAlliance == null ? "NONE" : selectedAlliance.name();
+
+        // Apply PID coefficients to flywheel
+        flywheel.setVelocityPIDFCoefficients(kP, kI, kD, 0);
+
+        // Calculate error
+        double measuredRPM = ticksPerSecondToRPM(flywheel.getVelocity());
+        double rpmError = targetRPM - measuredRPM;
+
         String csv = String.format(Locale.US, "%s,%.2f,%.2f,%.4f", allianceText, distanceIn, measuredRPM, hoodPos);
 
         telemetry.addData("Alliance", allianceText);
@@ -137,6 +164,11 @@ public class CalibrateShooterCoefficients extends OpMode {
         telemetry.addData("Measured RPM", "%.2f", measuredRPM);
         telemetry.addData("Hood", "%.4f", hoodPos);
         telemetry.addData("CSV", csv);
+        telemetry.addData("kP", "%.3f", kP);
+        telemetry.addData("kI", "%.3f", kI);
+        telemetry.addData("kD", "%.3f", kD);
+        telemetry.addData("RPM Error", "%.2f", rpmError);
+
         telemetry.update();
 
         prevGamepad1.copy(gamepad1);
