@@ -22,15 +22,16 @@ import java.util.Objects;
  */
 public class Flywheel {
     // Motor encoder
-    public static final double TICKS_PER_REV = 537.6;
-
-    // RPM presets
+    public static final double TICKS_PER_REV = 384;
     private static final double RPM_MAX = 435;
-    public static final double RPM_HIGH = 400;
-    public static final double RPM_LOW = 300;
-    public static final double RPM_AUTON_CLOSE = 150;
-    public static final double RPM_AUTON_FAR = 280;
+
+    // RPM presets : (ticksPerSec * 60) / TICKS_PER_REV
+    public static final double RPM_LOW = 183; // 1170 ticks per second
+    public static final double RPM_HIGH = 234; // 1500 ticks per second
+    public static final double RPM_AUTON_CLOSE = 78; // 500 ticks per second
+    public static final double RPM_AUTON_FAR = 175; // 1170 ticks per second
     public static final double RPM_OFF = 0;
+
     private static final double PID_RESET_THRESHOLD = RPM_MAX / 4.0;
 
     // Tolerance for determining if flywheel is at target RPM
@@ -121,9 +122,10 @@ public class Flywheel {
             double ff = feedForward.calculate(
                 0,
                 rpmToTicksPerSecond(targetRPM),
-                (rpmToTicksPerSecond(targetRPM) - rpmToTicksPerSecond(lastTargetRPM)) / dt)
-            ;
-            if (Math.abs(targetRPM) > 1) ff += Math.signum(targetRPM) * feedForward.getKS();
+                (rpmToTicksPerSecond(targetRPM) - rpmToTicksPerSecond(lastTargetRPM)) / dt);
+            if (Math.abs(targetRPM) > 1) {
+                ff += Math.signum(targetRPM) * feedForward.getKS();
+            }
 
             double pidOutput = usePID ? velocityPID.calculate(rpmToTicksPerSecond(targetRPM), motor.getVelocity(), dt) : 0;
 
