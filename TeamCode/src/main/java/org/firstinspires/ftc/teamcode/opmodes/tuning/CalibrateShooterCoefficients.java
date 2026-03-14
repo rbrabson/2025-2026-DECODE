@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes.tests;
+package org.firstinspires.ftc.teamcode.opmodes.tuning;
 
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
@@ -32,7 +32,7 @@ import java.util.Locale;
  * <li>Options: Snapshot (for future use)</li>
  * </ul>
  */
-@TeleOp(name = "Calibrate Shooter Coefficients", group = "Tests")
+@TeleOp(name = "Calibrate Shooter Coefficients", group = "Tuning")
 public class CalibrateShooterCoefficients extends OpMode {
 
     private static final String FLYWHEEL_NAME = "flywheel";
