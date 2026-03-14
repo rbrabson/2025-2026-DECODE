@@ -59,6 +59,10 @@ public class Flywheel {
     private FeedForward feedForward;
     private boolean usePID = true;
 
+    // Use class variables for possible telemetry display of feedforward and PID contributions
+    private double ff = 0;
+    private double pidOutput = 0;
+
     /**
      * Constructor for Flywheel subsystem.
      *
@@ -91,16 +95,13 @@ public class Flywheel {
      */
     private void initializeMotor() {
         motor.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        // We'll handle velocity control ourselves
         motor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-
         motor.setPower(0);
     }
 
     /**
      * Main control loop for the flywheel. Call periodically (e.g., in loop()).
-     * Combines feedforward with a simple velocity PID for improved accuracy.
+     * Combines feedforward with a velocity PID for improved accuracy.
      */
     public void update() {
         // Reset PID on large RPM changes to prevent windup
@@ -119,16 +120,6 @@ public class Flywheel {
         lastTargetRPM = targetRPM;
 
         if (telemetry != null) {
-            double ff = feedForward.calculate(
-                0,
-                rpmToTicksPerSecond(targetRPM),
-                (rpmToTicksPerSecond(targetRPM) - rpmToTicksPerSecond(lastTargetRPM)) / dt);
-            if (Math.abs(targetRPM) > 1) {
-                ff += Math.signum(targetRPM) * feedForward.getKS();
-            }
-
-            double pidOutput = usePID ? velocityPID.calculate(rpmToTicksPerSecond(targetRPM), motor.getVelocity(), dt) : 0;
-
             telemetry.addData("Flywheel RPM", getRPM());
             telemetry.addData("Flywheel Target RPM", targetRPM);
             telemetry.addData("Flywheel Feedforward", ff);
@@ -151,7 +142,7 @@ public class Flywheel {
         double acceleration = (targetVelocity - lastVelocity) / dt;
 
         // Feedforward component
-        double ff = feedForward.calculate(0, targetVelocity, acceleration);
+        ff = feedForward.calculate(0, targetVelocity, acceleration);
 
         // Static friction compensation
         if (Math.abs(targetVelocity) > 1) {
@@ -159,7 +150,7 @@ public class Flywheel {
         }
 
         // PID correction on top of feedforward
-        double pidOutput = usePID ? velocityPID.calculate(targetVelocity, motor.getVelocity(), dt) : 0;
+        pidOutput = usePID ? velocityPID.calculate(targetVelocity, motor.getVelocity(), dt) : 0;
         return Range.clip(ff + pidOutput, -1.0, 1.0);
     }
 
