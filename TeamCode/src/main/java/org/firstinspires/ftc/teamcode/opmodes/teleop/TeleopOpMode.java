@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
-import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.util.Timer;
 import com.qualcomm.hardware.lynx.LynxModule;
@@ -31,7 +30,6 @@ public abstract class TeleopOpMode extends OpMode {
     private final Gamepad currentGamepad1 = new Gamepad();
     private final Gamepad currentGamepad2 = new Gamepad();
     private final Timer timer = new Timer();
-    protected Follower follower;
     protected Robot robot;
     private List<UserInputProcessor> inputHandlers;
     private List<Mechanism> mechanisms;
@@ -51,8 +49,7 @@ public abstract class TeleopOpMode extends OpMode {
 
         Pose startingPose = blackboard.containsKey("robotPose") ? (Pose) blackboard.get("robotPose") : DEFAULT_STARTING_POSE;
         localizer = PedroFollower.getFusedLocalizer(hardwareMap, robot.limelight.getSensor()).withMode(FusedLocalizer.Mode.TELEOP);
-        follower = PedroFollower.create(hardwareMap, localizer);
-        follower.setStartingPose(startingPose);
+        localizer.setStartPose(startingPose);
         robot.mecanumDrive.setLocalizer(localizer);
         alliance = getAlliance();
         robot.shooter.setTurretBaseValues(alliance.getBaseX(), alliance.getBaseY());
@@ -100,7 +97,7 @@ public abstract class TeleopOpMode extends OpMode {
         robot.shooter.setFlywheelRPMToTeleOpLow();
 
         // Warm-up update to initialize follower state before loop begins
-        follower.update();
+        localizer.update();
 
     }
 
@@ -125,7 +122,7 @@ public abstract class TeleopOpMode extends OpMode {
         currentGamepad2.copy(gamepad2);
 
         // Update the robot's pose
-        follower.update();
+        localizer.update();
 
         // Adjust the shooter's flywheel velocity, hood position, and turret angle based on the robot's current location
         robot.shooter.update(localizer, alliance);
