@@ -36,21 +36,17 @@ public class Flywheel {
     // Tolerance for determining if flywheel is at target RPM
     public static final double RPM_TOLERANCE = 100;
 
-    // PID tuning defaults
+    // Velocity PID constants (these need to be tuned for your specific robot)
     public static final double kP = 0.00012;
     public static final double kI = 0;
     public static final double kD = 0;
 
-    // Feedforward gains (these may need to be tuned for your specific robot)
+    // Feedforward gains (these need to be tuned for your specific robot)
     public static final double kS = 0.05;
     public static final double kV = 0.00035;
     public static final double kA = 0.00002;
 
-    // Feedforward gains (example starting values)
-    public static final FeedForward FEEDFORWARD = new FeedForward(kS, kV, kA);
-
     private final DcMotorEx motor;
-    private final FeedForward feedForward;
 
     @Nullable
     private final Telemetry telemetry;
@@ -59,6 +55,7 @@ public class Flywheel {
     private double lastTargetRPM = 0;
     private long lastUpdateTime;
     private PID velocityPID;
+    private FeedForward feedForward;
     private boolean usePID = true;
 
     /**
@@ -80,9 +77,9 @@ public class Flywheel {
         HardwareMap map = Objects.requireNonNull(hardwareMap);
         this.motor = map.get(DcMotorEx.class, "shoot1");
         this.telemetry = telemetry;
-        this.feedForward = FEEDFORWARD;
 
         velocityPID = new PID(kP, kI, kD).withOutputLimits(-1.0, 1.0);
+        feedForward = new FeedForward(kS, kV, kA);
 
         initializeMotor();
         lastUpdateTime = System.nanoTime();
@@ -121,12 +118,14 @@ public class Flywheel {
         lastTargetRPM = targetRPM;
 
         if (telemetry != null) {
-            double ff = feedForward.calculate(0, rpmToTicksPerSecond(targetRPM),
-                    (rpmToTicksPerSecond(targetRPM) - rpmToTicksPerSecond(lastTargetRPM)) / dt);
+            double ff = feedForward.calculate(
+                0,
+                rpmToTicksPerSecond(targetRPM),
+                (rpmToTicksPerSecond(targetRPM) - rpmToTicksPerSecond(lastTargetRPM)) / dt)
+            ;
             if (Math.abs(targetRPM) > 1) ff += Math.signum(targetRPM) * feedForward.getKS();
 
-            double pidOutput = usePID ? velocityPID.calculate(rpmToTicksPerSecond(targetRPM),
-                    motor.getVelocity(), dt) : 0;
+            double pidOutput = usePID ? velocityPID.calculate(rpmToTicksPerSecond(targetRPM), motor.getVelocity(), dt) : 0;
 
             telemetry.addData("Flywheel RPM", getRPM());
             telemetry.addData("Flywheel Target RPM", targetRPM);
@@ -284,5 +283,17 @@ public class Flywheel {
      */
     public void setPIDGains(double kP, double kI, double kD) {
         velocityPID = new PID(kP, kI, kD).withOutputLimits(-1.0, 1.0);
+    }
+
+    /**
+     * Updates the feedforward gains at runtime. This can be useful for tuning or adapting to changes in
+     * the robot's performance over time.
+     *
+     * @param kS Static gain (voltage needed to overcome static friction)
+     * @param kV Velocity gain
+     * @param kA Acceleration gain
+     */
+    public void setFeedForwardConstants(double kS, double kV, double kA) {
+        feedForward = new FeedForward(kS, kV, kA);
     }
 }
