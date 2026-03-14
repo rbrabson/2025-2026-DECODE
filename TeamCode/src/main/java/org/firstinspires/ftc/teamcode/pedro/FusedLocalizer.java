@@ -8,6 +8,7 @@ import com.pedropathing.math.Vector;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.*;
 import org.firstinspires.ftc.teamcode.utils.MathEx;
@@ -235,7 +236,7 @@ public class FusedLocalizer implements Localizer {
         double maxReasonableCorrection = 24.0;
         double confidence = 1.0 - (correctionMagnitude / maxReasonableCorrection);
 
-        return Math.max(0.1, Math.min(1.0, confidence));
+        return Range.clip(confidence, 0.1, 1.0);
     }
 
     /**

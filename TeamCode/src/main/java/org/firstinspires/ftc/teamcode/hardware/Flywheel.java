@@ -111,7 +111,7 @@ public class Flywheel {
 
         long now = System.nanoTime();
         // Clamp dt to prevent spikes from lag
-        double dt = Math.min(Math.max((now - lastUpdateTime) / 1e9, 1e-3), 0.05);
+        double dt = Range.clip((now - lastUpdateTime) / 1e9, 1e-3, 0.05);
         lastUpdateTime = now;
 
         double power = calculatePower(targetRPM, dt);

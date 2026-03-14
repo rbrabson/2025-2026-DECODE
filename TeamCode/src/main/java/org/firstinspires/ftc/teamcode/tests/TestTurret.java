@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -56,7 +57,7 @@ public class TestTurret extends TestItem {
             hasRun = false;
         }
 
-        position = Math.max(MAX_RIGHT, Math.min(MAX_LEFT, position));
+        position = Range.clip(position, MAX_RIGHT, MAX_LEFT);
         turret.setTargetPosition(position);
         telemetry.addData("Turret Position", position);
     }

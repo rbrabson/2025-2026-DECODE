@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -62,7 +63,7 @@ public class TestHood extends TestItem {
             hasRun = false;
         }
 
-        position = Math.max(MIN_POSITION, Math.min(MAX_POSITION, position));
+        position = Range.clip(position, MIN_POSITION, MAX_POSITION);
         hood.setPosition(position);
         telemetry.addData("Hood Position", position);
     }

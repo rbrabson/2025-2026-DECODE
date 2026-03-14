@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -48,7 +49,7 @@ public class TestDriveMotor extends TestItem {
             power = 0;
             hasRun = false;
         }
-        power = Math.max(-1, Math.min(1, power));
+        power = Range.clip(power, -1, 1);
         motor.setPower(power);
         telemetry.addData(getDescription(), "%s Power: %.2f", getDescription(), power);
     }

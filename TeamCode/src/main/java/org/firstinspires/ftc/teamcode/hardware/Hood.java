@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -94,7 +95,7 @@ public class Hood {
      *                 HOOD_POSITION_MAXIMUM.
      */
     public void setPosition(double position) {
-        double clippedPosition = Math.max(HOOD_POSITION_MINIMUM, Math.min(position, HOOD_POSITION_MAXIMUM));
+        double clippedPosition = Range.clip(position, HOOD_POSITION_MINIMUM, HOOD_POSITION_MAXIMUM);
         if (Math.abs(clippedPosition - hood.getPosition()) < POSITION_EPSILON) {
             return;
         }
