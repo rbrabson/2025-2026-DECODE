@@ -35,16 +35,11 @@ public class ShooterController {
     private static final double HD = -0.000000;
 
     // Output limits
-    private static final double MIN_VELOCITY = 0.0;
-    private static final double MAX_VELOCITY = 2000.0;
     private static final double MIN_HOOD = 0.0;
     private static final double MAX_HOOD = 0.8;
 
     // Automatic shot tuning
     private static final double HOOD_OFFSET_STEP = 0.01;
-    private static final double VELOCITY_OFFSET_STEP = 25.0;
-    private static final double MIN_VELOCITY_OFFSET = -300.0;
-    private static final double MAX_VELOCITY_OFFSET = 300.0;
     private static final double MIN_HOOD_OFFSET = -0.20;
     private static final double MAX_HOOD_OFFSET = 0.20;
 
