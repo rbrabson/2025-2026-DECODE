@@ -3,12 +3,12 @@ package org.firstinspires.ftc.teamcode.hardware;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 import com.rbrabson.control.feedforward.FeedForward;
+import com.rbrabson.control.pid.PID;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -18,23 +18,36 @@ import java.util.Objects;
  * Flywheel subsystem for FTC robot.
  * <p>
  * This class manages a single flywheel motor, providing methods to set target RPMs,
+ * update motor power using feedforward control, and monitor flywheel performance.
  */
 public class Flywheel {
     // Motor encoder
     public static final double TICKS_PER_REV = 537.6;
 
     // RPM presets
+    private static final double RPM_MAX = 435;
     public static final double RPM_HIGH = 400;
     public static final double RPM_LOW = 300;
     public static final double RPM_AUTON_CLOSE = 150;
     public static final double RPM_AUTON_FAR = 280;
     public static final double RPM_OFF = 0;
+    private static final double PID_RESET_THRESHOLD = RPM_MAX / 4.0;
 
-    // Tolerance
+    // Tolerance for determining if flywheel is at target RPM
     public static final double RPM_TOLERANCE = 100;
 
+    // PID tuning defaults
+    public static final double kP = 0.00012;
+    public static final double kI = 0;
+    public static final double kD = 0;
+
+    // Feedforward gains (these may need to be tuned for your specific robot)
+    public static final double kS = 0.05;
+    public static final double kV = 0.00035;
+    public static final double kA = 0.00002;
+
     // Feedforward gains (example starting values)
-    public static final FeedForward FEEDFORWARD = new FeedForward(0.05, 0.00035, 0.00002);
+    public static final FeedForward FEEDFORWARD = new FeedForward(kS, kV, kA);
 
     private final DcMotorEx motor;
     private final FeedForward feedForward;
@@ -45,6 +58,8 @@ public class Flywheel {
     private double targetRPM = 0;
     private double lastTargetRPM = 0;
     private long lastUpdateTime;
+    private PID velocityPID;
+    private boolean usePID = true;
 
     /**
      * Constructor for Flywheel subsystem.
@@ -67,8 +82,9 @@ public class Flywheel {
         this.telemetry = telemetry;
         this.feedForward = FEEDFORWARD;
 
-        initializeMotor();
+        velocityPID = new PID(kP, kI, kD).withOutputLimits(-1.0, 1.0);
 
+        initializeMotor();
         lastUpdateTime = System.nanoTime();
     }
 
@@ -79,45 +95,71 @@ public class Flywheel {
         motor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // We'll handle velocity control ourselves
-        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         motor.setPower(0);
     }
 
     /**
-     * Main control loop for the flywheel. This should be called periodically (e.g., in a loop)
-     * to update motor power based on the target RPM and feedforward calculations.
+     * Main control loop for the flywheel. Call periodically (e.g., in loop()).
+     * Combines feedforward with a simple velocity PID for improved accuracy.
      */
     public void update() {
-        long now = System.nanoTime();
-        double dt = (now - lastUpdateTime) / 1e9;
-        lastUpdateTime = now;
-
-        double targetVelocity = rpmToTicksPerSecond(targetRPM);
-        double lastVelocity = rpmToTicksPerSecond(lastTargetRPM);
-
-        double acceleration = (targetVelocity - lastVelocity) / dt;
-
-        double ff = feedForward.calculate(0, targetVelocity, acceleration
-        );
-
-        // Static friction compensation
-        if (targetVelocity != 0) {
-            ff += Math.signum(targetVelocity) * feedForward.getKS();
+        // Reset PID on large RPM changes to prevent windup
+        if (Math.abs(targetRPM - lastTargetRPM) > PID_RESET_THRESHOLD) {
+            velocityPID.reset();
         }
 
-        // Clamp motor power
-        double power = Range.clip(ff, -1.0, 1.0);
+        long now = System.nanoTime();
+        // Clamp dt to prevent spikes from lag
+        double dt = Math.min(Math.max((now - lastUpdateTime) / 1e9, 1e-3), 0.05);
+        lastUpdateTime = now;
 
+        double power = calculatePower(targetRPM, dt);
         motor.setPower(power);
 
         lastTargetRPM = targetRPM;
 
         if (telemetry != null) {
+            double ff = feedForward.calculate(0, rpmToTicksPerSecond(targetRPM),
+                    (rpmToTicksPerSecond(targetRPM) - rpmToTicksPerSecond(lastTargetRPM)) / dt);
+            if (Math.abs(targetRPM) > 1) ff += Math.signum(targetRPM) * feedForward.getKS();
+
+            double pidOutput = usePID ? velocityPID.calculate(rpmToTicksPerSecond(targetRPM),
+                    motor.getVelocity(), dt) : 0;
+
             telemetry.addData("Flywheel RPM", getRPM());
-            telemetry.addData("Target RPM", targetRPM);
-            telemetry.addData("Power", power);
+            telemetry.addData("Flywheel Target RPM", targetRPM);
+            telemetry.addData("Flywheel Feedforward", ff);
+            telemetry.addData("Flywheel PID Output", pidOutput);
+            telemetry.addData("Flywheel Total Power", power);
+            telemetry.addData("Flywheel RPM Error", targetRPM - getRPM());
         }
+    }
+
+    /**
+     * Calculates the motor power for a given target RPM and dt.
+     *
+     * @param rpmTarget Target RPM for the flywheel
+     * @param dt        Time delta in seconds since last update
+     * @return Clipped motor power [-1, 1]
+     */
+    private double calculatePower(double rpmTarget, double dt) {
+        double targetVelocity = rpmToTicksPerSecond(rpmTarget);
+        double lastVelocity = rpmToTicksPerSecond(lastTargetRPM);
+        double acceleration = (targetVelocity - lastVelocity) / dt;
+
+        // Feedforward component
+        double ff = feedForward.calculate(0, targetVelocity, acceleration);
+
+        // Static friction compensation
+        if (Math.abs(targetVelocity) > 1) {
+            ff += Math.signum(targetVelocity) * feedForward.getKS();
+        }
+
+        // PID correction on top of feedforward
+        double pidOutput = usePID ? velocityPID.calculate(targetVelocity, motor.getVelocity(), dt) : 0;
+        return Range.clip(ff + pidOutput, -1.0, 1.0);
     }
 
     /**
@@ -153,15 +195,16 @@ public class Flywheel {
      * @param rpm Desired target RPM for the flywheel
      */
     public void setRPM(double rpm) {
-        targetRPM = rpm;
+        targetRPM = Range.clip(rpm, -RPM_MAX, RPM_MAX);
     }
+
     /**
      * Converts motor velocity in ticks per second to RPM.
      *
      * @param ticksPerSecond Motor velocity in ticks per second
      * @return Equivalent RPM of the flywheel
      */
-    public static double ticksPerSecondToRPM(double ticksPerSecond) {
+    private static double ticksPerSecondToRPM(double ticksPerSecond) {
         return (ticksPerSecond * 60.0) / TICKS_PER_REV;
     }
 
@@ -171,7 +214,7 @@ public class Flywheel {
      * @param rpm Desired RPM of the flywheel
      * @return Equivalent motor velocity in ticks per second
      */
-    public static double rpmToTicksPerSecond(double rpm) {
+    private static double rpmToTicksPerSecond(double rpm) {
         return (rpm * TICKS_PER_REV) / 60.0;
     }
 
@@ -182,20 +225,23 @@ public class Flywheel {
         setRPM(RPM_HIGH);
     }
 
-    /** Convenience method to set flywheel to low RPM preset.
+    /**
+     * Sets the flywheel to a lower RPM preset, which can be useful for closer shots or when less
+     * power is needed.
      */
     public void low() {
         setRPM(RPM_LOW);
     }
 
-    /** Convenience method to set flywheel to autonomous close RPM preset.
+    /**
+     * Sets the flywheel to a preset RPM suitable for close-range shots during autonomous.
      */
     public void autonomousClose() {
         setRPM(RPM_AUTON_CLOSE);
     }
 
     /**
-     * Convenience method to set flywheel to autonomous far RPM preset.
+     * Sets the flywheel to a preset RPM suitable for long-range shots during autonomous.
      */
     public void autonomousFar() {
         setRPM(RPM_AUTON_FAR);
@@ -206,5 +252,37 @@ public class Flywheel {
      */
     public void stop() {
         setRPM(RPM_OFF);
+    }
+
+    /**
+     * Gets the current power being applied to the flywheel motor. This can be useful for debugging
+     * or telemetry purposes.
+     *
+     * @return Current motor power being applied to the flywheel
+     */
+    public double getPower() {
+        return motor.getPower();
+    }
+
+    /**
+     * Enables or disables the use of PID control on top of feedforward. When enabled, the flywheel
+     * will use a simple velocity PID to correct for any discrepancies between target
+     * and actual RPM.
+     *
+     * @param usePID True to enable PID control, false to rely solely on feedforward
+     */
+    public void setUsePID(boolean usePID) {
+        this.usePID = usePID;
+    }
+
+    /**
+     * Updates the PID gains at runtime. This resets the PID controller to prevent integral windup.
+     *
+     * @param kP Proportional gain
+     * @param kI Integral gain
+     * @param kD Derivative gain
+     */
+    public void setPIDGains(double kP, double kI, double kD) {
+        velocityPID = new PID(kP, kI, kD).withOutputLimits(-1.0, 1.0);
     }
 }
