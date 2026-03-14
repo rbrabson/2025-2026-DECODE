@@ -4,7 +4,6 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -51,8 +50,8 @@ public class CalibrateShooterCoefficients extends OpMode {
     private static final double MAX_DISTANCE_IN = 300.0;
     private static final double DISTANCE_STEP_IN = 1.0;
 
-    private static final Pose BLUE_GOAL = new Pose(0, 72, Math.PI / 2.0);
-    private static final Pose RED_GOAL = new Pose(144, 72, Math.PI / 2.0);
+    private static final Pose BLUE_GOAL = new Pose(Alliance.BLUE.getBaseX(), Alliance.BLUE.getBaseY(), Math.PI / 2.0);
+    private static final Pose RED_GOAL = new Pose(Alliance.RED.getBaseX(), Alliance.RED.getBaseY(), Math.PI / 2.0);
 
     private DcMotorEx flywheel;
     private Servo hood;
@@ -78,6 +77,10 @@ public class CalibrateShooterCoefficients extends OpMode {
         flywheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         flywheel.setPower(0);
         hood.setPosition(hoodPos);
+
+        selectedAlliance = Alliance.RED;
+        limelight.switchToRedGoal();
+        initializePose();
 
         telemetry.addLine("Dpad L/R: Velocity, Dpad U/D: Hood");
         telemetry.addLine("X: Blue, B: Red");
@@ -152,10 +155,6 @@ public class CalibrateShooterCoefficients extends OpMode {
      * selected alliance and current position.
      */
     private void initializePose() {
-        if (selectedAlliance == null) {
-            return;
-        }
-
         // Get Limelight vision result directly
         LLResult visionResult = limelight.getSensor().getLatestResult();
         boolean visionValid = false;

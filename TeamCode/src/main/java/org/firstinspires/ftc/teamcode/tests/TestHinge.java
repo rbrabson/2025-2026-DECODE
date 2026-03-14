@@ -14,9 +14,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class TestHinge extends TestItem {
     private final Servo hinge;
 
-    private final Gamepad previousGamepad1 = new Gamepad();
-    private final Gamepad previousGamepad2 = new Gamepad();
-
     private boolean hasRun = false;
 
     /**
@@ -43,16 +40,14 @@ public class TestHinge extends TestItem {
         double position = 0.09;
         if (on) {
             if (!hasRun) {
-                previousGamepad1.copy(gamepad1);
-                previousGamepad2.copy(gamepad2);
                 telemetry.addLine("Use the dpad up and down buttons to control the hinge position.");
                 position = 0.4;
                 hasRun = true;
             }
 
-            if (gamepad1.dpad_down && !previousGamepad1.dpad_down) {
+            if (gamepad1.dpadDownWasPressed()) {
                 position = 0.09;
-            } else if (gamepad1.dpad_up && !previousGamepad1.dpad_up) {
+            } else if (gamepad1.dpadUpWasPressed()) {
                 position = 0.4;
             }
         } else {
@@ -60,8 +55,5 @@ public class TestHinge extends TestItem {
         }
         hinge.setPosition(position);
         telemetry.addData("Hinge Position", position);
-
-        previousGamepad1.copy(gamepad1);
-        previousGamepad2.copy(gamepad2);
     }
 }

@@ -12,7 +12,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  */
 public class TestLight extends TestItem {
     private final DcMotorEx light;
-    private final Gamepad previousGamepad1 = new Gamepad();
     private boolean isOn = false;
     private boolean hasRun = false;
 
@@ -33,10 +32,9 @@ public class TestLight extends TestItem {
             if (!hasRun) {
                 hasRun = true;
                 isOn = true;
-                previousGamepad1.copy(gamepad1);
                 telemetry.addLine("Press the X button to toggle the light on and off.");
             }
-            if (gamepad1.x && !previousGamepad1.x) {
+            if (gamepad1.xWasPressed()) {
                 isOn = !isOn;
             }
         } else {
@@ -47,7 +45,5 @@ public class TestLight extends TestItem {
         double power = isOn ? 1 : 0;
         light.setPower(power);
         telemetry.addData("Light On", isOn);
-
-        previousGamepad1.copy(gamepad1);
     }
 }
