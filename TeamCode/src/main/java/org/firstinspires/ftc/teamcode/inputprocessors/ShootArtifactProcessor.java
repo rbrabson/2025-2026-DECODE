@@ -73,7 +73,7 @@ public class ShootArtifactProcessor implements InputProcessor {
                 break;
 
             case WAITING_FOR_FLYWHEEL:
-                if (shooter.isFlywheelAtTargetVelocity()) {
+                if (shooter.isFlywheelAtTargetRPM()) {
                     flowState = FlowState.TRANSFERRING;
                 }
                 break;

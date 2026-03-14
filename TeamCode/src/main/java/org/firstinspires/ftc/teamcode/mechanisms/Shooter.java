@@ -56,7 +56,7 @@ public class Shooter implements Mechanism {
     }
 
     /**
-     * Decreases the velocity of the flywheel motor and hood position by a predefined increment.
+     * Decreases the RPM of the flywheel motor and hood position by a predefined increment.
      * This is typically used when overshooting artifacts.
      */
     public void shotWasHigh() {
@@ -64,7 +64,7 @@ public class Shooter implements Mechanism {
     }
 
     /**
-     * Increases the velocity of the flywheel motor and hood position by a predefined increment.
+     * Increases the RPM of the flywheel motor and hood position by a predefined increment.
      * This is typically used when undershooting artifacts.
      */
     public void shotWasLow() {
@@ -146,65 +146,65 @@ public class Shooter implements Mechanism {
     }
 
     /**
-     * Sets the velocity of the flywheel motor to a predefined value for close-range
+     * Sets the rpm of the flywheel motor to a predefined value for close-range
      * shooting in autonomous mode.
      */
-    public void setFlywheelVelocityToAutonomousClose() {
-        flywheel.setAutonomousClose();
+    public void setFlywheelRPMToAutonomousClose() {
+        flywheel.autonomousClose();
     }
 
     /**
-     * Sets the velocity of the flywheel motor to a predefined value for far-range
+     * Sets the rpm of the flywheel motor to a predefined value for far-range
      * shooting in autonomous mode.
      */
-    public void setFlywheelVelocityToAutonomousFar() {
-        flywheel.setAutonomousFar();
+    public void setFlywheelRPMToAutonomousFar() {
+        flywheel.autonomousFar();
     }
 
     /**
-     * Sets the velocity of the flywheel motor to a predefined value for high-power
+     * Sets the rpm of the flywheel motor to a predefined value for high-power
      * shooting in teleop mode.
      */
-    public void setFlywheelVelocityToTeleopHigh() {
-        flywheel.setHigh();
+    public void setFlywheelRPMToTeleopHigh() {
+        flywheel.high();
     }
 
     /**
-     * Sets the velocity of the flywheel motor to a predefined value for low-power
+     * Sets the rpm of the flywheel motor to a predefined value for low-power
      * shooting in teleop mode.
      */
-    public void setFlywheelVelocityToTeleopLow() {
-        flywheel.setLow();
+    public void setFlywheelRPMToTeleopLow() {
+        flywheel.low();
     }
 
     /**
-     * Returns the current velocity of the flywheel motor.
+     * Returns the current rpm of the flywheel motor.
      *
-     * @return The current velocity of the flywheel motor, obtained using the
-     *         getVelocity method of the DcMotorEx class.
+     * @return The current rpm of the flywheel motor, obtained using the
+     *         getRPM method of the DcMotorEx class.
      */
-    public double getFlywheelVelocity() {
-        return flywheel.getVelocity();
+    public double getFlywheelRPM() {
+        return flywheel.getRPM();
     }
 
     /**
-     * Sets the velocity of the flywheel motor to a specified value.
+     * Sets the rpm of the flywheel motor to a specified value.
      *
-     * @param velocity The desired velocity for the flywheel motor, which will be
-     *                 set using the setVelocity method of the DcMotorEx class.
+     * @param rpm The desired rpm for the flywheel motor, which will be
+     *                 set using the setRPM method of the DcMotorEx class.
      */
-    public void setFlywheelVelocity(double velocity) {
-        flywheel.setVelocity(velocity);
+    public void setFLywheelRPM(double rpm) {
+        flywheel.setRPM(rpm);
     }
 
     /**
      * Checks if the shooter is ready to shoot, which requires both the turret to be in position
-     * and the flywheel to be at the target velocity.
+     * and the flywheel to be at the target rpm.
      *
      * @return true if the shooter is ready to shoot, false otherwise.
      */
     public boolean isReadyToShoot() {
-        return isTurretInPosition() && isFlywheelAtTargetVelocity();
+        return isTurretInPosition() && isFlywheelAtTargetRPM();
     }
 
     /**
@@ -217,21 +217,21 @@ public class Shooter implements Mechanism {
     }
 
     /**
-     * Checks if the flywheel motor is currently at its target velocity.
+     * Checks if the flywheel motor is currently at its target rpm.
      *
-     * @return true if the flywheel is at the target velocity, false otherwise.
+     * @return true if the flywheel is at the target rpm, false otherwise.
      */
-    public boolean isFlywheelAtTargetVelocity() {
-        return flywheel.isAtTargetVelocity();
+    public boolean isFlywheelAtTargetRPM() {
+        return flywheel.atTargetRPM();
     }
 
     /**
-     * Updates the shooter mechanism based on the robot's current pose and velocity.
-     * Calculates the distance to the target and adjusts the flywheel velocity, hood position,
+     * Updates the shooter mechanism based on the robot's current pose and rpm.
+     * Calculates the distance to the target and adjusts the flywheel rpm, hood position,
      * and turret target position accordingly. The method uses the ShooterModel to determine the
-     * appropriate settings based on the distance and velocity.
+     * appropriate settings based on the distance and rpm.
      *
-     * @param localizer The Localizer object used to obtain the robot's current pose and velocity.
+     * @param localizer The Localizer object used to obtain the robot's current pose and rpm.
      * @param alliance  The current alliance (RED or BLUE) to determine which goal to target.
      */
     public void update(@NonNull Localizer localizer, @NonNull Alliance alliance) {
@@ -244,10 +244,10 @@ public class Shooter implements Mechanism {
         Pose velocity = localizer.getVelocity();
         double forwardVel = velocity.getY();
 
-        double targetVelocity = shooterModel.getFlywheelVelocity(distanceToTarget, forwardVel);
+        double targetRPM = shooterModel.getFlywheelRPM(distanceToTarget, forwardVel);
         double hoodPosition = shooterModel.getHoodPosition(distanceToTarget);
         double turretLeadAngle = shooterModel.getTurretLeadAngle(distanceToTarget, velocity.getX(), TURRET_DISTANCE_FROM_CENTER);
-        setFlywheelVelocity(targetVelocity);
+        setFLywheelRPM(targetRPM);
         setHoodPosition(hoodPosition);
         setTurretTargetPosition(dx, dy, pose.getHeading() + turretLeadAngle);
     }

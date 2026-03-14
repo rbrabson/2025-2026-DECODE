@@ -13,6 +13,15 @@ public class ShooterController {
     private static final double MIN_SHOT_DISTANCE = 0.0;
     private static final double MAX_SHOT_DISTANCE = 200.0;
 
+    // Output limits in RPM
+    private static final double MIN_RPM = 0.0;
+    private static final double MAX_RPM = 6000.0; // Example max RPM
+
+    // Automatic shot tuning in RPM
+    private static final double RPM_OFFSET_STEP = 50.0;
+    private static final double MIN_RPM_OFFSET = -500.0;
+    private static final double MAX_RPM_OFFSET = 500.0;
+
     // Flywheel cubic coefficients
     private static final double FA = -0.001660;
     private static final double FB = 0.297488;
@@ -45,7 +54,7 @@ public class ShooterController {
     // Flywheel velocity correction factor for robot motion compensation
     public static final double FLYWHEEL_CORRECTION = 5.0;
 
-    private double velocityOffset = 0.0;
+    private double rpmOffset = 0.0;
     private double hoodOffset = 0.0;
     private double filteredDistance = 0.0;
     private boolean distanceFilterInitialized = false;
@@ -70,21 +79,21 @@ public class ShooterController {
     }
 
     /**
-     * Calculate flywheel velocity for the given distance and robot closing velocity.
+     * Calculate flywheel RPM for the given distance and robot velocity toward the target, applying
+     * motion compensation and tuning offsets.
      *
-     * @param distance The distance to the target (in inches).
-     * @param robotVelocityTowardTarget Robot velocity toward target (in/s), positive when moving toward.
-     * @return Flywheel setpoint in raw motor velocity units, clamped to limits.
+     * @param distance                  The distance to the target (in inches).
+     * @param robotVelocityTowardTarget Robot velocity toward the target (in/s). Positive means
+     *                                  moving closer, negative means moving away.
+     * @return Calculated flywheel RPM, clamped to limits.
      */
-    public double getFlywheelVelocity(double distance, double robotVelocityTowardTarget) {
+    public double getFlywheelRPM(double distance, double robotVelocityTowardTarget) {
         double d = Range.clip(distance, MIN_SHOT_DISTANCE, MAX_SHOT_DISTANCE);
-        double velocity = ((FA * d + FB) * d + FC) * d + FD;
+        double rpm = ((FA * d + FB) * d + FC) * d + FD; // Assume coefficients now output RPM
 
-        // Moving toward target reduces required launch speed.
-        velocity -= robotVelocityTowardTarget * FLYWHEEL_CORRECTION;
-
-        velocity += velocityOffset;
-        return Range.clip(velocity, MIN_VELOCITY, MAX_VELOCITY);
+        rpm -= robotVelocityTowardTarget * FLYWHEEL_CORRECTION;
+        rpm += rpmOffset;
+        return Range.clip(rpm, MIN_RPM, MAX_RPM);
     }
 
     /**
@@ -117,20 +126,21 @@ public class ShooterController {
     }
 
     /**
-     * Adjust flywheel and hood offsets based on shot result.
+     * Adjust the RPM and hood position offsets based on whether the shot was high or low.
+     * This method is called after each shot to fine-tune the shooting parameters for future shots.
      *
-     * @param shotWasHigh True if shot was high, false if low.
+     * @param shotWasHigh True if the shot was high (overshot), false if it was low (undershot).
      */
     public void adjustShot(boolean shotWasHigh) {
         if (shotWasHigh) {
-            velocityOffset -= VELOCITY_OFFSET_STEP;
+            rpmOffset -= RPM_OFFSET_STEP;
             hoodOffset -= HOOD_OFFSET_STEP;
         } else {
-            velocityOffset += VELOCITY_OFFSET_STEP;
+            rpmOffset += RPM_OFFSET_STEP;
             hoodOffset += HOOD_OFFSET_STEP;
         }
 
-        velocityOffset = Range.clip(velocityOffset, MIN_VELOCITY_OFFSET, MAX_VELOCITY_OFFSET);
+        rpmOffset = Range.clip(rpmOffset, MIN_RPM_OFFSET, MAX_RPM_OFFSET);
         hoodOffset = Range.clip(hoodOffset, MIN_HOOD_OFFSET, MAX_HOOD_OFFSET);
     }
 }

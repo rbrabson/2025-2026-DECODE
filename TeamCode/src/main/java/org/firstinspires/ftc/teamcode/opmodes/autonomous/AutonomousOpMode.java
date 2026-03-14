@@ -56,11 +56,11 @@ public abstract class AutonomousOpMode extends OpMode {
 
     /**
      * This abstract method should be implemented by subclasses to specify the desired flywheel
-     * velocity for the autonomous routine.
+     * RPM for the autonomous routine.
      *
-     * @return The desired flywheel velocity for the autonomous routine.
+     * @return The desired flywheel RPM for the autonomous routine.
      */
-    abstract protected double getFlywheelVelocity();
+    abstract protected double getFlywheelRPM();
 
     /**
      * This abstract method should be implemented by subclasses to specify the starting pose of the
@@ -121,7 +121,7 @@ public abstract class AutonomousOpMode extends OpMode {
      */
     @Override
     public void start() {
-        robot.shooter.setFlywheelVelocity(getFlywheelVelocity());
+        robot.shooter.setFLywheelRPM(getFlywheelRPM());
         robot.intake.startIntakeMotor();
         robot.light.enable();
         follower.activateAllPIDFs();

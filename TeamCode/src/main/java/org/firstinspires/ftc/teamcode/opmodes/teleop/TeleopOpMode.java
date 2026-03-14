@@ -97,7 +97,7 @@ public abstract class TeleopOpMode extends OpMode {
      */
     @Override
     public void start() {
-        robot.shooter.setFlywheelVelocityToTeleopLow();
+        robot.shooter.setFlywheelRPMToTeleopLow();
 
         // Warm-up update to initialize follower state before loop begins
         follower.update();
