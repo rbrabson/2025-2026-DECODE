@@ -53,7 +53,7 @@ public class ShootArtifactProcessor implements UserInputProcessor {
      * @param gamepad2 The current state of gamepad2.
      */
     @Override public void process(@NonNull Gamepad gamepad1, @NonNull Gamepad gamepad2) {
-        boolean triggerPressed = gamepad1.left_trigger >0.5 || gamepad2.left_trigger >0.5;
+        boolean triggerPressed = gamepad1.left_trigger > 0.5 || gamepad2.left_trigger > 0.5;
         boolean transferRequested = triggerPressed && !leftTriggerLatched && !intake.isEmpty();
 
         switch (flowState) {
