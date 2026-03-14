@@ -29,14 +29,14 @@ public class Turret {
 
     private static final double RUN_POWER = 1.0;
 
-    private static final double BX = 0;
-    private static final double BY = 144;
+    private static final double DEFAULT_BX = 0;
+    private static final double DEFAULT_BY = 144;
 
     private final DcMotorEx turret;
     @Nullable private final Telemetry telemetry;
 
-    private double baseX = BX;
-    private double baseY = BY;
+    private double baseX = DEFAULT_BX;
+    private double baseY = DEFAULT_BY;
 
     private int targetPosition = 0;
 
