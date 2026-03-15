@@ -312,6 +312,7 @@ public class FusedLocalizer implements Localizer {
      * @return a Pose representing the position and heading in the PedroPathing coordinate system,
      *         with X as right, Y as forward, and heading adjusted accordingly
      */
+    @NonNull
     private Pose getRobotPoseFromCamera(@NonNull Pose3D botpose) {
         return getRobotPoseFromCamera(
                 botpose.getPosition().toUnit(DistanceUnit.INCH).x,
@@ -332,6 +333,7 @@ public class FusedLocalizer implements Localizer {
      * @return a Pose representing the position and heading in the PedroPathing coordinate system,
      *         with X as right, Y as forward, and heading adjusted accordingly
      */
+    @NonNull
     private Pose getRobotPoseFromCamera(double x, double y, double turnInRad) {
         return new Pose(x, y, turnInRad, FTCCoordinates.INSTANCE).getAsCoordinateSystem(PedroCoordinates.INSTANCE);
     }
