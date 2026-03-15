@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.sensors;
 
+import androidx.annotation.NonNull;
+
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -8,6 +10,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.enums.Motif;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -21,9 +24,18 @@ public class Limelight {
     public static final int PIPELINE_RED_GOAL = 2;
 
     private final Limelight3A limelight;
-    private final Telemetry telemetry;
+    @Nullable private final Telemetry telemetry;
 
     private Motif detectedMotif = null; // Default to GPP
+
+    /**
+     * Constructor for the Limelight class. Initializes the Limelight camera without any telemetry.
+     *
+     * @param hardwareMap The hardware map to access the Limelight camera.
+     */
+    public Limelight(@NonNull HardwareMap hardwareMap) {
+        this(hardwareMap, null);
+    }
 
     /**
      * Constructor for the Limelight class. Initializes the Limelight camera and
@@ -33,13 +45,15 @@ public class Limelight {
      * @param telemetry   The telemetry object to send data back to the driver
      *                    station.
      */
-    public Limelight(@NotNull HardwareMap hardwareMap, @NotNull Telemetry telemetry) {
+    public Limelight(@NotNull HardwareMap hardwareMap, @Nullable Telemetry telemetry) {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         this.telemetry = telemetry;
 
         initializeLimelight();
 
-        telemetry.addLine("Limelight initialized");
+        if (telemetry != null) {
+            telemetry.addLine("Limelight initialized");
+        }
     }
 
     /**
@@ -47,7 +61,6 @@ public class Limelight {
      * switching to the motif detection pipeline and starting the camera.
      */
     private void initializeLimelight() {
-        telemetry.setMsTransmissionInterval(10);
         switchToDetectMotif();
         limelight.start();
     }
@@ -59,7 +72,9 @@ public class Limelight {
      */
     public void switchToDetectMotif() {
         limelight.pipelineSwitch(PIPELINE_MOTIF);
-        telemetry.addData("Pipeline", "detect motif");
+        if (telemetry != null) {
+            telemetry.addData("Pipeline", "detect motif");
+        }
     }
 
     /**
@@ -71,25 +86,33 @@ public class Limelight {
      */
     public Motif detectMotif() {
         if (detectedMotif != null) {
-            telemetry.addData("Motif", detectedMotif.name());
+            if (telemetry != null) {
+                telemetry.addData("[LIMELIGHT] Motif", detectedMotif.name());
+            }
             return detectedMotif; // Return previously detected motif if already detected
         }
 
         LLResult result = limelight.getLatestResult();
         if (result == null || !result.isValid()) {
-            telemetry.addData("Motif", "No valid result");
+            if (telemetry != null) {
+                telemetry.addData("[LIMELIGHT] Motif", "No valid result");
+            }
             return null;
         }
 
         List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
         if (fiducials.isEmpty()) {
-            telemetry.addData("Motif", "No fiducials detected");
+            if (telemetry != null) {
+                telemetry.addData("[LIMELIGHT] Motif", "No fiducials detected");
+            }
             return null; // Default to GPP if no fiducials detected
         }
 
         int tagId = fiducials.get(0).getFiducialId();
         detectedMotif = Motif.fromAprilTagID(tagId);
-        telemetry.addData("Motif", detectedMotif.name());
+        if (telemetry != null) {
+            telemetry.addData("[LIMELIGHT] Motif", detectedMotif.name());
+        }
         return detectedMotif;
     }
 
@@ -101,7 +124,9 @@ public class Limelight {
      */
     public void switchToBlueGoal() {
         limelight.pipelineSwitch(PIPELINE_BLUE_GOAL);
-        telemetry.addData("Pipeline", "blue goal");
+        if (telemetry != null) {
+            telemetry.addData("[LIMELIGHT] Pipeline", "blue goal");
+        }
     }
 
     /**
@@ -112,7 +137,9 @@ public class Limelight {
      */
     public void switchToRedGoal() {
         limelight.pipelineSwitch(PIPELINE_RED_GOAL);
-        telemetry.addData("Pipeline", "red goal");
+        if (telemetry != null) {
+            telemetry.addData("[LIMELIGHT] Pipeline", "red goal");
+        }
     }
 
     /**
@@ -138,11 +165,15 @@ public class Limelight {
     public double getError() {
         LLResult result = limelight.getLatestResult();
         if (result == null || !result.isValid()) {
-            telemetry.addData("Angle Error", "no valid result");
+            if (telemetry != null) {
+                telemetry.addData("[LIMELIGHT] Error", "no valid result");
+            }
             return Double.NaN; // Return NaN if no valid result
         }
 
-        telemetry.addData("Angle Error", result.getTx());
+        if (telemetry != null) {
+            telemetry.addData("[LIMELIGHT] Error", result.getTx());
+        }
         return result.getTx();
     }
 

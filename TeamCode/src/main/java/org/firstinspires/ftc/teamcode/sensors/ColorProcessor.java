@@ -83,27 +83,27 @@ public class ColorProcessor implements AutoCloseable {
         if (result == null) {
             if (telemetry != null) {
                 telemetry.addLine("No color detected");
-                telemetry.addData("Color detected: ", "NONE");
+                telemetry.addData("[COLOR] Detected", "NONE");
             }
             return null;
         }
 
         if (result.closestSwatch == PredominantColorProcessor.Swatch.ARTIFACT_GREEN) {
             if (telemetry != null) {
-                telemetry.addData("Color detected: ", "GREEN");
+                telemetry.addData("[COLOR] Detected", "GREEN");
             }
             return Color.GREEN;
         }
 
         if (result.closestSwatch == PredominantColorProcessor.Swatch.ARTIFACT_PURPLE) {
             if (telemetry != null) {
-                telemetry.addData("Color detected: ", "PURPLE");
+                telemetry.addData("[COLOR] Detected", "PURPLE");
             }
             return Color.PURPLE;
         }
 
         if (telemetry != null) {
-            telemetry.addData("Color detected: ", "UNKNOWN");
+            telemetry.addData("[COLOR] Detected", "UNKNOWN");
         }
 
         return Color.UNKNOWN;
