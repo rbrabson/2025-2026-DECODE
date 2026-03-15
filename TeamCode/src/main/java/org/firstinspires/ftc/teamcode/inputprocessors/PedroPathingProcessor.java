@@ -53,7 +53,7 @@ public class PedroPathingProcessor implements UserInputProcessor {
      */
     @Override
     public void process(@NonNull Gamepad gamepad1, @NonNull Gamepad gamepad2) {
-        if (gamepad1.leftBumperWasPressed()) {
+        if (gamepad1.rightBumperWasPressed()) {
             slowMode = !slowMode;
         }
         double gain = slowMode ? SLOW_GAIN : NORMAL_GAIN;

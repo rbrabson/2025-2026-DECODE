@@ -27,13 +27,7 @@ public class ShooterProcessor implements UserInputProcessor {
     private boolean automateShooting = true;
     private boolean flywheelSpeedLow = true;
 
-    private boolean leftBumperLatched = false;
-    private boolean yLatched = false;
-    private boolean gamepad1DpadLeftLatched = false;
-    private boolean gamepad1DpadRightLatched = false;
-    private boolean gamepad2DpadLeftLatched = false;
-    private boolean gamepad2DpadRightLatched = false;
-    private boolean turretAlignedLatched = false;
+    private boolean turretAligned = false;
 
     /**
      * Constructor for the ShooterProcessor class.
@@ -59,14 +53,13 @@ public class ShooterProcessor implements UserInputProcessor {
      * @param gamepad2 The current state of gamepad2.
      */
     @Override public void process(@NonNull Gamepad gamepad1, @NonNull Gamepad gamepad2) {
-        boolean leftBumperPressed = gamepad1.left_bumper || gamepad2.left_bumper;
-        if (leftBumperPressed && !leftBumperLatched) {
+        // Toggle automated shooting
+        if (gamepad1.leftBumperWasPressed() || gamepad2.leftBumperWasPressed()) {
             automateShooting = !automateShooting;
         }
-        leftBumperLatched = leftBumperPressed;
 
-        boolean yPressed = gamepad1.y || gamepad2.y;
-        if (yPressed && !yLatched) {
+        // Toggle flywheel speed
+        if (gamepad1.yWasPressed() || gamepad2.yWasPressed()) {
             flywheelSpeedLow = !flywheelSpeedLow;
             if (flywheelSpeedLow) {
                 shooter.setFlywheelRPMToTeleOpLow();
@@ -74,50 +67,38 @@ public class ShooterProcessor implements UserInputProcessor {
                 shooter.setFlywheelRPMToTeleOpHigh();
             }
         }
-        yLatched = yPressed;
 
-        // Shot compensation on gamepad1 dpad (edge-latched).
-        boolean g1Left = gamepad1.dpad_left;
-        if (g1Left && !gamepad1DpadLeftLatched) {
+        // Shot compensation on gamepad1 dpad
+        if (gamepad1.dpadLeftWasPressed()) {
             shooter.shotWasHigh();
-        }
-        gamepad1DpadLeftLatched = g1Left;
-
-        boolean g1Right = gamepad1.dpad_right;
-        if (g1Right && !gamepad1DpadRightLatched) {
+        } else if (gamepad1.dpadRightWasPressed()) {
             shooter.shotWasLow();
         }
-        gamepad1DpadRightLatched = g1Right;
 
-        // Hood adjustment on gamepad2 dpad (edge-latched).
-        boolean g2Left = gamepad2.dpad_left;
-        if (g2Left && !gamepad2DpadLeftLatched) {
+        // Hood adjustment on gamepad2 dpad
+        if (gamepad2.dpadLeftWasPressed()) {
             shooter.decreaseHoodPosition(HOOD_INCREMENT);
-        }
-        gamepad2DpadLeftLatched = g2Left;
-
-        boolean g2Right = gamepad2.dpad_right;
-        if (g2Right && !gamepad2DpadRightLatched) {
+        } else if (gamepad2.dpadRightWasPressed()) {
             shooter.increaseHoodPosition(HOOD_INCREMENT);
         }
-        gamepad2DpadRightLatched = g2Right;
 
         double llError = limelight.getError();
         if (automateShooting) {
             shooter.update(localizer, alliance);
-
             boolean aligned = !Double.isNaN(llError) && Math.abs(llError) <= ACCEPTABLE_TURRET_ERROR;
-            if (aligned && !turretAlignedLatched) {
+            // Only rumble the once when the turret is aligned
+            if (aligned && !turretAligned) {
                 gamepad1.rumble(100);
                 gamepad2.rumble(100);
             }
-            turretAlignedLatched = aligned;
+            turretAligned = aligned;
         } else {
-            turretAlignedLatched = false;
+            turretAligned = false;
         }
 
         telemetry.addData("[SHOOTER] Auto", automateShooting);
         telemetry.addData("[SHOOTER] Flywheel Low", flywheelSpeedLow);
+        telemetry.addData("[SHOOTER] Turret Aligned", turretAligned);
         telemetry.addData("[SHOOTER] Limelight Error", llError);
     }
 }
