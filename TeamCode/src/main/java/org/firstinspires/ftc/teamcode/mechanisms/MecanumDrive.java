@@ -10,8 +10,8 @@ import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigu
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.robotcontrol.MecanumDriveController;
-import org.firstinspires.ftc.teamcode.robotcontrol.MecanumDriveController.DriveOutput;
+import org.firstinspires.ftc.teamcode.robotcontrol.DriveController;
+import org.firstinspires.ftc.teamcode.robotcontrol.DriveController.DriveOutput;
 import org.firstinspires.ftc.teamcode.robotcontrol.VoltageCompensator;
 import org.firstinspires.ftc.teamcode.pedroPathing.FusedLocalizer;
 import org.firstinspires.ftc.teamcode.utils.MathEx;
@@ -32,7 +32,7 @@ public class MecanumDrive implements Mechanism {
 
     private final DcMotorEx frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor;
     private final Telemetry telemetry;
-    private final MecanumDriveController driveCtrl;
+    private final DriveController driveCtrl;
 
     private final VoltageCompensator voltageComp;
     private FusedLocalizer localizer;
@@ -54,7 +54,7 @@ public class MecanumDrive implements Mechanism {
 
         this.telemetry = telemetry;
 
-        driveCtrl = new MecanumDriveController();
+        driveCtrl = new DriveController();
         voltageComp = new VoltageCompensator(Robot.getInstance(hardwareMap, telemetry).voltageSensor);
 
         initializeMotors();

@@ -9,19 +9,19 @@ import org.firstinspires.ftc.teamcode.utils.Vector2;
 import java.util.Objects;
 
 /**
- * MecanumDriveController combines a HeadingController and a TranslationController to provide a unified
+ * DriveController combines a HeadingController and a TranslationController to provide a unified
  * interface for controlling both aspects of robot movement. It takes driver inputs for translation
  * and turning, along with the current robot pose, and produces a combined output for
  * driving the robot.
  */
-public class MecanumDriveController {
+public class DriveController {
     private final HeadingController headingController;
     private final TranslationController translationController;
 
     /**
      * Default constructor using default heading and translation controllers.
      */
-    public MecanumDriveController() {
+    public DriveController() {
         this(new HeadingController(), new TranslationController());
     }
 
@@ -31,7 +31,7 @@ public class MecanumDriveController {
      * @param headingController     Heading controller to use.
      * @param translationController Translation controller to use.
      */
-    public MecanumDriveController(@NonNull HeadingController headingController, @NonNull TranslationController translationController) {
+    public DriveController(@NonNull HeadingController headingController, @NonNull TranslationController translationController) {
         this.headingController = Objects.requireNonNull(headingController, "headingController");
         this.translationController = Objects.requireNonNull(translationController, "translationController");
     }

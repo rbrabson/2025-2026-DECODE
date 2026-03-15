@@ -11,7 +11,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.pedroPathing.FusedLocalizer;
 import org.firstinspires.ftc.teamcode.pedroPathing.PedroFollower;
-import org.firstinspires.ftc.teamcode.robotcontrol.MecanumDriveController;
+import org.firstinspires.ftc.teamcode.robotcontrol.DriveController;
 import org.firstinspires.ftc.teamcode.robotcontrol.VoltageCompensator;
 import org.firstinspires.ftc.teamcode.utils.MathEx;
 
@@ -32,7 +32,7 @@ public class PedroPathingDrive implements Mechanism {
     private final Telemetry telemetry;
 
     private final VoltageCompensator voltageComp;
-    private final MecanumDriveController driveCtrl;
+    private final DriveController driveCtrl;
     private static final double NOMINAL_VOLTAGE = 12.0;
     private boolean robotCentric = false;
 
@@ -50,7 +50,7 @@ public class PedroPathingDrive implements Mechanism {
         this.localizer = PedroFollower.getFusedLocalizer(map, limelight, FusedLocalizer.Mode.TELEOP);
         follower = PedroFollower.create(map, localizer);
         this.telemetry = telemetry;
-        driveCtrl = new MecanumDriveController();
+        driveCtrl = new DriveController();
         voltageComp = new VoltageCompensator(Robot.getInstance(map, telemetry).voltageSensor);
     }
 
@@ -86,7 +86,7 @@ public class PedroPathingDrive implements Mechanism {
         double[] values = voltageComp.compensate(new double[]{forward, strafe, turn});
 
         // Update the drive controller with the compensated values and the current pose from the localizer to get the drive outputs
-        MecanumDriveController.DriveOutput driveValues = driveCtrl.update(values[0], values[1], values[2], localizer.getPose());
+        DriveController.DriveOutput driveValues = driveCtrl.update(values[0], values[1], values[2], localizer.getPose());
         forward = driveValues.getX();
         strafe = driveValues.getY();
         turn = driveValues.getTurn();
