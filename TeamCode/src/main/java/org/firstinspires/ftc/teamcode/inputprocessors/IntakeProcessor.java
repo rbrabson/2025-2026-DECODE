@@ -57,7 +57,7 @@ public class IntakeProcessor implements UserInputProcessor {
         }
 
         if (telemetry != null && isIntakeRunning != oldIsIntakeRunning) {
-            telemetry.addData("Intake Running", isIntakeRunning);
+            telemetry.addData("[INTAKE] Running", isIntakeRunning);
         }
     }
 }

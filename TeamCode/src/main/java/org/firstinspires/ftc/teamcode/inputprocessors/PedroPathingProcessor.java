@@ -68,9 +68,10 @@ public class PedroPathingProcessor implements UserInputProcessor {
 
         if (telemetry != null) {
             Pose pose = drive.getPose();
-            telemetry.addData("Drive X", pose.getX());
-            telemetry.addData("Drive Y", pose.getY());
-            telemetry.addData("Drive Heading", Math.toDegrees(pose.getHeading()));
+            telemetry.addData("[DRIVE] X", pose.getX());
+            telemetry.addData("[DRIVE] Y", pose.getY());
+            telemetry.addData("[DRIVE] Heading", Math.toDegrees(pose.getHeading()));
+            telemetry.addData("[DRIVE] Slow Mode", slowMode);
         }
     }
 }
