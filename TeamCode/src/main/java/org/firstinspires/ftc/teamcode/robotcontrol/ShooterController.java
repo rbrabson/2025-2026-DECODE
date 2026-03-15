@@ -121,7 +121,6 @@ public class ShooterController {
 
         double leadAngle = Math.atan2(lateralTravel, d);
 
-        // Clamp lead angle to protect turret
         return Range.clip(leadAngle, -MAX_LEAD_RAD, MAX_LEAD_RAD);
     }
 
