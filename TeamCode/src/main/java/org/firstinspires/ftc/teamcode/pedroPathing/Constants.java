@@ -15,9 +15,15 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class Constants {
-    public static FollowerConstants followerConstants = new FollowerConstants().mass(10).forwardZeroPowerAcceleration(-36.127).lateralZeroPowerAcceleration(-72.1608).translationalPIDFCoefficients(new PIDFCoefficients(0.1, 0, 0.01, 0.02)).headingPIDFCoefficients(new PIDFCoefficients(0.75, 0, 0.01, 0.025)).drivePIDFCoefficients(new FilteredPIDFCoefficients(0.0045, 0, 0, 0.6, 0.1)).centripetalScaling(0.0005);
-    public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 5, 1);
-    public static PinpointConstants localizerConstants = new PinpointConstants()
+    public static final FollowerConstants followerConstants = new FollowerConstants()
+            .mass(10)
+            .forwardZeroPowerAcceleration(-36.127)
+            .lateralZeroPowerAcceleration(-72.1608)
+            .translationalPIDFCoefficients(new PIDFCoefficients(0.1, 0, 0.01, 0.02))
+            .headingPIDFCoefficients(new PIDFCoefficients(0.75, 0, 0.01, 0.025))
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.0045, 0, 0, 0.6, 0.1))
+            .centripetalScaling(0.0005);
+    public static final PinpointConstants localizerConstants = new PinpointConstants()
             .forwardPodY(-6.5)
             .strafePodX(-6)
             .distanceUnit(DistanceUnit.INCH)
@@ -25,7 +31,8 @@ public class Constants {
             .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
             .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD)
             .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED);
-    public static MecanumConstants driveConstants = new MecanumConstants()
+    public static final PathConstraints pathConstraints = new PathConstraints(0.99, 100, 5, 1);
+    public static final MecanumConstants driveConstants = new MecanumConstants()
             .maxPower(1)
             .xVelocity(73.30485)
             .yVelocity(54.3355)

@@ -18,6 +18,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 /**
  * This class is responsible for creating and configuring the path follower for the autonomous period.
@@ -26,35 +27,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  * it for use in autonomous routines.
  */
 public class PedroFollower {
-    private static final FollowerConstants followerConstants = new FollowerConstants()
-        .mass(10)
-        .forwardZeroPowerAcceleration(-36.127)
-        .lateralZeroPowerAcceleration(-72.1608)
-        .translationalPIDFCoefficients(new PIDFCoefficients(0.1, 0, 0.01, 0.02))
-        .headingPIDFCoefficients(new PIDFCoefficients(0.75, 0, 0.01, 0.025))
-        .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.0045, 0, 0, 0.6, 0.1))
-        .centripetalScaling(0.0005);
-    private static final PinpointConstants localizerConstants = new PinpointConstants()
-        .forwardPodY(-6.5)
-        .strafePodX(-6)
-        .distanceUnit(DistanceUnit.INCH)
-        .hardwareMapName("pp")
-        .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
-        .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD)
-        .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED);
-    private static final PathConstraints pathConstraints = new PathConstraints(0.99, 100, 5, 1);
-    private static final MecanumConstants driveConstants = new MecanumConstants()
-        .maxPower(1)
-        .xVelocity(73.30485)
-        .yVelocity(54.3355)
-        .rightFrontMotorName("frm")
-        .rightRearMotorName("brm")
-        .leftRearMotorName("blm")
-        .leftFrontMotorName("flm")
-        .leftFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
-        .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
-        .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
-        .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD);
 
     /**
      * Creates and configures a Pinpoint localizer using the specified hardware map and localizer
@@ -65,7 +37,7 @@ public class PedroFollower {
      */
     @NonNull
     public static Localizer getPinpointLocalizer(@NonNull HardwareMap hardwareMap) {
-        return new PinpointLocalizer(hardwareMap, localizerConstants);
+        return new PinpointLocalizer(hardwareMap, Constants.localizerConstants);
     }
 
     /**
@@ -124,9 +96,9 @@ public class PedroFollower {
      */
     @NonNull
     public static Follower create(@NonNull HardwareMap hardwareMap, @NonNull Localizer localizer) {
-        return new FollowerBuilder(followerConstants, hardwareMap)
-            .pathConstraints(pathConstraints)
-            .mecanumDrivetrain(driveConstants)
+        return new FollowerBuilder(Constants.followerConstants, hardwareMap)
+            .pathConstraints(Constants.pathConstraints)
+            .mecanumDrivetrain(Constants.driveConstants)
             .setLocalizer(localizer)
             .build();
     }
