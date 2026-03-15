@@ -39,14 +39,11 @@ public class IntakeProcessor implements UserInputProcessor {
     @Override
     public void process(@NonNull Gamepad gamepad1, @NonNull Gamepad gamepad2) {
         boolean triggerPressed = gamepad1.right_trigger > 0.5 || gamepad2.right_trigger > 0.5;
-
         boolean toggleIntakeMotor = triggerPressed && !rightTriggerLatched && rightTriggerDuration.getElapsedTime() > INTAKE_TOGGLE_DELAY;
-
         if (toggleIntakeMotor) {
             isIntakeRunning = !isIntakeRunning;
             rightTriggerDuration.resetTimer();
         }
-
         rightTriggerLatched = triggerPressed;
 
         if (isIntakeRunning) {
