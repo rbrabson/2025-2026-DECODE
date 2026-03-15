@@ -24,7 +24,7 @@ import java.util.List;
  * This is the base OpMode for teleop routines. It provides the structure for initializing,
  * starting, and looping during the teleop period.
  */
-public abstract class TeleopOpMode extends OpMode {
+public abstract class MecanumTeleOp extends OpMode {
     private static final Pose DEFAULT_STARTING_POSE = new Pose(7.5, 7.5, Math.toRadians(90));
 
     private final Gamepad currentGamepad1 = new Gamepad();

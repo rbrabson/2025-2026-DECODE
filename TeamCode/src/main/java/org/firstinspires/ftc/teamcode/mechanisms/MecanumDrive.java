@@ -24,8 +24,17 @@ import java.util.Objects;
 /**
  * Mechanism class for controlling a mecanum drive system.
  * <p>
- * NOTE: You MUST call setLocalizer() with a valid FusionLocalizer instance before using the drive()
- *       method.
+ * <b>NOTES</b>:
+ * <ol>
+ *     <li>
+ *         You MUST call setLocalizer() with a valid FusionLocalizer instance before using the
+ *         drive() method.
+ *     </li>
+ *     <li>
+ *         This mechanism is current unused. To use it, change the alliance TeleOps to inherit
+ *         from MedanumTeleOp.
+ *     </li>
+ * </ol>
  */
 public class MecanumDrive implements Mechanism {
     private static final double STRAFING_ADJUSTMENT = 1.1;
