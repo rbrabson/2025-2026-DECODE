@@ -39,7 +39,7 @@ public class PedroPathingProcessor implements UserInputProcessor {
      * @param drive     The PedroPathingDrive instance used to control the robot's movement.
      * @param telemetry The Telemetry instance used for debugging and feedback during operation.
      */
-    public PedroPathingProcessor(@NonNull PedroPathingDrive drive, @NonNull Telemetry telemetry) {
+    public PedroPathingProcessor(@NonNull PedroPathingDrive drive, @Nullable Telemetry telemetry) {
         this.drive = drive;
         this.telemetry = telemetry;
     }
