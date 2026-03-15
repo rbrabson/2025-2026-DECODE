@@ -84,9 +84,9 @@ public class FusedLocalizer implements Localizer {
 
         // Get vision result
         LLResult result = limelight.getLatestResult();
-        if (!visionBasicValid(result, odoPose)) return;
-
-        Pose visionPose = extractVisionPose(result);
+        if (!visionBasicValid(result, odoPose)) {
+            return;
+        }
 
         // Angular velocity gating (reduce vision influence on fast rotation)
         double angularVel = Math.abs(odometry.getVelocity().getHeading());
@@ -98,6 +98,7 @@ public class FusedLocalizer implements Localizer {
         double blend = computeBlend(result) * rotationFactor;
 
         // Scale by correction confidence (how far vision is from odometry)
+        Pose visionPose = getRobotPoseFromCamera(result.getBotpose());
         double correctionFactor = computeCorrectionConfidence(odoPose, visionPose);
         blend *= correctionFactor;
 
@@ -243,25 +244,6 @@ public class FusedLocalizer implements Localizer {
     }
 
     /**
-     * Extracts the pose from the Limelight result and converts it to the same units and coordinates
-     * system as the odometry pose. The Limelight provides the position in meters, so it is
-     * converted to inches. The heading is extracted from the orientation quaternion and converted
-     * to radians.
-     *
-     * @param result the latest vision result from the Limelight
-     * @return a Pose representing the position and heading from the vision system, in the same
-     *         units as odometry
-     */
-    @NonNull
-    private Pose extractVisionPose(@NonNull LLResult result) {
-        Pose3D llPose = result.getBotpose();
-        return getRobotPoseFromCamera(
-                llPose.getPosition().x,
-                llPose.getPosition().y,
-                llPose.getOrientation().getYaw(AngleUnit.RADIANS));
-    }
-
-    /**
      * Computes the blend factor for fusing vision and odometry based on the number of detected
      * fiducial tags. The more tags detected, the higher the confidence in the vision data, and
      * thus the higher the blend factor. The blend factor is scaled by a base blend constant to
@@ -317,6 +299,24 @@ public class FusedLocalizer implements Localizer {
     private double blendHeading(double odo, double vision, double blend) {
         double diff = MathEx.angleWrap(vision - odo);
         return odo + diff * blend;
+    }
+
+    /**
+     * Converts the X and Y coordinates from the Limelight's coordinate system (where X is
+     * forward and Y is left) to the standard PedroPathing coordinate system (where X is right
+     * and Y is forward). The heading is also converted from the Limelight's orientation to the
+     * PedroPathing coordinate system.
+     *
+     * @param botpose the Pose3D from the Limelight, containing position in meters and orientation
+     *               as a quaternion
+     * @return a Pose representing the position and heading in the PedroPathing coordinate system,
+     *         with X as right, Y as forward, and heading adjusted accordingly
+     */
+    private Pose getRobotPoseFromCamera(@NonNull Pose3D botpose) {
+        return getRobotPoseFromCamera(
+                botpose.getPosition().toUnit(DistanceUnit.INCH).x,
+                botpose.getPosition().toUnit(DistanceUnit.INCH).y,
+                botpose.getOrientation().getYaw(AngleUnit.RADIANS));
     }
 
     /**
