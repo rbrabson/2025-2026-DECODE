@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.mechanisms.PedroPathingDrive;
 
+import java.util.Objects;
+
 /**
  * Example input processor for a pathing drive system. This processor allows the driver to press
  * buttons to automatically drive to predefined poses on the field, while still allowing manual
@@ -40,7 +42,7 @@ public class PedroPathingProcessor implements UserInputProcessor {
      * @param telemetry The Telemetry instance used for debugging and feedback during operation.
      */
     public PedroPathingProcessor(@NonNull PedroPathingDrive drive, @Nullable Telemetry telemetry) {
-        this.drive = drive;
+        this.drive = Objects.requireNonNull(drive);
         this.telemetry = telemetry;
     }
 

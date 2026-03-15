@@ -11,6 +11,8 @@ import org.firstinspires.ftc.teamcode.mechanisms.Intake;
 import org.firstinspires.ftc.teamcode.mechanisms.Shooter;
 import org.firstinspires.ftc.teamcode.mechanisms.Transfer;
 
+import java.util.Objects;
+
 /**
  * The ShootArtifactProcessor class manages the interaction between multiple mechanisms to manage the flow
  * of artifacts from the intake, through the transfer mechanism, and into the shooter for scoring.
@@ -40,9 +42,9 @@ public class ShootArtifactProcessor implements UserInputProcessor {
      * @param telemetry the telemetry used to display data on the driver station.
      */
     public ShootArtifactProcessor(@NonNull Intake intake, @NonNull Transfer transfer, @NonNull Shooter shooter, @Nullable Telemetry telemetry) {
-        this.intake = intake;
-        this.transfer = transfer;
-        this.shooter = shooter;
+        this.intake = Objects.requireNonNull(intake);
+        this.transfer = Objects.requireNonNull(transfer);
+        this.shooter = Objects.requireNonNull(shooter);
         this.telemetry = telemetry;
     }
 

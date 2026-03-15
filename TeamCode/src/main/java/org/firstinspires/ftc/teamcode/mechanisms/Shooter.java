@@ -13,6 +13,8 @@ import org.firstinspires.ftc.teamcode.hardware.Hood;
 import org.firstinspires.ftc.teamcode.hardware.Turret;
 import org.firstinspires.ftc.teamcode.robotcontrol.ShooterController;
 
+import java.util.Objects;
+
 /**
  * Shooter mechanism class for controlling the turret, flywheel, and hood.
  */
@@ -36,9 +38,10 @@ public class Shooter implements Mechanism {
      * @param telemetry   The telemetry object for logging data.
      */
     public Shooter(@NonNull HardwareMap hardwareMap, @NonNull Telemetry telemetry) {
-        this.turret = new Turret(hardwareMap, telemetry);
-        this.flywheel = new Flywheel(hardwareMap, telemetry);
-        this.hood = new Hood(hardwareMap, telemetry);
+        HardwareMap map = Objects.requireNonNull(hardwareMap);
+        this.turret = new Turret(map, telemetry);
+        this.flywheel = new Flywheel(map, telemetry);
+        this.hood = new Hood(map, telemetry);
         this.telemetry = telemetry;
 
         telemetry.addLine("Shooter initialized");
