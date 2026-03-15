@@ -333,7 +333,6 @@ public class FusedLocalizer implements Localizer {
      *         with X as right, Y as forward, and heading adjusted accordingly
      */
     private Pose getRobotPoseFromCamera(double x, double y, double turnInRad) {
-        return new Pose(x, y, turnInRad, FTCCoordinates.INSTANCE)
-            .getAsCoordinateSystem(PedroCoordinates.INSTANCE);
+        return new Pose(x, y, turnInRad, FTCCoordinates.INSTANCE).getAsCoordinateSystem(PedroCoordinates.INSTANCE);
     }
 }
