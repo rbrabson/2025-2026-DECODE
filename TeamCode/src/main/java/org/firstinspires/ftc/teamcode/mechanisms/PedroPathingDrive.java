@@ -24,16 +24,12 @@ import java.util.Objects;
  * based on the current pose and target paths.
  */
 public class PedroPathingDrive implements Mechanism {
-    private static final double SLOW_MODE_GAIN = 0.5;;
-    private static final double NORMAL_MODE_GAIN = 1.0;
-
     public final FusedLocalizer localizer;
     private final Follower follower;
     private final Telemetry telemetry;
 
     private final VoltageCompensator voltageComp;
     private final DriveController driveCtrl;
-    private static final double NOMINAL_VOLTAGE = 12.0;
     private boolean robotCentric = false;
 
     /**
