@@ -124,7 +124,8 @@ public abstract class TeleopOpMode extends OpMode {
         // Update the robot's pose
         localizer.update();
 
-        // Adjust the shooter's flywheel velocity, hood position, and turret angle based on the robot's current location
+        // Adjust the shooter's flywheel velocity, hood position, and turret angle based on the
+        // robot's current location
         robot.shooter.update(localizer, alliance);
 
         // Update any hardware components on each loop
