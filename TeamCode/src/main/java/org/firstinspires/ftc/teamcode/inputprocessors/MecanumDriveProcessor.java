@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.inputprocessors;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 
@@ -19,7 +20,7 @@ public class MecanumDriveProcessor implements UserInputProcessor {
     private static final double SLOW_GAIN = 0.5;
 
     private final MecanumDrive mecanumDrive;
-    private final Telemetry telemetry;
+    @Nullable private final Telemetry telemetry;
 
     private boolean slowMode = false;
 
@@ -29,7 +30,7 @@ public class MecanumDriveProcessor implements UserInputProcessor {
      * @param mecanumDrive the mecanum drive to control.
      * @param telemetry    the telemetry used to display data on the driver station.
      */
-    public MecanumDriveProcessor(@NonNull MecanumDrive mecanumDrive, @NonNull Telemetry telemetry) {
+    public MecanumDriveProcessor(@NonNull MecanumDrive mecanumDrive, @Nullable Telemetry telemetry) {
         this.telemetry = telemetry;
         this.mecanumDrive = mecanumDrive;
     }
@@ -53,10 +54,12 @@ public class MecanumDriveProcessor implements UserInputProcessor {
 
         mecanumDrive.drive(x, y, turn);
 
-        telemetry.addData("[DRIVE] X", x);
-        telemetry.addData("[DRIVE] Y", y);
-        telemetry.addData("[DRIVE] Turn", turn);
-        telemetry.addData("[DRIVE] Slow Mode", slowMode);
+        if (telemetry != null) {
+            telemetry.addData("[DRIVE] X", x);
+            telemetry.addData("[DRIVE] Y", y);
+            telemetry.addData("[DRIVE] Turn", turn);
+            telemetry.addData("[DRIVE] Slow Mode", slowMode);
+        }
     }
 
     /**

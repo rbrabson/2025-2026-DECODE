@@ -165,7 +165,7 @@ public class Shooter implements Mechanism {
      * Sets the rpm of the flywheel motor to a predefined value for high-power
      * shooting in teleop mode.
      */
-    public void setFlywheelRPMToTeleOpHigh() {
+    public void setFlywheelRPMToHigh() {
         flywheel.high();
     }
 
@@ -173,7 +173,7 @@ public class Shooter implements Mechanism {
      * Sets the rpm of the flywheel motor to a predefined value for low-power
      * shooting in teleop mode.
      */
-    public void setFlywheelRPMToTeleOpLow() {
+    public void setFlywheelRPMToLow() {
         flywheel.low();
     }
 

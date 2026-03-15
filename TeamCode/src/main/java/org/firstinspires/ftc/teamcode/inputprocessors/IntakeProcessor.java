@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.inputprocessors;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -14,7 +15,7 @@ import org.firstinspires.ftc.teamcode.mechanisms.Intake;
 public class IntakeProcessor implements UserInputProcessor {
     private final static long INTAKE_TOGGLE_DELAY = 500;
     private final Intake intake;
-    private final Telemetry telemetry;
+    @Nullable private final Telemetry telemetry;
 
     private final Timer rightTriggerDuration = new Timer();
     private boolean isIntakeRunning = true;
@@ -25,7 +26,7 @@ public class IntakeProcessor implements UserInputProcessor {
      * @param intake    the Intake mechanism to control
      * @param telemetry the Telemetry for debugging and feedback
      */
-    public IntakeProcessor(@NonNull Intake intake, @NonNull Telemetry telemetry) {
+    public IntakeProcessor(@NonNull Intake intake, @Nullable Telemetry telemetry) {
         this.intake = intake;
         this.telemetry = telemetry;
     }
@@ -38,6 +39,7 @@ public class IntakeProcessor implements UserInputProcessor {
      */
     @Override
     public void process(@NonNull Gamepad gamepad1, @NonNull Gamepad gamepad2) {
+        boolean oldIsIntakeRunning = isIntakeRunning;
         boolean triggerPressed = gamepad1.right_trigger > 0.5 || gamepad2.right_trigger > 0.5;
         boolean toggleIntakeMotor = triggerPressed && !rightTriggerLatched && rightTriggerDuration.getElapsedTime() > INTAKE_TOGGLE_DELAY;
         if (toggleIntakeMotor) {
@@ -52,6 +54,8 @@ public class IntakeProcessor implements UserInputProcessor {
             intake.stopIntakeMotor();
         }
 
-        telemetry.addData("Intake Running", isIntakeRunning);
+        if (telemetry != null && isIntakeRunning != oldIsIntakeRunning) {
+            telemetry.addData("Intake Running", isIntakeRunning);
+        }
     }
 }

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.inputprocessors;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.pedropathing.localization.Localizer;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -22,7 +23,7 @@ public class ShooterProcessor implements UserInputProcessor {
     private final Limelight limelight;
     private final Localizer localizer;
     private final Alliance alliance;
-    private final Telemetry telemetry;
+    @Nullable private final Telemetry telemetry;
 
     private boolean automateShooting = true;
     private boolean flywheelSpeedLow = true;
@@ -38,7 +39,7 @@ public class ShooterProcessor implements UserInputProcessor {
      * @param alliance  the Alliance to determine scoring positions
      * @param telemetry the Telemetry for debugging and feedback
      */
-    public ShooterProcessor(@NonNull Shooter shooter, @NonNull Limelight limelight, @NonNull Localizer localizer, @NonNull Alliance alliance, @NonNull Telemetry telemetry) {
+    public ShooterProcessor(@NonNull Shooter shooter, @NonNull Limelight limelight, @NonNull Localizer localizer, @NonNull Alliance alliance, @Nullable Telemetry telemetry) {
         this.shooter = shooter;
         this.limelight = limelight;
         this.localizer = localizer;
@@ -62,9 +63,9 @@ public class ShooterProcessor implements UserInputProcessor {
         if (gamepad1.yWasPressed() || gamepad2.yWasPressed()) {
             flywheelSpeedLow = !flywheelSpeedLow;
             if (flywheelSpeedLow) {
-                shooter.setFlywheelRPMToTeleOpLow();
+                shooter.setFlywheelRPMToLow();
             } else {
-                shooter.setFlywheelRPMToTeleOpHigh();
+                shooter.setFlywheelRPMToHigh();
             }
         }
 
@@ -96,9 +97,11 @@ public class ShooterProcessor implements UserInputProcessor {
             turretAligned = false;
         }
 
-        telemetry.addData("[SHOOTER] Auto", automateShooting);
-        telemetry.addData("[SHOOTER] Flywheel Low", flywheelSpeedLow);
-        telemetry.addData("[SHOOTER] Turret Aligned", turretAligned);
-        telemetry.addData("[SHOOTER] Limelight Error", llError);
+        if (telemetry != null) {
+            telemetry.addData("[SHOOTER] Auto", automateShooting);
+            telemetry.addData("[SHOOTER] Flywheel Low", flywheelSpeedLow);
+            telemetry.addData("[SHOOTER] Turret Aligned", turretAligned);
+            telemetry.addData("[SHOOTER] Limelight Error", llError);
+        }
     }
 }

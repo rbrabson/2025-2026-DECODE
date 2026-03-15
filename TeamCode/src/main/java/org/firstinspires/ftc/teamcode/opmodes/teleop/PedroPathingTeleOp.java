@@ -97,7 +97,7 @@ public abstract class PedroPathingTeleOp extends OpMode {
      */
     @Override
     public void start() {
-        robot.shooter.setFlywheelRPMToTeleOpLow();
+        robot.shooter.setFlywheelRPMToLow();
         drive.startTeleopDrive();
         drive.update();
     }
