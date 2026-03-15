@@ -38,7 +38,6 @@ public class FusedLocalizer implements Localizer {
     private static final double MAX_TELEOP_ANGULAR_VEL = 4.0; // rad/sec
 
     private static final double BASE_BLEND = 0.35;
-    // =======================
 
     private final Localizer odometry;
     private final Limelight3A limelight;
