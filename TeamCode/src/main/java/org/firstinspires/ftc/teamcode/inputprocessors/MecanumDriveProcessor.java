@@ -22,7 +22,6 @@ public class MecanumDriveProcessor implements UserInputProcessor {
     private final Telemetry telemetry;
 
     private boolean slowMode = false;
-    private boolean leftBumperLatched = false;
 
     /**
      * Creates a controller for a mecanum drive chassis.
@@ -43,15 +42,12 @@ public class MecanumDriveProcessor implements UserInputProcessor {
      */
     @Override
     public void process(@NonNull Gamepad gamepad1, @NonNull Gamepad gamepad2) {
-        boolean leftBumperPressed = gamepad1.left_bumper;
-        if (leftBumperPressed && !leftBumperLatched) {
+        if (gamepad1.leftBumperWasPressed()) {
             slowMode = !slowMode;
         }
-        leftBumperLatched = leftBumperPressed;
-
         double gain = slowMode ? SLOW_GAIN : NORMAL_GAIN;
 
-        double x = gamepad1.left_stick_x * gain;
+        double x = -gamepad1.left_stick_x * gain;
         double y = -gamepad1.left_stick_y * gain;
         double turn = -gamepad1.right_stick_x * TURN_MULTIPLIER * gain;
 

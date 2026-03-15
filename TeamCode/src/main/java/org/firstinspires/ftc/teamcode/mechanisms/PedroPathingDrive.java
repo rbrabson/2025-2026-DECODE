@@ -24,6 +24,9 @@ import org.firstinspires.ftc.teamcode.utils.MathEx;
  * based on the current pose and target paths.
  */
 public class PedroPathingDrive implements Mechanism {
+    private static final double SLOW_MODE_GAIN = 0.5;;
+    private static final double NORMAL_MODE_GAIN = 1.0;
+
     public final FusedLocalizer localizer;
     private final Follower follower;
     private final Telemetry telemetry;
@@ -128,39 +131,6 @@ public class PedroPathingDrive implements Mechanism {
     }
 
     /**
-     * Sets the teleop drive values for the robot, allowing for manual control while still utilizing
-     * the localizer for accurate movement.
-     *
-     * @param forward      The forward/backward movement value, where positive is forward and negative is
-     *                     backward.
-     * @param strafe       The strafe movement value, where positive is right and negative is left.
-     * @param turn         The rotation value, where positive is clockwise and negative is counterclockwise.
-     * @param robotCentric Whether the controls should be robot-centric (true) or field-centric (false).
-     *                     In robot-centric mode, the controls are relative to the robot's orientation,
-     *                     while in field-centric mode, the controls are relative to the field regardless
-     *                     of the robot's orientation.
-     */
-    public void setTeleOpDrive(double forward, double strafe, double turn, boolean robotCentric) {
-        // Compensate the user input values for voltage to maintain consistent performance as the battery voltage changes
-        double[] values = voltageComp.compensate(new double[]{forward, strafe, turn});
-
-        // Update the drive controller with the compensated values and the current pose from the localizer to get the drive outputs
-        MecanumDriveController.DriveOutput driveValues = driveCtrl.update(values[0], values[1], values[2], localizer.getPose());
-        forward = driveValues.getX();
-        strafe = driveValues.getY();
-        turn = driveValues.getTurn();
-
-        // Normalize the values to ensure that the maximum absolute value does not exceed 1
-        double max = MathEx.maxAbs(1, forward, strafe, turn);
-        if (max > 1) {
-            forward /= max;
-            strafe /= max;
-            turn /= max;
-        }
-        follower.setTeleOpDrive(forward, strafe, turn, robotCentric);
-    }
-
-    /**
      * Starts the teleop drive mode, allowing for manual control of the robot while still utilizing
      * the localizer for accurate movement. This method should be called at the beginning of the
      * teleop period to enable teleop control.
@@ -189,5 +159,38 @@ public class PedroPathingDrive implements Mechanism {
     @Override
     public void update() {
         follower.update();
+    }
+
+    /**
+     * Sets the teleop drive values for the robot, allowing for manual control while still utilizing
+     * the localizer for accurate movement.
+     *
+     * @param forward      The forward/backward movement value, where positive is forward and negative is
+     *                     backward.
+     * @param strafe       The strafe movement value, where positive is right and negative is left.
+     * @param turn         The rotation value, where positive is clockwise and negative is counterclockwise.
+     * @param robotCentric Whether the controls should be robot-centric (true) or field-centric (false).
+     *                     In robot-centric mode, the controls are relative to the robot's orientation,
+     *                     while in field-centric mode, the controls are relative to the field regardless
+     *                     of the robot's orientation.
+     */
+    private void setTeleOpDrive(double forward, double strafe, double turn, boolean robotCentric) {
+        // Compensate the user input values for voltage to maintain consistent performance as the battery voltage changes
+        double[] values = voltageComp.compensate(new double[]{forward, strafe, turn});
+
+        // Update the drive controller with the compensated values and the current pose from the localizer to get the drive outputs
+        MecanumDriveController.DriveOutput driveValues = driveCtrl.update(values[0], values[1], values[2], localizer.getPose());
+        forward = driveValues.getX();
+        strafe = driveValues.getY();
+        turn = driveValues.getTurn();
+
+        // Normalize the values to ensure that the maximum absolute value does not exceed 1
+        double max = MathEx.maxAbs(1, forward, strafe, turn);
+        if (max > 1) {
+            forward /= max;
+            strafe /= max;
+            turn /= max;
+        }
+        follower.setTeleOpDrive(forward, strafe, turn, robotCentric);
     }
 }

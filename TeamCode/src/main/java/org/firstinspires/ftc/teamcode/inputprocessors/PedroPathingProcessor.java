@@ -15,8 +15,13 @@ import org.firstinspires.ftc.teamcode.mechanisms.PedroPathingDrive;
  * control when not auto-driving.
  */
 public class PedroPathingProcessor implements UserInputProcessor {
+    private static final double NORMAL_GAIN = 1.0;
+    private static final double SLOW_GAIN = 0.5;
+
     private final PedroPathingDrive drive;
     @Nullable private final Telemetry telemetry;
+
+    private boolean slowMode = false;
 
     /**
      * Constructor for the PedroPathingProcessor with only the drive parameter. Telemetry will be
@@ -48,9 +53,14 @@ public class PedroPathingProcessor implements UserInputProcessor {
      */
     @Override
     public void process(@NonNull Gamepad gamepad1, @NonNull Gamepad gamepad2) {
-        double forward = -gamepad1.left_stick_y;
-        double strafe = gamepad1.left_stick_x;
-        double turn = gamepad1.right_stick_x;
+        if (gamepad1.leftBumperWasPressed()) {
+            slowMode = !slowMode;
+        }
+        double gain = slowMode ? SLOW_GAIN : NORMAL_GAIN;
+
+        double forward = -gamepad1.left_stick_y * gain;
+        double strafe = -gamepad1.left_stick_x * gain;
+        double turn = -gamepad1.right_stick_x * gain;
 
         drive.drive(forward, strafe, turn);
 
