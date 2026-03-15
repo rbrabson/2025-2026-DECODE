@@ -1,19 +1,23 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
+import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.util.Timer;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.enums.Alliance;
-import org.firstinspires.ftc.teamcode.inputprocessors.UserInputProcessor;
 import org.firstinspires.ftc.teamcode.inputprocessors.IntakeProcessor;
 import org.firstinspires.ftc.teamcode.inputprocessors.MecanumDriveProcessor;
+import org.firstinspires.ftc.teamcode.inputprocessors.PedroPathingProcessor;
 import org.firstinspires.ftc.teamcode.inputprocessors.ShootArtifactProcessor;
 import org.firstinspires.ftc.teamcode.inputprocessors.ShooterProcessor;
+import org.firstinspires.ftc.teamcode.inputprocessors.UserInputProcessor;
 import org.firstinspires.ftc.teamcode.mechanisms.Mechanism;
+import org.firstinspires.ftc.teamcode.mechanisms.PedroPathingDrive;
 import org.firstinspires.ftc.teamcode.pedro.FusedLocalizer;
 import org.firstinspires.ftc.teamcode.pedro.PedroFollower;
 
@@ -21,26 +25,29 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * This is the base OpMode for teleop routines. It provides the structure for initializing,
- * starting, and looping during the teleop period.
+ * This class implements a teleop mode for the robot that utilizes the Pedro Pathing library for
+ * localization and path following. The robot's starting pose is determined by checking if a pose
+ * was stored on the blackboard during the autonomous period; if not, it defaults to a predefined
+ * starting pose. The teleop mode includes input processors for controlling the robot's mechanisms
+ * based on gamepad inputs, and it updates the robot's state and telemetry on each loop.
  */
-public abstract class TeleopOpMode extends OpMode {
+public abstract class PedroPathingTeleOp extends OpMode {
     private static final Pose DEFAULT_STARTING_POSE = new Pose(7.5, 7.5, Math.toRadians(90));
 
     private final Gamepad currentGamepad1 = new Gamepad();
     private final Gamepad currentGamepad2 = new Gamepad();
     private final Timer timer = new Timer();
-    protected Robot robot;
+    private Robot robot;
     private List<UserInputProcessor> inputHandlers;
     private List<Mechanism> mechanisms;
 
-    private FusedLocalizer localizer;
+    private PedroPathingDrive drive;
     private Alliance alliance;
 
     /**
-     * This method is called once when the driver hits the INIT button. It is used to initialize
-     * any hardware or variables needed for the teleop period. In this base class, it is left empty
-     * and can be overridden by subclasses to provide specific initialization logic.
+     * The init method is called once when the driver hits the "Init" button on the driver station.
+     * It initializes the robot hardware, sets up the localizer with the starting pose, configures
+     * the input handlers for controlling the robot's mechanisms, and prepares the telemetry.
      */
     @Override
     public void init() {
@@ -48,9 +55,14 @@ public abstract class TeleopOpMode extends OpMode {
         robot = Robot.getInstance(hardwareMap, telemetry);
 
         Pose startingPose = blackboard.containsKey("robotPose") ? (Pose) blackboard.get("robotPose") : DEFAULT_STARTING_POSE;
-        localizer = PedroFollower.getFusedLocalizer(hardwareMap, robot.limelight.getSensor()).withMode(FusedLocalizer.Mode.TELEOP);
-        localizer.setStartPose(startingPose);
-        robot.mecanumDrive.setLocalizer(localizer);
+        drive = robot.pedroPathingDrive;
+        drive.setMode(FusedLocalizer.Mode.TELEOP);
+        drive.setStartingPose(startingPose);
+
+        Robot.reset();
+        robot = Robot.getInstance(hardwareMap, telemetry);
+
+        robot.mecanumDrive.setLocalizer(drive.localizer);
         alliance = getAlliance();
         robot.shooter.setTurretBaseValues(alliance.getBaseX(), alliance.getBaseY());
 
@@ -63,47 +75,38 @@ public abstract class TeleopOpMode extends OpMode {
 
         // Initialize the input handlers for each mechanism.
         inputHandlers = Arrays.asList(
-                new MecanumDriveProcessor(robot.mecanumDrive, telemetry),
+                new PedroPathingProcessor(drive, telemetry),
                 new IntakeProcessor(robot.intake, telemetry),
-                new ShooterProcessor(robot.shooter, robot.limelight, localizer, alliance, telemetry),
+                new ShooterProcessor(robot.shooter, robot.limelight, drive.localizer, alliance, telemetry),
                 new ShootArtifactProcessor(robot.intake, robot.transfer, robot.shooter, telemetry)
         );
 
+        // All the hardware mechanisms that need to be updated each loop are added to this list.
+        // This ensures that any necessary updates (such as setting motor powers or updating sensor
+        // readings) are performed on each mechanism during the loop.
         mechanisms = Arrays.asList(
-                robot.mecanumDrive,
+                robot.pedroPathingDrive,
                 robot.intake,
                 robot.shooter,
                 robot.transfer
         );
 
         telemetry.addLine("Initialization Complete");
+
     }
 
     /**
-     * This method must be implemented by subclasses to specify the alliance (RED or BLUE) that
-     * the robot is on.
-     *
-     * @return The alliance that the robot is on (RED or BLUE).
-     */
-    abstract protected Alliance getAlliance();
-
-    /**
-     * This method is called once when the driver hits the PLAY button. It is used to start any
-     * processes or set any initial conditions needed for the teleop period. In this base class, it
-     * is left empty and can be overridden by subclasses to provide specific starting logic.
+     * The start method is called once when the driver hits the "Play" button on the driver station.
      */
     @Override
     public void start() {
         robot.shooter.setFlywheelRPMToTeleOpLow();
-
-        // Warm-up update to initialize follower state before loop begins
-        localizer.update();
+        drive.startTeleopDrive();
+        drive.update();
     }
 
     /**
-     * This method is called repeatedly during the teleop period. It is where the main logic for
-     * controlling the robot during teleop should be placed. In this base class, it is left empty
-     * and can be overridden by subclasses to provide specific control logic.
+     * The loop method is called repeatedly while the op mode is active.
      */
     @Override
     public void loop() {
@@ -120,12 +123,11 @@ public abstract class TeleopOpMode extends OpMode {
         currentGamepad1.copy(gamepad1);
         currentGamepad2.copy(gamepad2);
 
-        // Update the robot's pose
-        localizer.update();
+        drive.update();
 
         // Adjust the shooter's flywheel velocity, hood position, and turret angle based on the
         // robot's current location
-        robot.shooter.update(localizer, alliance);
+        robot.shooter.update(drive.localizer, alliance);
 
         // Update any hardware components on each loop
         for (Mechanism mechanism : mechanisms) {
@@ -138,14 +140,25 @@ public abstract class TeleopOpMode extends OpMode {
             controller.process(currentGamepad1, currentGamepad2);
         }
 
-        telemetry.addData("Pose", localizer.getPose());
+        telemetry.addData("Pose", drive.getPose());
         telemetry.addData("Loop Time (s)", "%.2f", timer.getElapsedTimeSeconds());
 
         telemetry.update();
     }
 
+    /**
+     * The stop method is called once when the driver hits the "Stop" button on the driver station.
+     */
     @Override
     public void stop() {
         robot.intake.close();
     }
+
+    /**
+     * This method must be implemented by subclasses to specify the alliance (RED or BLUE) that
+     * the robot is on.
+     *
+     * @return The alliance that the robot is on (RED or BLUE).
+     */
+    abstract protected Alliance getAlliance();
 }

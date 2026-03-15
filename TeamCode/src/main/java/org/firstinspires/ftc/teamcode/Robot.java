@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.hardware.Light;
 import org.firstinspires.ftc.teamcode.hardware.VoltageSensor;
 import org.firstinspires.ftc.teamcode.mechanisms.Intake;
 import org.firstinspires.ftc.teamcode.mechanisms.MecanumDrive;
+import org.firstinspires.ftc.teamcode.mechanisms.PedroPathingDrive;
 import org.firstinspires.ftc.teamcode.mechanisms.Shooter;
 import org.firstinspires.ftc.teamcode.mechanisms.Transfer;
 import org.firstinspires.ftc.teamcode.sensors.Limelight;
@@ -25,6 +26,7 @@ public class Robot{
 
     // Public fields for each mechanism and subsystem of the robot.
     public final MecanumDrive mecanumDrive;
+    public final PedroPathingDrive pedroPathingDrive;
     public final Intake intake;
     public final Shooter shooter;
     public final Transfer transfer;
@@ -41,11 +43,12 @@ public class Robot{
      * @param telemetry   The telemetry object used for debugging and feedback during operation.
      */
     private Robot(HardwareMap hardwareMap, Telemetry telemetry) {
+        limelight = new Limelight(hardwareMap, telemetry);
         mecanumDrive = new MecanumDrive(hardwareMap, telemetry);
+        pedroPathingDrive = new PedroPathingDrive(hardwareMap, limelight.getSensor(), telemetry);
         intake = new Intake(hardwareMap, telemetry);
         shooter = new Shooter(hardwareMap, telemetry);
         transfer = new Transfer(hardwareMap, telemetry);
-        limelight = new Limelight(hardwareMap, telemetry);
         light = new Light(hardwareMap, telemetry);
         voltageSensor = new VoltageSensor(hardwareMap, telemetry);
 
