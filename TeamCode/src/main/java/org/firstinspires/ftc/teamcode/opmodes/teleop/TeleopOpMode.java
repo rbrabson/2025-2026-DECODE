@@ -144,6 +144,10 @@ public abstract class TeleopOpMode extends OpMode {
         telemetry.update();
     }
 
+    /**
+     * This method is called once when the driver hits the STOP button. It is used to stop any
+     * processes or perform any cleanup needed after the teleop period.
+     */
     @Override
     public void stop() {
         robot.intake.close();

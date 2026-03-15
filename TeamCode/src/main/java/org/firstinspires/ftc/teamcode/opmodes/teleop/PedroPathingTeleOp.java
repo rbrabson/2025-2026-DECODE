@@ -1,17 +1,14 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
-import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.util.Timer;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.enums.Alliance;
 import org.firstinspires.ftc.teamcode.inputprocessors.IntakeProcessor;
-import org.firstinspires.ftc.teamcode.inputprocessors.MecanumDriveProcessor;
 import org.firstinspires.ftc.teamcode.inputprocessors.PedroPathingProcessor;
 import org.firstinspires.ftc.teamcode.inputprocessors.ShootArtifactProcessor;
 import org.firstinspires.ftc.teamcode.inputprocessors.ShooterProcessor;
@@ -19,7 +16,6 @@ import org.firstinspires.ftc.teamcode.inputprocessors.UserInputProcessor;
 import org.firstinspires.ftc.teamcode.mechanisms.Mechanism;
 import org.firstinspires.ftc.teamcode.mechanisms.PedroPathingDrive;
 import org.firstinspires.ftc.teamcode.pedro.FusedLocalizer;
-import org.firstinspires.ftc.teamcode.pedro.PedroFollower;
 
 import java.util.Arrays;
 import java.util.List;
