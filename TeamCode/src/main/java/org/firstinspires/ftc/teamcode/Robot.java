@@ -44,7 +44,8 @@ public class Robot{
      */
     private Robot(HardwareMap hardwareMap, Telemetry telemetry) {
         limelight = new Limelight(hardwareMap, telemetry);
-        mecanumDrive = new MecanumDrive(hardwareMap, telemetry);
+        // mecanumDrive = new MecanumDrive(hardwareMap, telemetry);
+        mecanumDrive = null; // Using PedroPathing for Teleop instead of MecanumDrive
         pedroPathingDrive = new PedroPathingDrive(hardwareMap, limelight.getSensor(), telemetry);
         intake = new Intake(hardwareMap, telemetry);
         shooter = new Shooter(hardwareMap, telemetry);
