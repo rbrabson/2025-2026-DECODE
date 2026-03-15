@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.robotcontrol.MecanumDriveController;
 import org.firstinspires.ftc.teamcode.robotcontrol.MecanumDriveController.DriveOutput;
 import org.firstinspires.ftc.teamcode.robotcontrol.VoltageCompensator;
-import org.firstinspires.ftc.teamcode.pedro.FusedLocalizer;
+import org.firstinspires.ftc.teamcode.pedroPathing.FusedLocalizer;
 import org.firstinspires.ftc.teamcode.utils.MathEx;
 import org.firstinspires.ftc.teamcode.utils.Vector2;
 

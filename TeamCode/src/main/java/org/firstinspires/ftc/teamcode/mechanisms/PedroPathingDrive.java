@@ -6,13 +6,11 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.Path;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.pedro.FusedLocalizer;
-import org.firstinspires.ftc.teamcode.pedro.PedroFollower;
+import org.firstinspires.ftc.teamcode.pedroPathing.FusedLocalizer;
+import org.firstinspires.ftc.teamcode.pedroPathing.PedroFollower;
 import org.firstinspires.ftc.teamcode.robotcontrol.MecanumDriveController;
 import org.firstinspires.ftc.teamcode.robotcontrol.VoltageCompensator;
 import org.firstinspires.ftc.teamcode.utils.MathEx;

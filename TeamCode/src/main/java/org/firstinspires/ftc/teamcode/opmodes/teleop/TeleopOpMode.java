@@ -14,8 +14,8 @@ import org.firstinspires.ftc.teamcode.inputprocessors.MecanumDriveProcessor;
 import org.firstinspires.ftc.teamcode.inputprocessors.ShootArtifactProcessor;
 import org.firstinspires.ftc.teamcode.inputprocessors.ShooterProcessor;
 import org.firstinspires.ftc.teamcode.mechanisms.Mechanism;
-import org.firstinspires.ftc.teamcode.pedro.FusedLocalizer;
-import org.firstinspires.ftc.teamcode.pedro.PedroFollower;
+import org.firstinspires.ftc.teamcode.pedroPathing.FusedLocalizer;
+import org.firstinspires.ftc.teamcode.pedroPathing.PedroFollower;
 
 import java.util.Arrays;
 import java.util.List;
