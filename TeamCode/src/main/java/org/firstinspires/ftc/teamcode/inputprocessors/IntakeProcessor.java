@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.mechanisms.Intake;
 
+import java.util.Objects;
+
 /**
  * The IntakeInput class manages the control of the intake mechanism based on gamepad inputs.
  */
@@ -27,7 +29,7 @@ public class IntakeProcessor implements UserInputProcessor {
      * @param telemetry the Telemetry for debugging and feedback
      */
     public IntakeProcessor(@NonNull Intake intake, @Nullable Telemetry telemetry) {
-        this.intake = intake;
+        this.intake = Objects.requireNonNull(intake);
         this.telemetry = telemetry;
     }
 

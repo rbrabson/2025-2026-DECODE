@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.utils.Vector2;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Mechanism class for controlling a mecanum drive system.
@@ -45,10 +46,11 @@ public class MecanumDrive implements Mechanism {
      * @param telemetry   The telemetry object for logging.
      */
     public MecanumDrive(@NonNull HardwareMap hardwareMap, @NonNull Telemetry telemetry) {
-        frontLeftMotor = hardwareMap.get(DcMotorEx.class, "flm");
-        frontRightMotor = hardwareMap.get(DcMotorEx.class, "frm");
-        backLeftMotor = hardwareMap.get(DcMotorEx.class, "blm");
-        backRightMotor = hardwareMap.get(DcMotorEx.class, "brm");
+        HardwareMap map = Objects.requireNonNull(hardwareMap);
+        frontLeftMotor = map.get(DcMotorEx.class, "flm");
+        frontRightMotor = map.get(DcMotorEx.class, "frm");
+        backLeftMotor = map.get(DcMotorEx.class, "blm");
+        backRightMotor = map.get(DcMotorEx.class, "brm");
 
         this.telemetry = telemetry;
 

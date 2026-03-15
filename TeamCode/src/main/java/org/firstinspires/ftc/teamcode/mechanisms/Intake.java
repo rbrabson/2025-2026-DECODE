@@ -9,6 +9,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.hardware.Indexer;
 import org.firstinspires.ftc.teamcode.hardware.IntakeMotor;
 
+import java.util.Objects;
+
 /**
  * Mechanism class for the Intake mechanism.
  */
@@ -23,8 +25,9 @@ public class Intake implements Mechanism, AutoCloseable {
      * @param telemetry   The telemetry object for logging.
      */
     public Intake(@NonNull HardwareMap hardwareMap, @NonNull Telemetry telemetry) {
-        this.indexer = new Indexer(hardwareMap, telemetry);
-        intake = new IntakeMotor(hardwareMap, telemetry);
+        HardwareMap map = Objects.requireNonNull(hardwareMap);
+        this.indexer = new Indexer(map, telemetry);
+        intake = new IntakeMotor(map, telemetry);
 
         telemetry.addLine("Intake initialized");
     }

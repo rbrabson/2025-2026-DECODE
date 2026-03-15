@@ -8,6 +8,8 @@ import com.rbrabson.behave.Status;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.hardware.Hinge;
 
+import java.util.Objects;
+
 /**
  * Mechanism class for transferring artifacts from the intake to the shooter.
  */
@@ -24,7 +26,8 @@ public class Transfer implements Mechanism {
      * @param telemetry   The telemetry object for logging.
      */
     public Transfer(@NonNull HardwareMap hardwareMap, @NonNull Telemetry telemetry) {
-        this.hinge = new Hinge(hardwareMap, telemetry);
+        HardwareMap map = Objects.requireNonNull(hardwareMap);
+        this.hinge = new Hinge(map, telemetry);
         this.telemetry = telemetry;
     }
 

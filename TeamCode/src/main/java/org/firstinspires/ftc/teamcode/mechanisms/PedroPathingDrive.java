@@ -15,6 +15,8 @@ import org.firstinspires.ftc.teamcode.robotcontrol.MecanumDriveController;
 import org.firstinspires.ftc.teamcode.robotcontrol.VoltageCompensator;
 import org.firstinspires.ftc.teamcode.utils.MathEx;
 
+import java.util.Objects;
+
 /**
  * This class implements a pathing drive mechanism using the Pedro Pathing library. It provides
  * methods for driving the robot, getting and setting the robot's pose, following paths, and
@@ -44,11 +46,12 @@ public class PedroPathingDrive implements Mechanism {
      *                    debugging and monitoring.
      */
     public PedroPathingDrive(HardwareMap hardwareMap, Limelight3A limelight, Telemetry telemetry) {
-        this.localizer = PedroFollower.getFusedLocalizer(hardwareMap, limelight, FusedLocalizer.Mode.TELEOP);
-        follower = PedroFollower.create(hardwareMap, localizer);
+        HardwareMap map = Objects.requireNonNull(hardwareMap);
+        this.localizer = PedroFollower.getFusedLocalizer(map, limelight, FusedLocalizer.Mode.TELEOP);
+        follower = PedroFollower.create(map, localizer);
         this.telemetry = telemetry;
         driveCtrl = new MecanumDriveController();
-        voltageComp = new VoltageCompensator(Robot.getInstance(hardwareMap, telemetry).voltageSensor);
+        voltageComp = new VoltageCompensator(Robot.getInstance(map, telemetry).voltageSensor);
     }
 
     /**

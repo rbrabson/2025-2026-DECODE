@@ -11,6 +11,8 @@ import org.firstinspires.ftc.teamcode.enums.Alliance;
 import org.firstinspires.ftc.teamcode.mechanisms.Shooter;
 import org.firstinspires.ftc.teamcode.sensors.Limelight;
 
+import java.util.Objects;
+
 /**
  * ShooterProcessor handles the input processing for the shooter mechanism, including toggling automation,
  * adjusting flywheel speed, and providing feedback on turret alignment.
@@ -40,10 +42,10 @@ public class ShooterProcessor implements UserInputProcessor {
      * @param telemetry the Telemetry for debugging and feedback
      */
     public ShooterProcessor(@NonNull Shooter shooter, @NonNull Limelight limelight, @NonNull Localizer localizer, @NonNull Alliance alliance, @Nullable Telemetry telemetry) {
-        this.shooter = shooter;
-        this.limelight = limelight;
-        this.localizer = localizer;
-        this.alliance = alliance;
+        this.shooter = Objects.requireNonNull(shooter);
+        this.limelight = Objects.requireNonNull(limelight);
+        this.localizer = Objects.requireNonNull(localizer);
+        this.alliance = Objects.requireNonNull(alliance);
         this.telemetry = telemetry;
     }
 

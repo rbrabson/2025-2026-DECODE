@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.mechanisms.MecanumDrive;
 
+import java.util.Objects;
+
 /**
  * A controller for a mecanum drive chassis. This controller uses the left stick on gamepad1 to
  * control the X and Y movement of the robot, and the right stick on gamepad1 to control the
@@ -31,8 +33,8 @@ public class MecanumDriveProcessor implements UserInputProcessor {
      * @param telemetry    the telemetry used to display data on the driver station.
      */
     public MecanumDriveProcessor(@NonNull MecanumDrive mecanumDrive, @Nullable Telemetry telemetry) {
+        this.mecanumDrive = Objects.requireNonNull(mecanumDrive);
         this.telemetry = telemetry;
-        this.mecanumDrive = mecanumDrive;
     }
 
     /**
