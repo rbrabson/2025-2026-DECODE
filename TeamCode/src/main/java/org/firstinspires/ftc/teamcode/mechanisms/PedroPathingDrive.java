@@ -146,9 +146,9 @@ public class PedroPathingDrive implements Mechanism {
 
         // Update the drive controller with the compensated values and the current pose from the localizer to get the drive outputs
         MecanumDriveController.DriveOutput driveValues = driveCtrl.update(values[0], values[1], values[2], localizer.getPose());
-        forward = values[0];
-        strafe = values[1];
-        turn= values[2];
+        forward = driveValues.getX();
+        strafe = driveValues.getY();
+        turn = driveValues.getTurn();
 
         // Normalize the values to ensure that the maximum absolute value does not exceed 1
         double max = MathEx.maxAbs(1, forward, strafe, turn);
