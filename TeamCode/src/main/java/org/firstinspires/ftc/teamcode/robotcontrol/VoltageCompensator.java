@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.hardware.VoltageSensor;
  * This helps maintain consistent performance even as the battery voltage drops.
  */
 public class VoltageCompensator {
-    private static final double NOMINAL = 13.0;
+    private static final double NOMINAL = 12.5;
 
     private final VoltageSensor sensor;
 
@@ -33,8 +33,16 @@ public class VoltageCompensator {
         double voltage = sensor.getVoltage();
         double scale = NOMINAL / voltage;
 
+        double max = 1;
         for (int i = 0; i < powers.length; i++) {
             powers[i] *= scale;
+            max = Math.max(max, Math.abs(powers[i]));
+        }
+        // Normalize so that no power exceeds 1 after compensation
+        if (max > 1) {
+            for (int i = 0; i < powers.length; i++) {
+                powers[i] /= max;
+            }
         }
 
         return powers;
