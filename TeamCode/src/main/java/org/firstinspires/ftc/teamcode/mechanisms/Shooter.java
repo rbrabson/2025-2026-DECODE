@@ -249,7 +249,7 @@ public class Shooter implements Mechanism {
 
         double targetRPM = shooterModel.getFlywheelRPM(distanceToTarget, forwardVel);
         double hoodPosition = shooterModel.getHoodPosition(distanceToTarget);
-        double turretLeadAngle = shooterModel.getTurretLeadAngle(distanceToTarget, velocity.getX(), TURRET_DISTANCE_FROM_CENTER);
+        double turretLeadAngle = shooterModel.getTurretLeadAngle(distanceToTarget, velocity.getX());
         setFLywheelRPM(targetRPM);
         setHoodPosition(hoodPosition);
         setTurretTargetPosition(dx, dy, pose.getHeading() + turretLeadAngle);
