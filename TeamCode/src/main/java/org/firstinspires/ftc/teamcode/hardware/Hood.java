@@ -101,7 +101,7 @@ public class Hood {
         }
         hood.setPosition(clippedPosition);
         if (telemetry != null) {
-            telemetry.addData("Hood Position", clippedPosition);
+            telemetry.addData("[HOOD] Position", clippedPosition);
         }
     }
 

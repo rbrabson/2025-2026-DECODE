@@ -127,7 +127,7 @@ public class Turret {
         turret.setPower(RUN_POWER);
 
         if (telemetry != null) {
-            telemetry.addData("Turret target ticks", targetPosition);
+            telemetry.addData("[TURRET] target ticks", targetPosition);
         }
     }
 

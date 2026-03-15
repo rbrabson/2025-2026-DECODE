@@ -59,7 +59,7 @@ public class Hinge {
     public void raise() {
         setPosition(RAISED_POSITION);
         if (telemetry != null) {
-            telemetry.addLine("Hinge raised");
+            telemetry.addLine("[HINGE] Raised");
         }
     }
 
@@ -75,7 +75,7 @@ public class Hinge {
         hinge.setPosition(position);
         timer.reset();
         if (telemetry != null) {
-            telemetry.addData("Hinge position", position);
+            telemetry.addData("[HINGE] Position", position);
         }
     }
 
@@ -85,7 +85,7 @@ public class Hinge {
     public void lower() {
         setPosition(LOWERED_POSITION);
         if (telemetry != null) {
-            telemetry.addLine("Hinge lowered");
+            telemetry.addLine("[HINGE] Lowered");
         }
     }
 
