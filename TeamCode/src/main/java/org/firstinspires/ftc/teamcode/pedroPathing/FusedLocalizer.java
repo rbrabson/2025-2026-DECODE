@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.pedroPathing;
 
 import androidx.annotation.NonNull;
 
+import com.pedropathing.ftc.FTCCoordinates;
+import com.pedropathing.geometry.PedroCoordinates;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.localization.Localizer;
 import com.pedropathing.math.Vector;
@@ -203,6 +205,7 @@ public class FusedLocalizer implements Localizer {
         Pose3D llPose = result.getBotpose();
         if (llPose == null) return false;
 
+        // Get X and Y, converting meters to inches
         double llX = llPose.getPosition().x * 39.3701;
         double llY = llPose.getPosition().y * 39.3701;
 
@@ -252,14 +255,10 @@ public class FusedLocalizer implements Localizer {
     @NonNull
     private Pose extractVisionPose(@NonNull LLResult result) {
         Pose3D llPose = result.getBotpose();
-
-        double x = llPose.getPosition().x * 39.3701;
-        double y = llPose.getPosition().y * 39.3701;
-
-        YawPitchRollAngles orientation = llPose.getOrientation();
-        double heading = orientation.getYaw(AngleUnit.RADIANS);
-
-        return new Pose(x, y, heading);
+        return getRobotPoseFromCamera(
+                llPose.getPosition().x,
+                llPose.getPosition().y,
+                llPose.getOrientation().getYaw(AngleUnit.RADIANS));
     }
 
     /**
@@ -318,5 +317,23 @@ public class FusedLocalizer implements Localizer {
     private double blendHeading(double odo, double vision, double blend) {
         double diff = MathEx.angleWrap(vision - odo);
         return odo + diff * blend;
+    }
+
+    /**
+     * Converts the X and Y coordinates from the Limelight's coordinate system (where X is
+     * forward and Y is left) to the standard PedroPathing coordinate system (where X is right
+     * and Y is forward). The heading is also converted from the Limelight's orientation to the
+     * PedroPathing coordinate system.
+     *
+     * @param x          the X coordinate from the Limelight, representing forward distance in inches
+     * @param y          the Y coordinate from the Limelight, representing left distance in inches
+     * @param turnInRad  the heading from the Limelight in radians, where 0 is facing forward and
+     *                   positive is left
+     * @return a Pose representing the position and heading in the PedroPathing coordinate system,
+     *         with X as right, Y as forward, and heading adjusted accordingly
+     */
+    private Pose getRobotPoseFromCamera(double x, double y, double turnInRad) {
+        return new Pose(x, y, turnInRad, FTCCoordinates.INSTANCE)
+            .getAsCoordinateSystem(PedroCoordinates.INSTANCE);
     }
 }
