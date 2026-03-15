@@ -52,6 +52,7 @@ public abstract class PedroPathingTeleOp extends OpMode {
 
         Pose startingPose = blackboard.containsKey("robotPose") ? (Pose) blackboard.get("robotPose") : DEFAULT_STARTING_POSE;
         drive = robot.pedroPathingDrive;
+        drive.setRobotCentric(false);
         drive.setMode(FusedLocalizer.Mode.TELEOP);
         drive.setStartingPose(startingPose);
 

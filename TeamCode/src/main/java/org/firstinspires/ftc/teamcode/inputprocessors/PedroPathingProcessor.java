@@ -49,10 +49,10 @@ public class PedroPathingProcessor implements UserInputProcessor {
     @Override
     public void process(@NonNull Gamepad gamepad1, @NonNull Gamepad gamepad2) {
         double forward = -gamepad1.left_stick_y;
-        double strafe = -gamepad1.left_stick_x;
-        double turn = -gamepad1.right_stick_x;
+        double strafe = gamepad1.left_stick_x;
+        double turn = gamepad1.right_stick_x;
 
-        drive.setTeleOpDrive(forward, strafe, turn, false);
+        drive.drive(forward, strafe, turn);
 
         if (telemetry != null) {
             Pose pose = drive.getPose();
