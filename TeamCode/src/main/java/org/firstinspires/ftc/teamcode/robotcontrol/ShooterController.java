@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 import com.pedropathing.geometry.Pose;
 import com.rbrabson.control.interplut.InterpLUT;
 
-import org.firstinspires.ftc.teamcode.enums.Alliance;
+import org.firstinspires.ftc.teamcode.decode.Alliance;
 
 /**
  * ShooterController manages flywheel RPM, hood position, and predictive turret lead angle

@@ -8,7 +8,7 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.enums.Motif;
+import org.firstinspires.ftc.teamcode.decode.Motif;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

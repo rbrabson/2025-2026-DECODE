@@ -7,12 +7,12 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.enums.Alliance;
+import org.firstinspires.ftc.teamcode.decode.Alliance;
 import org.firstinspires.ftc.teamcode.mechanisms.Mechanism;
 import org.firstinspires.ftc.teamcode.pedroPathing.FusedLocalizer;
 import org.firstinspires.ftc.teamcode.opmodes.autonomous.pathing.AutonomousPathing;
 import org.firstinspires.ftc.teamcode.pedroPathing.PedroFollower;
-import org.firstinspires.ftc.teamcode.enums.Motif;
+import org.firstinspires.ftc.teamcode.decode.Motif;
 
 import java.util.Arrays;
 import java.util.List;

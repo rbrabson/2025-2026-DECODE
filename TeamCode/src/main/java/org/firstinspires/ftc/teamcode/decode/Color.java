@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.enums;
+package org.firstinspires.ftc.teamcode.decode;
 
 /**
  * Enum representing the possible colors of the game elements.

@@ -3,15 +3,14 @@ package org.firstinspires.ftc.teamcode.hardware;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.rbrabson.behave.Status;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.enums.Color;
-import org.firstinspires.ftc.teamcode.enums.Motif;
+import org.firstinspires.ftc.teamcode.decode.Color;
+import org.firstinspires.ftc.teamcode.decode.Motif;
 import org.firstinspires.ftc.teamcode.sensors.ColorProcessor;
 
 import java.util.Arrays;

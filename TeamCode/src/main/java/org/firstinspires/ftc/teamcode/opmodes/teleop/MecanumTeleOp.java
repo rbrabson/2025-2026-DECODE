@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.enums.Alliance;
+import org.firstinspires.ftc.teamcode.decode.Alliance;
 import org.firstinspires.ftc.teamcode.inputprocessors.UserInputProcessor;
 import org.firstinspires.ftc.teamcode.inputprocessors.IntakeProcessor;
 import org.firstinspires.ftc.teamcode.inputprocessors.MecanumDriveProcessor;

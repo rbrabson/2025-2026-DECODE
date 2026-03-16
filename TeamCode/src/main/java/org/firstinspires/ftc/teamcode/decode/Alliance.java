@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.enums;
+package org.firstinspires.ftc.teamcode.decode;
 
 /**
  * Enum representing the two alliances in the FTC game: RED and BLUE.

@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes.autonomous;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.enums.Alliance;
+import org.firstinspires.ftc.teamcode.decode.Alliance;
 import org.firstinspires.ftc.teamcode.opmodes.autonomous.pathing.AutonomousPathing;
 import org.firstinspires.ftc.teamcode.opmodes.autonomous.pathing.RedFarPathing;
 import org.firstinspires.ftc.teamcode.hardware.Flywheel;

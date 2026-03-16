@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.enums;
+package org.firstinspires.ftc.teamcode.decode;
 
 /**
  * Enum representing the possible motifs of the game elements.
