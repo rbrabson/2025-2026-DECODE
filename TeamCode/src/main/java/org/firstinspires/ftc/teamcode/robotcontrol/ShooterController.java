@@ -33,9 +33,13 @@ public class ShooterController {
     private static final double MIN_HOOD_OFFSET = -0.20;
     private static final double MAX_HOOD_OFFSET = 0.20;
 
-    public static final double FLYWHEEL_CORRECTION = 5.0;
-    private static final double MAX_VELOCITY = 60.0; // inches/sec clamp for velocity inputs
+    private static final double MAX_ROBOT_VELOCITY = 60.0; // inches/sec clamp for velocity inputs
     private static final double MAX_LEAD_RAD = Math.toRadians(10.0); // ±10° max turret lead
+    public static final double MIN_RPM_SCALE = 0.7;
+    public static final double MAX_RPM_SCALE = 1.3;
+
+    public static final double MIN_SHOOT_DISTANCE = 12.0;
+    public static final double MAX_SHOOT_DISTANCE = 100.0;
 
     private double rpmOffset = 0.0;
     private double hoodOffset = 0.0;
@@ -79,12 +83,18 @@ public class ShooterController {
      * @return Flywheel RPM, clipped to safe range
      */
     public double getFlywheelRPM(double distance, double robotVelocityTowardTarget) {
-        double d = Range.clip(distance, 20.0, 100.0); // LUT range
-        double rpm = flywheelLUT.get(d);
+        distance = Range.clip(distance, MIN_SHOOT_DISTANCE, MAX_SHOOT_DISTANCE); // LUT range
+        double rpm = flywheelLUT.get(distance);
 
-        robotVelocityTowardTarget = Range.clip(robotVelocityTowardTarget, -MAX_VELOCITY, MAX_VELOCITY);
+        robotVelocityTowardTarget = Range.clip(robotVelocityTowardTarget, -MAX_ROBOT_VELOCITY, MAX_ROBOT_VELOCITY);
 
-        rpm -= robotVelocityTowardTarget * FLYWHEEL_CORRECTION;
+        double flightTime = flightTimeLUT.get(distance);
+        double projectileVelocity = distance / flightTime;
+
+        double scale = 1.0 - robotVelocityTowardTarget / projectileVelocity;
+        scale = Range.clip(scale, MIN_RPM_SCALE, MAX_RPM_SCALE);
+
+        rpm *= scale;
         rpm += rpmOffset;
 
         return Range.clip(rpm, -Flywheel.RPM_MAX, Flywheel.RPM_MAX);
@@ -97,7 +107,7 @@ public class ShooterController {
      * @return Servo position (0.0–1.0), clipped to min/max limits
      */
     public double getHoodPosition(double distance) {
-        double d = Range.clip(distance, 0.0, 100.0); // LUT range
+        double d = Range.clip(distance, MIN_SHOOT_DISTANCE, MAX_SHOOT_DISTANCE); // LUT range
         double hood = hoodLUT.get(d);
         hood += hoodOffset;
         return Range.clip(hood, MIN_HOOD, MAX_HOOD);
@@ -112,14 +122,14 @@ public class ShooterController {
      * @return Lead angle in radians, clipped to ±MAX_LEAD_RAD
      */
     public double getTurretLeadAngle(double distance, double robotLateralVelocity) {
-        double d = Math.max(1e-6, distance);
+        distance = Math.max(1e-6, distance);
 
-        robotLateralVelocity = Range.clip(robotLateralVelocity, -MAX_VELOCITY, MAX_VELOCITY);
+        robotLateralVelocity = Range.clip(robotLateralVelocity, -MAX_ROBOT_VELOCITY, MAX_ROBOT_VELOCITY);
 
-        double flightTime = flightTimeLUT.get(d);
+        double flightTime = flightTimeLUT.get(distance);
         double lateralTravel = robotLateralVelocity * flightTime;
 
-        double leadAngle = Math.atan2(lateralTravel, d);
+        double leadAngle = Math.atan2(lateralTravel, distance);
 
         return Range.clip(leadAngle, -MAX_LEAD_RAD, MAX_LEAD_RAD);
     }
