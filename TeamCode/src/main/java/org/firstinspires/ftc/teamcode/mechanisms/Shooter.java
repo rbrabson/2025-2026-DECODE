@@ -55,6 +55,7 @@ public class Shooter implements Mechanism {
      * @param startingPose The initial pose of the robot, used to calculate the initial distance and angle to the goal for setting the initial smoothed values in the ShooterController
      * @return The Shooter instance with the updated shooter model based on the specified alliance and starting pose, allowing for method chaining.
      */
+    @NonNull
     public Shooter setAllianceAndPose(@NonNull Alliance alliance, @NonNull Pose startingPose) {
         shooterModel.setAlliancePose(alliance, startingPose);
         return this;
@@ -67,6 +68,7 @@ public class Shooter implements Mechanism {
      * @param baseY Y-coordinate of the turret base in inches
      * @return The Shooter instance with the updated turret base values, allowing for method chaining.
      */
+    @NonNull
     public Shooter setTurretBaseValues(double baseX, double baseY) {
         turret.setBaseValues(baseX, baseY);
         return this;

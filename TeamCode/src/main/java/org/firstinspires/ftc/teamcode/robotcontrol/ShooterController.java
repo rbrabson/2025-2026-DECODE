@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.robotcontrol;
 
+import androidx.annotation.NonNull;
+
 import com.pedropathing.geometry.Pose;
 import com.rbrabson.control.interplut.InterpLUT;
 
@@ -58,7 +60,8 @@ public class ShooterController {
      *                 the goal for setting
      * @return the ShooterController instance, allowing for method chaining if desired
      */
-    public ShooterController setAlliancePose(Alliance alliance, Pose pose) {
+    @NonNull
+    public ShooterController setAlliancePose(@NonNull Alliance alliance, @NonNull Pose pose) {
         double goalX = alliance.getBaseX();
         double goalY = alliance.getBaseY();
 
