@@ -30,7 +30,7 @@ public class PedroPathingDrive implements Mechanism {
 
     private final VoltageCompensator voltageComp;
     private final DriveController driveCtrl;
-    private boolean robotCentric = false;
+    private boolean robotCentric = true;
 
     /**
      * Constructor for the PedroPathingDrive class. It initializes the localizer and follower using
