@@ -47,26 +47,6 @@ public class Shooter implements Mechanism {
     }
 
     /**
-     * Constructor that initializes the shooter with a specific alliance and starting pose,
-     * allowing for more accurate initial targeting based on the robot's starting position on the field.
-     *
-     * @param hardwareMap  HardwareMap for accessing hardware devices
-     * @param telemetry    Telemetry for logging and debugging
-     * @param alliance     The alliance color (BLUE or RED) to determine which goal to target
-     * @param startingPose The initial pose of the robot, used to calculate the initial distance
-     *                     and angle to the goal for setting the initial smoothed values in the ShooterController
-     */
-    public Shooter(@NonNull HardwareMap hardwareMap, @NonNull Telemetry telemetry, @NonNull Alliance alliance, @NonNull Pose startingPose) {
-        HardwareMap map = Objects.requireNonNull(hardwareMap);
-        this.telemetry = Objects.requireNonNull(telemetry);
-        this.turret = new Turret(map, telemetry);
-        this.flywheel = new Flywheel(map, telemetry);
-        this.hood = new Hood(map, telemetry);
-        shooterModel = new ShooterController(alliance, startingPose);
-        telemetry.addLine("Shooter initialized");
-    }
-
-    /**
      * Fluent interface method to set alliance and starting pose for the shooter model. This
      * allows for chaining this configuration after constructing the Shooter object,
      * providing flexibility in how the shooter is initialized and configured.
