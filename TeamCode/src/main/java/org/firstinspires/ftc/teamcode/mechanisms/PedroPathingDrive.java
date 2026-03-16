@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.mechanisms;
 
+import androidx.annotation.NonNull;
+
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
@@ -43,13 +45,14 @@ public class PedroPathingDrive implements Mechanism {
      * @param telemetry   The telemetry instance for sending data to the driver station for
      *                    debugging and monitoring.
      */
-    public PedroPathingDrive(HardwareMap hardwareMap, Limelight3A limelight, Telemetry telemetry) {
+    public PedroPathingDrive(@NonNull HardwareMap hardwareMap, @NonNull Limelight3A limelight, @NonNull Telemetry telemetry) {
         HardwareMap map = Objects.requireNonNull(hardwareMap);
-        this.localizer = PedroFollower.getFusedLocalizer(map, limelight, FusedLocalizer.Mode.TELEOP);
-        follower = PedroFollower.create(map, localizer);
-        this.telemetry = telemetry;
-        driveCtrl = new DriveController();
-        voltageComp = new VoltageCompensator(Robot.getInstance(map, telemetry).voltageSensor);
+        Limelight3A ll = Objects.requireNonNull(limelight);
+        this.localizer = PedroFollower.getFusedLocalizer(map, ll, FusedLocalizer.Mode.TELEOP);
+        this.telemetry = Objects.requireNonNull(telemetry);
+        this.follower = PedroFollower.create(map, this.localizer);
+        this.driveCtrl = new DriveController();
+        this.voltageComp = new VoltageCompensator(Robot.getInstance(map, this.telemetry).voltageSensor);
     }
 
     /**
