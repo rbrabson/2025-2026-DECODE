@@ -28,7 +28,7 @@ public class Shooter implements Mechanism {
     private final Flywheel flywheel;
     private final Hood hood;
     private final Telemetry telemetry;
-    private final ShooterController shooterModel = new ShooterController();
+    private ShooterController shooterModel;
 
     /**
      * Initializes shooter subsystems and telemetry.
@@ -42,7 +42,42 @@ public class Shooter implements Mechanism {
         this.turret = new Turret(map, telemetry);
         this.flywheel = new Flywheel(map, telemetry);
         this.hood = new Hood(map, telemetry);
+        shooterModel = new ShooterController();
         telemetry.addLine("Shooter initialized");
+    }
+
+    /**
+     * Constructor that initializes the shooter with a specific alliance and starting pose,
+     * allowing for more accurate initial targeting based on the robot's starting position on the field.
+     *
+     * @param hardwareMap  HardwareMap for accessing hardware devices
+     * @param telemetry    Telemetry for logging and debugging
+     * @param alliance     The alliance color (BLUE or RED) to determine which goal to target
+     * @param startingPose The initial pose of the robot, used to calculate the initial distance
+     *                     and angle to the goal for setting the initial smoothed values in the ShooterController
+     */
+    public Shooter(@NonNull HardwareMap hardwareMap, @NonNull Telemetry telemetry, @NonNull Alliance alliance, @NonNull Pose startingPose) {
+        HardwareMap map = Objects.requireNonNull(hardwareMap);
+        this.telemetry = Objects.requireNonNull(telemetry);
+        this.turret = new Turret(map, telemetry);
+        this.flywheel = new Flywheel(map, telemetry);
+        this.hood = new Hood(map, telemetry);
+        shooterModel = new ShooterController(alliance, startingPose);
+        telemetry.addLine("Shooter initialized");
+    }
+
+    /**
+     * Fluent interface method to set alliance and starting pose for the shooter model. This
+     * allows for chaining this configuration after constructing the Shooter object,
+     * providing flexibility in how the shooter is initialized and configured.
+     *
+     * @param alliance     The alliance color (BLUE or RED) to determine which goal to target
+     * @param startingPose The initial pose of the robot, used to calculate the initial distance and angle to the goal for setting the initial smoothed values in the ShooterController
+     * @return The Shooter instance with the updated shooter model based on the specified alliance and starting pose, allowing for method chaining.
+     */
+    public Shooter setAllianceAndPose(@NonNull Alliance alliance, @NonNull Pose startingPose) {
+        shooterModel = new ShooterController(alliance, startingPose);
+        return this;
     }
 
     /**
@@ -50,9 +85,11 @@ public class Shooter implements Mechanism {
      *
      * @param baseX X-coordinate of the turret base in inches
      * @param baseY Y-coordinate of the turret base in inches
+     * @return The Shooter instance with the updated turret base values, allowing for method chaining.
      */
-    public void setTurretBaseValues(double baseX, double baseY) {
+    public Shooter setTurretBaseValues(double baseX, double baseY) {
         turret.setBaseValues(baseX, baseY);
+        return this;
     }
 
     /**
@@ -243,6 +280,22 @@ public class Shooter implements Mechanism {
     }
 
     /**
+     * Sets the target position of the turret based on the desired x and y coordinates of the
+     * target relative to the robot, and the robot's current heading. This method calculates the
+     * necessary turret angle to aim at the target position and sets the turret's target position
+     * accordingly. The heading parameter allows for compensation based on the robot's orientation,
+     * ensuring accurate aiming even when the robot is not facing directly towards the target.
+     *
+     * @param x       X-coordinate of the target position relative to the robot in inches
+     * @param y       Y-coordinate of the target position relative to the robot in inches
+     * @param heading Current heading of the robot in radians, used for calculating the turret
+     *                angle to aim at the target
+     */
+    public void setTurretTargetPosition(double x, double y, double heading) {
+        turret.setTargetPosition(x, y, heading);
+    }
+
+    /**
      * Calculates a dynamic maximum lateral velocity based on the current forward velocity.
      *
      * @param forwardVel Current forward velocity of the robot in inches per second
@@ -258,22 +311,6 @@ public class Shooter implements Mechanism {
 
         // Clip to reasonable range
         return Range.clip(scaled, baseMax, maxCap);
-    }
-
-    /**
-     * Sets the target position of the turret based on the desired x and y coordinates of the
-     * target relative to the robot, and the robot's current heading. This method calculates the
-     * necessary turret angle to aim at the target position and sets the turret's target position
-     * accordingly. The heading parameter allows for compensation based on the robot's orientation,
-     * ensuring accurate aiming even when the robot is not facing directly towards the target.
-     *
-     * @param x       X-coordinate of the target position relative to the robot in inches
-     * @param y       Y-coordinate of the target position relative to the robot in inches
-     * @param heading Current heading of the robot in radians, used for calculating the turret
-     *                angle to aim at the target
-     */
-    public void setTurretTargetPosition(double x, double y, double heading) {
-        turret.setTargetPosition(x, y, heading);
     }
 
     @Override

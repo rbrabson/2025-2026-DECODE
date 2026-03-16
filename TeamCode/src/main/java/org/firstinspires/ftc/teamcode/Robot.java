@@ -28,7 +28,7 @@ public class Robot{
     public final MecanumDrive mecanumDrive;
     public final PedroPathingDrive pedroPathingDrive;
     public final Intake intake;
-    public final Shooter shooter;
+    public Shooter shooter;
     public final Transfer transfer;
     public final Limelight limelight;
     public final Light light;

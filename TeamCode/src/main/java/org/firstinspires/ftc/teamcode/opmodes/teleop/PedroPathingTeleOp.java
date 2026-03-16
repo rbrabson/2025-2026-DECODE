@@ -15,10 +15,12 @@ import org.firstinspires.ftc.teamcode.inputprocessors.ShooterProcessor;
 import org.firstinspires.ftc.teamcode.inputprocessors.UserInputProcessor;
 import org.firstinspires.ftc.teamcode.mechanisms.Mechanism;
 import org.firstinspires.ftc.teamcode.mechanisms.PedroPathingDrive;
+import org.firstinspires.ftc.teamcode.mechanisms.Shooter;
 import org.firstinspires.ftc.teamcode.pedroPathing.FusedLocalizer;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This class implements a teleop mode for the robot that utilizes the Pedro Pathing library for
@@ -34,6 +36,7 @@ public abstract class PedroPathingTeleOp extends OpMode {
     private final Gamepad currentGamepad2 = new Gamepad();
     private final Timer timer = new Timer();
     private Robot robot;
+    private Shooter shooter;
     private List<UserInputProcessor> inputHandlers;
     private List<Mechanism> mechanisms;
 
@@ -50,7 +53,7 @@ public abstract class PedroPathingTeleOp extends OpMode {
         Robot.reset();
         robot = Robot.getInstance(hardwareMap, telemetry);
 
-        Pose startingPose = blackboard.containsKey("robotPose") ? (Pose) blackboard.get("robotPose") : DEFAULT_STARTING_POSE;
+        Pose startingPose = Objects.requireNonNull(blackboard.containsKey("robotPose") ? (Pose) blackboard.get("robotPose") : DEFAULT_STARTING_POSE);
         drive = robot.pedroPathingDrive
                     .setRobotCentric(false)
                     .setUseCompensation(true)
@@ -59,7 +62,9 @@ public abstract class PedroPathingTeleOp extends OpMode {
                     .setStartingPose(startingPose);
 
         alliance = getAlliance();
-        robot.shooter.setTurretBaseValues(alliance.getBaseX(), alliance.getBaseY());
+        robot.shooter = robot.shooter
+                .setTurretBaseValues(alliance.getBaseX(), alliance.getBaseY())
+                .setAllianceAndPose(alliance, startingPose);
 
         // Set all Lynx module hubs to manual bulk caching mode. This allows us to control when
         // the bulk cache is cleared, which can improve performance by reducing the number of reads

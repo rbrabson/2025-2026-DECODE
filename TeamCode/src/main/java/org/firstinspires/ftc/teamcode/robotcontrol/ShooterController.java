@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.robotcontrol;
 
+import com.pedropathing.geometry.Pose;
 import com.rbrabson.control.interplut.InterpLUT;
+
+import org.firstinspires.ftc.teamcode.enums.Alliance;
 
 /**
  * ShooterController manages flywheel RPM, hood position, and predictive turret lead angle
@@ -9,9 +12,11 @@ import com.rbrabson.control.interplut.InterpLUT;
 public class ShooterController {
     private static final double RPM_SMOOTHING = 0.15;
     private static final double ANGLE_SMOOTHING = 0.1;
+
     private final InterpLUT flywheelLUT;
     private final InterpLUT hoodLUT;
     private final InterpLUT flightTimeLUT;
+
     private double flywheelRPMOffset = 0.0;
     private double hoodOffset = 0.0;
     private double smoothedRPM = 0.0;
@@ -25,6 +30,83 @@ public class ShooterController {
         this.flywheelLUT = getFlywheelLUT();
         this.hoodLUT = getHoodLUT();
         this.flightTimeLUT = getFlightTimeLUT();
+    }
+
+    /**
+     * Constructor that initializes the ShooterController and sets initial smoothed RPM and
+     * lead angle based on the starting pose and alliance.
+     *
+     * @param alliance     the alliance the robot is on, used to determine the goal position for
+     *                     initial calculations
+     * @param startingPose the initial pose of the robot, used to calculate the initial distance
+     *                     and angle to the goal for setting the initial smoothed values
+     */
+    public ShooterController(Alliance alliance, Pose startingPose) {
+        this.flywheelLUT = getFlywheelLUT();
+        this.hoodLUT = getHoodLUT();
+        this.flightTimeLUT = getFlightTimeLUT();
+
+        // Get goal position based on alliance
+        double goalX = alliance.getBaseX();
+        double goalY = alliance.getBaseY();
+
+        // Calculate initial distance and angle to goal
+        double dx = goalX - startingPose.getX();
+        double dy = goalY - startingPose.getY();
+        double initialDistance = Math.hypot(dx, dy);
+        double initialAngle = Math.atan2(dy, dx) - startingPose.getHeading();
+
+        // Initialize smoothing variables
+        this.smoothedRPM = flywheelLUT.get(initialDistance);
+        this.smoothedLeadAngle = initialAngle;
+    }
+
+    /**
+     * Defines the flywheel RPM LUT based on distance to target.
+     *
+     * @return an InterpLUT mapping distance to flywheel RPM, which can be used to determine the
+     *         base RPM for shooting at different distances.
+     */
+    private InterpLUT getFlywheelLUT() {
+        return new InterpLUT()
+                .withPoint(20, 500)
+                .withPoint(50, 1170)
+                .withPoint(75, 1750)
+                .withPoint(100, 2000)
+                .build();
+    }
+
+    /**
+     * Defines the hood position LUT based on distance to target.
+     *
+     * @return an InterpLUT mapping distance to hood position, which can be used to determine the base
+     *         hood angle for shooting at different distances.
+     */
+    private InterpLUT getHoodLUT() {
+        return new InterpLUT()
+                .withPoint(0, 0.0)
+                .withPoint(20, 0.0)
+                .withPoint(50, 0.1)
+                .withPoint(75, 0.2)
+                .withPoint(100, 0.4)
+                .build();
+    }
+
+    /**
+     * Defines the flight time LUT based on distance to target, which can be used for predictive aiming.
+     *
+     * @return an InterpLUT mapping distance to estimated flight time, which can be used to predict
+     *         where the target will be when the projectile arrives, allowing for lead compensation
+     *         in the turret aiming.
+     */
+    private InterpLUT getFlightTimeLUT() {
+        return new InterpLUT()
+                .withPoint(20, 0.05)
+                .withPoint(40, 0.08)
+                .withPoint(60, 0.11)
+                .withPoint(80, 0.15)
+                .withPoint(100, 0.20)
+                .build();
     }
 
     /**
@@ -101,53 +183,5 @@ public class ShooterController {
         // Smooth the lead angle
         smoothedLeadAngle += ANGLE_SMOOTHING * (leadAngle - smoothedLeadAngle);
         return smoothedLeadAngle;
-    }
-
-    /**
-     * Defines the flywheel RPM LUT based on distance to target.
-     *
-     * @return an InterpLUT mapping distance to flywheel RPM, which can be used to determine the
-     *         base RPM for shooting at different distances.
-     */
-    private InterpLUT getFlywheelLUT() {
-        return new InterpLUT()
-                .withPoint(20, 500)
-                .withPoint(50, 1170)
-                .withPoint(75, 1750)
-                .withPoint(100, 2000)
-                .build();
-    }
-
-    /**
-     * Defines the hood position LUT based on distance to target.
-     *
-     * @return an InterpLUT mapping distance to hood position, which can be used to determine the base
-     *         hood angle for shooting at different distances.
-     */
-    private InterpLUT getHoodLUT() {
-        return new InterpLUT()
-                .withPoint(0, 0.0)
-                .withPoint(20, 0.0)
-                .withPoint(50, 0.1)
-                .withPoint(75, 0.2)
-                .withPoint(100, 0.4)
-                .build();
-    }
-
-    /**
-     * Defines the flight time LUT based on distance to target, which can be used for predictive aiming.
-     *
-     * @return an InterpLUT mapping distance to estimated flight time, which can be used to predict
-     *         where the target will be when the projectile arrives, allowing for lead compensation
-     *         in the turret aiming.
-     */
-    private InterpLUT getFlightTimeLUT() {
-        return new InterpLUT()
-                .withPoint(20, 0.05)
-                .withPoint(40, 0.08)
-                .withPoint(60, 0.11)
-                .withPoint(80, 0.15)
-                .withPoint(100, 0.20)
-                .build();
     }
 }
