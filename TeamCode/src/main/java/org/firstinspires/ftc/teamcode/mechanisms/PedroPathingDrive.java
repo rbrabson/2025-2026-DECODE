@@ -85,10 +85,10 @@ public class PedroPathingDrive implements Mechanism {
     public void drive(double forward, double strafe, double turn, boolean robotCentric) {
         if (useVoltageCompensation) {
             // Compensate the user input values for voltage to maintain consistent performance as the battery voltage changes
-            double[] values = voltageComp.compensate(new double[]{forward, strafe, turn});
-            forward = values[0];
-            strafe = values[1];
-            turn = values[2];
+            double[] driveValues = voltageComp.compensate(new double[]{forward, strafe, turn});
+            forward = driveValues[0];
+            strafe = driveValues[1];
+            turn = driveValues[2];
         }
 
         if (useCompensation ) {
