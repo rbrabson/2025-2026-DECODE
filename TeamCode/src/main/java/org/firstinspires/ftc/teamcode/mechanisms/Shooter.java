@@ -227,11 +227,6 @@ public class Shooter implements Mechanism {
         double dy = goal.getY() - pose.getY();
         double distanceToTarget = Math.hypot(dx, dy);
 
-        // Dynamic lateral velocity limit
-        double lateralVelToTarget = fieldVx * (-dy / distanceToTarget) + fieldVy * (dx / distanceToTarget);
-        double dynamicMax = getMaxLateralVelocity(forwardVel);
-        lateralVelToTarget = Range.clip(lateralVelToTarget, -dynamicMax, dynamicMax);
-
         // Shooter LUTs and predictive calculations
         double targetRPM = shooterModel.getFlywheelRPM(distanceToTarget);
         double hoodPosition = shooterModel.getHoodPosition(distanceToTarget);
