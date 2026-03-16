@@ -138,9 +138,11 @@ public class PedroPathingDrive implements Mechanism {
      *
      * @param pose The current pose to set for the localizer, including the robot's
      *             position (x, y) and orientation (heading).
+     * @return The PedroPathingDrive instance, allowing for method chaining when setting the current pose.
      */
-    public void setPose(Pose pose) {
+    public PedroPathingDrive setPose(Pose pose) {
         follower.setPose(pose);
+        return this;
     }
 
     /**
@@ -150,9 +152,11 @@ public class PedroPathingDrive implements Mechanism {
      *
      * @param pose The starting pose to set for the localizer, including the robot's initial
      *             position (x, y) and orientation (heading).
+     * @return The PedroPathingDrive instance, allowing for method chaining when setting the starting pose.
      */
-    public void setStartingPose(Pose pose) {
+    public PedroPathingDrive setStartingPose(Pose pose) {
         follower.setStartingPose(pose);
+        return this;
     }
 
     /**
@@ -162,18 +166,23 @@ public class PedroPathingDrive implements Mechanism {
      *
      * @param mode The mode to set for the localizer, which can be one of the predefined modes in
      *             the FusedLocalizer.Mode enum (e.g., TELEOP, AUTONOMOUS).
+     * @return The PedroPathingDrive instance, allowing for method chaining when configuring the localizer mode.
      */
-    public void setMode(FusedLocalizer.Mode mode) {
+    public PedroPathingDrive setMode(FusedLocalizer.Mode mode) {
         localizer.withMode(mode);
+        return this;
     }
 
     /**
      * Starts the teleop drive mode, allowing for manual control of the robot while still utilizing
      * the localizer for accurate movement. This method should be called at the beginning of the
      * teleop period to enable teleop control.
+     *
+     * @return The PedroPathingDrive instance, allowing for method chaining when starting the teleop drive mode.
      */
-    public void startTeleopDrive() {
+    public PedroPathingDrive startTeleopDrive() {
         follower.startTeleopDrive();
+        return this;
     }
 
     /**
@@ -183,9 +192,11 @@ public class PedroPathingDrive implements Mechanism {
      * orientation.
      *
      * @param robotCentric Whether the controls should be robot-centric (true) or field-centric (false).
+     * @return The PedroPathingDrive instance, allowing for method chaining when setting the robot-centric mode.
      */
-    public void setRobotCentric(boolean robotCentric) {
+    public PedroPathingDrive setRobotCentric(boolean robotCentric) {
         this.robotCentric = robotCentric;
+        return this;
     }
 
     /**
@@ -195,9 +206,11 @@ public class PedroPathingDrive implements Mechanism {
      *
      * @param useVoltageCompensation Whether to apply voltage compensation to the teleop drive inputs
      *                              (true to enable, false to disable).
+     * @return The PedroPathingDrive instance, allowing for method chaining when setting the voltage compensation.
      */
-    public void setUseVoltageCompensation(boolean useVoltageCompensation) {
+    public PedroPathingDrive setUseVoltageCompensation(boolean useVoltageCompensation) {
         this.useVoltageCompensation = useVoltageCompensation;
+        return this;
     }
 
     /**
@@ -210,9 +223,11 @@ public class PedroPathingDrive implements Mechanism {
      * @param useCompensation Whether to apply additional compensation to the teleop drive inputs
      *                       based on the current pose from the localizer (true to enable,
      *                        false to disable).
+     * @return The PedroPathingDrive instance, allowing for method chaining when setting the compensation based on the localizer pose.
      */
-    public void setUseCompensation(boolean useCompensation) {
+    public PedroPathingDrive setUseCompensation(boolean useCompensation) {
         this.useCompensation = useCompensation;
+        return this;
     }
 
     /**

@@ -51,15 +51,13 @@ public abstract class PedroPathingTeleOp extends OpMode {
         robot = Robot.getInstance(hardwareMap, telemetry);
 
         Pose startingPose = blackboard.containsKey("robotPose") ? (Pose) blackboard.get("robotPose") : DEFAULT_STARTING_POSE;
-        drive = robot.pedroPathingDrive;
-        drive.setRobotCentric(false);
-        drive.setMode(FusedLocalizer.Mode.TELEOP);
-        drive.setStartingPose(startingPose);
+        drive = robot.pedroPathingDrive
+                    .setRobotCentric(false)
+                    .setUseCompensation(true)
+                    .setUseVoltageCompensation(true)
+                    .setMode(FusedLocalizer.Mode.TELEOP)
+                    .setStartingPose(startingPose);
 
-        Robot.reset();
-        robot = Robot.getInstance(hardwareMap, telemetry);
-
-        robot.mecanumDrive.setLocalizer(drive.localizer);
         alliance = getAlliance();
         robot.shooter.setTurretBaseValues(alliance.getBaseX(), alliance.getBaseY());
 
@@ -131,7 +129,7 @@ public abstract class PedroPathingTeleOp extends OpMode {
             mechanism.update();
         }
 
-        // Update each input handler with the current gamepad values. Each handler will handle
+        // Update each input processor with the current gamepad values. Each processor will handle
         // the logic for controlling its respective mechanism based on the gamepad inputs.
         for (UserInputProcessor controller : inputHandlers) {
             controller.process(currentGamepad1, currentGamepad2);
