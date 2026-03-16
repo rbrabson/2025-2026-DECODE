@@ -56,7 +56,7 @@ public class Shooter implements Mechanism {
      * @return The Shooter instance with the updated shooter model based on the specified alliance and starting pose, allowing for method chaining.
      */
     public Shooter setAllianceAndPose(@NonNull Alliance alliance, @NonNull Pose startingPose) {
-        shooterModel = new ShooterController(alliance, startingPose);
+        shooterModel.setAlliancePose(alliance, startingPose);
         return this;
     }
 

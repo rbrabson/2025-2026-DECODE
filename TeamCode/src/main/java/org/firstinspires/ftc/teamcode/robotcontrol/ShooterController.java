@@ -45,20 +45,31 @@ public class ShooterController {
         this.flywheelLUT = getFlywheelLUT();
         this.hoodLUT = getHoodLUT();
         this.flightTimeLUT = getFlightTimeLUT();
+    }
 
-        // Get goal position based on alliance
+    /**
+     * Sets the alliance and current pose to calculate the distance and angle to the goal, which are
+     * used to initialize the smoothed RPM and lead angle. This allows the controller to start
+     * with reasonable values based on the robot's initial position relative to the target, improving
+     * the accuracy of the first few shots before feedback adjustments take effect.
+     *
+     * @param alliance the alliance the robot is on, used to determine the goal position for calculations
+     * @param pose     the current pose of the robot, used to calculate the distance and angle to
+     *                 the goal for setting
+     * @return the ShooterController instance, allowing for method chaining if desired
+     */
+    public ShooterController setAlliancePose(Alliance alliance, Pose pose) {
         double goalX = alliance.getBaseX();
         double goalY = alliance.getBaseY();
 
-        // Calculate initial distance and angle to goal
-        double dx = goalX - startingPose.getX();
-        double dy = goalY - startingPose.getY();
-        double initialDistance = Math.hypot(dx, dy);
-        double initialAngle = Math.atan2(dy, dx) - startingPose.getHeading();
+        double dx = goalX - pose.getX();
+        double dy = goalY - pose.getY();
+        double distance = Math.hypot(dx, dy);
+        double angleToGoal = Math.atan2(dy, dx) - pose.getHeading();
 
-        // Initialize smoothing variables
-        this.smoothedRPM = flywheelLUT.get(initialDistance);
-        this.smoothedLeadAngle = initialAngle;
+        this.smoothedRPM = flywheelLUT.get(distance);
+        this.smoothedLeadAngle = angleToGoal;
+        return this;
     }
 
     /**
