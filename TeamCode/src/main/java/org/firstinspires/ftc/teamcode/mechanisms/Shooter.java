@@ -57,7 +57,7 @@ public class Shooter implements Mechanism {
      */
     @NonNull
     public Shooter setAllianceAndPose(@NonNull Alliance alliance, @NonNull Pose startingPose) {
-        shooterModel.setAlliancePose(alliance, startingPose);
+        shooterModel = shooterModel.setAlliancePose(alliance, startingPose);
         return this;
     }
 
