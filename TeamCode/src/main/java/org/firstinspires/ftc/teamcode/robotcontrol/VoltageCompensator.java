@@ -15,7 +15,7 @@ public class VoltageCompensator {
 
     /**
      * Constructor for the VoltageCompensator class.
-     * 
+     *
      * @param sensor The VoltageSensor instance to read the current voltage from.
      */
     public VoltageCompensator(@NonNull VoltageSensor sensor) {
