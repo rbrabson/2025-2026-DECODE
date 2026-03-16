@@ -91,7 +91,7 @@ public class PedroPathingDrive implements Mechanism {
             turn = driveValues[2];
         }
 
-        if (useCompensation ) {
+        if (useCompensation) {
             // Update the drive controller with the compensated values and the current pose from the localizer to get the drive outputs
             DriveController.DriveOutput driveValues = driveCtrl.update(forward, strafe, turn, localizer.getPose());
             forward = driveValues.getX();
@@ -106,7 +106,7 @@ public class PedroPathingDrive implements Mechanism {
             strafe /= max;
             turn /= max;
         }
-        
+
         follower.setTeleOpDrive(forward, strafe, turn, robotCentric);
     }
 
