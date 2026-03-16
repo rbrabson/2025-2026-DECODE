@@ -95,7 +95,7 @@ public class MecanumDrive implements Mechanism {
      *
      * @param localizer the FusionLocalizer instance to be used for pose estimation.
      */
-    public void setLocalizer(FusedLocalizer localizer) {
+    public void setLocalizer(@NonNull FusedLocalizer localizer) {
         this.localizer = localizer;
     }
 

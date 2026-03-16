@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.PedroFollower;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This is the base OpMode for teleop routines. It provides the structure for initializing,
@@ -47,12 +48,14 @@ public abstract class MecanumTeleOp extends OpMode {
         Robot.reset();
         robot = Robot.getInstance(hardwareMap, telemetry);
 
-        Pose startingPose = blackboard.containsKey("robotPose") ? (Pose) blackboard.get("robotPose") : DEFAULT_STARTING_POSE;
+        Pose startingPose = Objects.requireNonNull(blackboard.containsKey("robotPose") ? (Pose) blackboard.get("robotPose") : DEFAULT_STARTING_POSE);
         localizer = PedroFollower.getFusedLocalizer(hardwareMap, robot.limelight.getSensor()).withMode(FusedLocalizer.Mode.TELEOP);
         localizer.setStartPose(startingPose);
         robot.mecanumDrive.setLocalizer(localizer);
         alliance = getAlliance();
-        robot.shooter.setTurretBaseValues(alliance.getBaseX(), alliance.getBaseY());
+        robot.shooter = robot.shooter
+                .setTurretBaseValues(alliance.getBaseX(), alliance.getBaseY())
+                .setAllianceAndPose(alliance, startingPose);
 
         // Set all Lynx module hubs to manual bulk caching mode. This allows us to control when
         // the bulk cache is cleared, which can improve performance by reducing the number of reads
