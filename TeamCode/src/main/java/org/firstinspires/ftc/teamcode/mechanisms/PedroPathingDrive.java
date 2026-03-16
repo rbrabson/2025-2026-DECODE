@@ -31,6 +31,8 @@ public class PedroPathingDrive implements Mechanism {
     private final VoltageCompensator voltageComp;
     private final DriveController driveCtrl;
     private boolean robotCentric = true;
+    private boolean useVoltageCompensation = true;
+    private boolean useCompensation = true;
 
     /**
      * Constructor for the PedroPathingDrive class. It initializes the localizer and follower using
@@ -78,14 +80,21 @@ public class PedroPathingDrive implements Mechanism {
      *                     of the robot's orientation.
      */
     public void drive(double forward, double strafe, double turn, boolean robotCentric) {
-        // Compensate the user input values for voltage to maintain consistent performance as the battery voltage changes
-        double[] values = voltageComp.compensate(new double[]{forward, strafe, turn});
+        if (useVoltageCompensation) {
+            // Compensate the user input values for voltage to maintain consistent performance as the battery voltage changes
+            double[] values = voltageComp.compensate(new double[]{forward, strafe, turn});
+            forward = values[0];
+            strafe = values[1];
+            turn = values[2];
+        }
 
-        // Update the drive controller with the compensated values and the current pose from the localizer to get the drive outputs
-        DriveController.DriveOutput driveValues = driveCtrl.update(values[0], values[1], values[2], localizer.getPose());
-        forward = driveValues.getX();
-        strafe = driveValues.getY();
-        turn = driveValues.getTurn();
+        if (useCompensation ) {
+            // Update the drive controller with the compensated values and the current pose from the localizer to get the drive outputs
+            DriveController.DriveOutput driveValues = driveCtrl.update(forward, strafe, turn, localizer.getPose());
+            forward = driveValues.getX();
+            strafe = driveValues.getY();
+            turn = driveValues.getTurn();
+        }
 
         // Normalize the values to ensure that the maximum absolute value does not exceed 1
         double max = MathEx.maxAbs(1, forward, strafe, turn);
@@ -109,9 +118,7 @@ public class PedroPathingDrive implements Mechanism {
      */
     public void driveToPose(Pose target) {
         Pose start = follower.getPose();
-        Path path = new Path(
-                new BezierLine(start, target)
-        );
+        Path path = new Path(new BezierLine(start, target));
         follower.followPath(path);
     }
 
@@ -179,6 +186,33 @@ public class PedroPathingDrive implements Mechanism {
      */
     public void setRobotCentric(boolean robotCentric) {
         this.robotCentric = robotCentric;
+    }
+
+    /**
+     * Sets whether voltage compensation should be applied to the teleop drive inputs. Voltage
+     * compensation helps maintain consistent performance as the battery voltage changes, ensuring
+     * that the robot responds predictably to driver inputs throughout the match.
+     *
+     * @param useVoltageCompensation Whether to apply voltage compensation to the teleop drive inputs
+     *                              (true to enable, false to disable).
+     */
+    public void setUseVoltageCompensation(boolean useVoltageCompensation) {
+        this.useVoltageCompensation = useVoltageCompensation;
+    }
+
+    /**
+     * Sets whether additional compensation should be applied to the teleop drive inputs based on
+     * the current pose from the localizer. This compensation can help improve the robot's
+     * responsiveness and accuracy during teleop control by adjusting the drive inputs based on the
+     * robot's current position and orientation, allowing for more precise control and better
+     * handling of the robot's movement on the field.
+     *
+     * @param useCompensation Whether to apply additional compensation to the teleop drive inputs
+     *                       based on the current pose from the localizer (true to enable,
+     *                        false to disable).
+     */
+    public void setUseCompensation(boolean useCompensation) {
+        this.useCompensation = useCompensation;
     }
 
     /**
