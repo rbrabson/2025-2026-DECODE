@@ -35,21 +35,6 @@ public class ShooterController {
     }
 
     /**
-     * Constructor that initializes the ShooterController and sets initial smoothed RPM and
-     * lead angle based on the starting pose and alliance.
-     *
-     * @param alliance     the alliance the robot is on, used to determine the goal position for
-     *                     initial calculations
-     * @param startingPose the initial pose of the robot, used to calculate the initial distance
-     *                     and angle to the goal for setting the initial smoothed values
-     */
-    public ShooterController(Alliance alliance, Pose startingPose) {
-        this.flywheelLUT = getFlywheelLUT();
-        this.hoodLUT = getHoodLUT();
-        this.flightTimeLUT = getFlightTimeLUT();
-    }
-
-    /**
      * Sets the alliance and current pose to calculate the distance and angle to the goal, which are
      * used to initialize the smoothed RPM and lead angle. This allows the controller to start
      * with reasonable values based on the robot's initial position relative to the target, improving
