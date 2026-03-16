@@ -220,8 +220,7 @@ public class PedroPathingDrive implements Mechanism {
      * Sets whether additional compensation should be applied to the teleop drive inputs based on
      * the current pose from the localizer. This compensation can help improve the robot's
      * responsiveness and accuracy during teleop control by adjusting the drive inputs based on the
-     * robot's current position and orientation, allowing for more precise control and better
-     * handling of the robot's movement on the field.
+     * robot's current position and orientation.
      *
      * @param useCompensation Whether to apply additional compensation to the teleop drive inputs
      *                       based on the current pose from the localizer (true to enable,
