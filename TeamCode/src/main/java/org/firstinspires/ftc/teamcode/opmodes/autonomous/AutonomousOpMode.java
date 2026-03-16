@@ -120,7 +120,7 @@ public abstract class AutonomousOpMode extends OpMode {
      */
     @Override
     public void start() {
-        robot.shooter.setFLywheelRPM(getFlywheelRPM());
+        robot.shooter.setFlywheelRPM(getFlywheelRPM());
         robot.intake.startIntakeMotor();
         robot.light.enable();
         follower.activateAllPIDFs();

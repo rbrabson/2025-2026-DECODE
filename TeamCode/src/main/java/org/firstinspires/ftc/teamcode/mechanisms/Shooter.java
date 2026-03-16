@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.localization.Localizer;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.enums.Alliance;
@@ -16,195 +17,134 @@ import org.firstinspires.ftc.teamcode.robotcontrol.ShooterController;
 import java.util.Objects;
 
 /**
- * Shooter mechanism class for controlling the turret, flywheel, and hood.
+ * Shooter mechanism class controlling turret, flywheel, and hood.
+ * Fully LUT-driven via ShooterController.
  */
 public class Shooter implements Mechanism {
     private static final Pose BLUE_GOAL_SCORE = new Pose(25, 18.5, 0);
     private static final Pose RED_GOAL_SCORE = new Pose(25, 125.5, 0);
 
-    private static final double TURRET_DISTANCE_FROM_CENTER = 0; // Inches from the center of the robot to the turret's rotation axis
-
     private final Turret turret;
     private final Flywheel flywheel;
     private final Hood hood;
     private final Telemetry telemetry;
-
     private final ShooterController shooterModel = new ShooterController();
 
     /**
-     * Constructor for the Shooter class.
+     * Initializes shooter subsystems and telemetry.
      *
-     * @param hardwareMap The hardware map to access the motors and servos.
-     * @param telemetry   The telemetry object for logging data.
+     * @param hardwareMap HardwareMap for accessing hardware devices
+     * @param telemetry   Telemetry for logging and debugging
      */
     public Shooter(@NonNull HardwareMap hardwareMap, @NonNull Telemetry telemetry) {
         HardwareMap map = Objects.requireNonNull(hardwareMap);
+        this.telemetry = Objects.requireNonNull(telemetry);
         this.turret = new Turret(map, telemetry);
         this.flywheel = new Flywheel(map, telemetry);
         this.hood = new Hood(map, telemetry);
-        this.telemetry = telemetry;
-
         telemetry.addLine("Shooter initialized");
     }
 
     /**
-     * Sets the base values for the turret, which are used as reference points for calculating the
-     * turret's target position based on the target's coordinates.
+     * Sets the base position of the turret for accurate targeting.
      *
-     * @param baseX The x-coordinate of the base position for the turret.
-     * @param baseY The y-coordinate of the base position for the turret.
+     * @param baseX X-coordinate of the turret base in inches
+     * @param baseY Y-coordinate of the turret base in inches
      */
     public void setTurretBaseValues(double baseX, double baseY) {
         turret.setBaseValues(baseX, baseY);
     }
 
     /**
-     * Decreases the RPM of the flywheel motor and hood position by a predefined increment.
-     * This is typically used when overshooting artifacts.
+     * Adjusts the shooter model based on whether the last shot was high or low.
+     * This allows for dynamic compensation in future shots.
      */
     public void shotWasHigh() {
         shooterModel.adjustShot(true);
     }
 
     /**
-     * Increases the RPM of the flywheel motor and hood position by a predefined increment.
-     * This is typically used when undershooting artifacts.
+     * Adjusts the shooter model based on whether the last shot was high or low.
+     * This allows for dynamic compensation in future shots.
      */
     public void shotWasLow() {
         shooterModel.adjustShot(false);
     }
 
-
     /**
-     * Sets the target position of the turret, adjusting for the offset.
+     * Returns the current position of the turret in encoder ticks.
      *
-     * @param position The desired target position for the turret, which will be
-     *                 adjusted by the TURRET_OFFSET.
-     */
-    public void setTurretTargetPosition(int position) {
-        turret.setTargetPosition(position);
-    }
-
-    /**
-     * Calculates and sets the turret target position based on the given x, y
-     * coordinates and robot heading. The method ensures that the calculated turret
-     * position does not exceed the defined left and right limits.
-     *
-     * @param x       The x-coordinate of the target position.
-     * @param y       The y-coordinate of the target position.
-     * @param heading The current heading of the robot in radians.
-     */
-    public void setTurretTargetPosition(double x, double y, double heading) {
-        turret.setTargetPosition(x, y, heading);
-    }
-
-    /**
-     * Returns the current position of the turret motor.
-     *
-     * @return The current encoder position of the turret motor.
+     * @return Current turret position in ticks
      */
     public int getTurretCurrentPosition() {
         return turret.getCurrentPosition();
     }
 
     /**
-     * Decreases the hood position by a specified increment, ensuring that the new
-     * position does not go below the defined minimum.
+     * Increases the hood position by a specified increment. The increment is added to the current
+     * hood position, and the resulting position is set as the new hood position. The method ensures
+     * that the hood position remains within the valid range of 0.0 to 1.0.
      *
-     * @param increment The amount to decrease the hood position by.
-     */
-    public void decreaseHoodPosition(double increment) {
-        setHoodPosition(getHoodPosition() - increment);
-    }
-
-    /**
-     * Returns the current position of the hood servo.
-     *
-     * @return The current position of the hood servo.
-     */
-    public double getHoodPosition() {
-        return hood.getPosition();
-    }
-
-    /**
-     * Sets the hood position to a specified value, ensuring that it is within the
-     * defined minimum and maximum limits.
-     *
-     * @param position The desired position for the hood, which will be clipped to
-     *                 the range defined by HOOD_POSITION_MINIMUM and
-     *                 HOOD_POSITION_MAXIMUM.
-     */
-    public void setHoodPosition(double position) {
-        hood.setPosition(position);
-    }
-
-    /**
-     * Increases the hood position by a specified increment, ensuring that the new
-     * position does not exceed the defined maximum.
-     *
-     * @param increment The amount to increase the hood position by.
+     * @param increment Amount to increase the hood position by (positive value)
      */
     public void increaseHoodPosition(double increment) {
         setHoodPosition(getHoodPosition() + increment);
     }
 
     /**
-     * Sets the rpm of the flywheel motor to a predefined value for close-range
-     * shooting in autonomous mode.
-     */
-    public void setFlywheelRPMToAutonomousClose() {
-        flywheel.autonomousClose();
-    }
-
-    /**
-     * Sets the rpm of the flywheel motor to a predefined value for far-range
-     * shooting in autonomous mode.
-     */
-    public void setFlywheelRPMToAutonomousFar() {
-        flywheel.autonomousFar();
-    }
-
-    /**
-     * Sets the rpm of the flywheel motor to a predefined value for high-power
-     * shooting in teleop mode.
-     */
-    public void setFlywheelRPMToHigh() {
-        flywheel.high();
-    }
-
-    /**
-     * Sets the rpm of the flywheel motor to a predefined value for low-power
-     * shooting in teleop mode.
-     */
-    public void setFlywheelRPMToLow() {
-        flywheel.low();
-    }
-
-    /**
-     * Returns the current rpm of the flywheel motor.
+     * Returns the current position of the hood as a normalized value (0.0 to 1.0).
+     * 0.0 corresponds to the lowest hood position, and 1.0 corresponds to the highest hood position.
      *
-     * @return The current rpm of the flywheel motor, obtained using the
-     *         getRPM method of the DcMotorEx class.
+     * @return Current hood position
+     */
+    public double getHoodPosition() {
+        return hood.getPosition();
+    }
+
+    /**
+     * Sets the position of the hood using a normalized value (0.0 to 1.0).
+     * 0.0 corresponds to the lowest hood position, and 1.0 corresponds to the highest hood position.
+     *
+     * @param position Desired hood position (0.0 to 1.0)
+     */
+    public void setHoodPosition(double position) {
+        hood.setPosition(position);
+    }
+
+    /**
+     * Decreases the hood position by a specified increment. The increment is subtracted from the current
+     * hood position, and the resulting position is set as the new hood position. The method ensures
+     * that the hood position remains within the valid range of 0.0 to 1.0.
+     *
+     * @param increment Amount to decrease the hood position by (positive value)
+     */
+    public void decreaseHoodPosition(double increment) {
+        setHoodPosition(getHoodPosition() - increment);
+    }
+
+    /**
+     * Returns the current RPM of the flywheel.
+     *
+     * @return Current flywheel RPM
      */
     public double getFlywheelRPM() {
         return flywheel.getRPM();
     }
 
     /**
-     * Sets the rpm of the flywheel motor to a specified value.
+     * Sets the target RPM of the flywheel.
      *
-     * @param rpm The desired rpm for the flywheel motor, which will be
-     *                 set using the setRPM method of the DcMotorEx class.
+     * @param rpm Desired flywheel RPM
      */
-    public void setFLywheelRPM(double rpm) {
+    public void setFlywheelRPM(double rpm) {
         flywheel.setRPM(rpm);
     }
 
     /**
-     * Checks if the shooter is ready to shoot, which requires both the turret to be in position
-     * and the flywheel to be at the target rpm.
+     * Checks if the shooter is ready to shoot by verifying that both the turret is in position and
+     * the flywheel is at its target RPM.
      *
-     * @return true if the shooter is ready to shoot, false otherwise.
+     * @return True if the shooter is ready to shoot, false otherwise
      */
     public boolean isReadyToShoot() {
         return isTurretInPosition() && isFlywheelAtTargetRPM();
@@ -212,52 +152,137 @@ public class Shooter implements Mechanism {
 
     /**
      * Checks if the turret is currently at its target position.
+     * This method can be used to determine if the turret has finished moving to its desired position
      *
-     * @return true if the turret is at the target position, false otherwise.
+     * @return True if the turret is at its target position, false otherwise
      */
     public boolean isTurretInPosition() {
         return turret.isAtTarget();
     }
 
     /**
-     * Checks if the flywheel motor is currently at its target rpm.
+     * Checks if the flywheel is currently at its target RPM.
+     * This method can be used to determine if the flywheel has reached the desired speed for shooting.
      *
-     * @return true if the flywheel is at the target rpm, false otherwise.
+     * @return True if the flywheel is at its target RPM, false otherwise
      */
     public boolean isFlywheelAtTargetRPM() {
         return flywheel.atTargetRPM();
     }
 
     /**
-     * Updates the shooter mechanism based on the robot's current pose and rpm.
-     * Calculates the distance to the target and adjusts the flywheel rpm, hood position,
-     * and turret target position accordingly. The method uses the ShooterModel to determine the
-     * appropriate settings based on the distance and rpm.
+     * Sets the flywheel to a predefined low RPM setting. This can be used for close-range shots
+     * or when less power is needed.
+     */
+    public void setFlywheelRPMToLow() {
+        flywheel.low();
+    }
+
+    /**
+     * Sets the flywheel to a predefined high RPM setting. This can be used for long-range shots
+     * or when more power is needed.
+     */
+    public void setFlywheelRPMToHigh() {
+        flywheel.high();
+    }
+
+    /**
+     * Sets the target position of the turret in encoder ticks. This method allows for precise control
+     * of the turret's position, enabling it to aim accurately at the target.
      *
-     * @param localizer The Localizer object used to obtain the robot's current pose and rpm.
-     * @param alliance  The current alliance (RED or BLUE) to determine which goal to target.
+     * @param position Desired turret position in encoder ticks
+     */
+    public void setTurretTargetPosition(int position) {
+        turret.setTargetPosition(position);
+    }
+
+    /**
+     * Updates the shooter mechanism based on the current pose and velocity of the robot, as well
+     * as the alliance color. This method calculates the necessary adjustments to the flywheel RPM,
+     * hood position, and turret angle to accurately aim and shoot at the target goal.
+     *
+     * @param localizer Localizer providing the current pose and velocity of the robot, which is
+     *                  used to calculate the
+     * @param alliance  The alliance color (BLUE or RED) to determine which goal to target
      */
     public void update(@NonNull Localizer localizer, @NonNull Alliance alliance) {
-        Pose goal = alliance == Alliance.BLUE ? BLUE_GOAL_SCORE : RED_GOAL_SCORE;
+        // Determine goal based on alliance
+        Pose goal = (alliance == Alliance.BLUE) ? BLUE_GOAL_SCORE : RED_GOAL_SCORE;
         Pose pose = localizer.getPose();
-        double dx = pose.getX() - goal.getX();
-        double dy = pose.getY() - goal.getY();
-        double distanceToTarget = shooterModel.updateDistance(Math.hypot(dx, dy));
-
         Pose velocity = localizer.getVelocity();
-        double forwardVel = velocity.getY();
 
-        double targetRPM = shooterModel.getFlywheelRPM(distanceToTarget, forwardVel);
+        double heading = pose.getHeading();
+        double forwardVel = velocity.getY();
+        double lateralVel = velocity.getX();
+        double angularVel = velocity.getHeading();
+
+        // Convert robot-relative velocity to field-relative
+        double cos = Math.cos(heading);
+        double sin = Math.sin(heading);
+        double fieldVx = forwardVel * cos - lateralVel * sin;
+        double fieldVy = forwardVel * sin + lateralVel * cos;
+
+        // Distance to target
+        double dx = goal.getX() - pose.getX();
+        double dy = goal.getY() - pose.getY();
+        double distanceToTarget = Math.hypot(dx, dy);
+
+        // Dynamic lateral velocity limit
+        double lateralVelToTarget = fieldVx * (-dy / distanceToTarget) + fieldVy * (dx / distanceToTarget);
+        double dynamicMax = getMaxLateralVelocity(forwardVel);
+        lateralVelToTarget = Range.clip(lateralVelToTarget, -dynamicMax, dynamicMax);
+
+        // Shooter LUTs and predictive calculations
+        double targetRPM = shooterModel.getFlywheelRPM(distanceToTarget);
         double hoodPosition = shooterModel.getHoodPosition(distanceToTarget);
-        double turretLeadAngle = shooterModel.getTurretLeadAngle(distanceToTarget, velocity.getX());
-        setFLywheelRPM(targetRPM);
+        double turretLeadAngle = shooterModel.getTurretLeadAngle(
+                pose.getX(), pose.getY(), heading,
+                fieldVx, fieldVy, angularVel,
+                goal.getX(), goal.getY()
+        );
+
+        // Apply outputs to hardware
+        setFlywheelRPM(targetRPM);
         setHoodPosition(hoodPosition);
-        setTurretTargetPosition(dx, dy, pose.getHeading() + turretLeadAngle);
+        setTurretTargetPosition(dx, dy, heading + turretLeadAngle);
+    }
+
+    /**
+     * Calculates a dynamic maximum lateral velocity based on the current forward velocity.
+     *
+     * @param forwardVel Current forward velocity of the robot in inches per second
+     * @return Maximum allowed lateral velocity in inches per second, scaled based on forward velocity
+     */
+    private double getMaxLateralVelocity(double forwardVel) {
+        // Base max lateral velocity at low forward speed
+        double baseMax = 30.0;      // in/sec
+        double maxCap = 60.0;       // in/sec, absolute max
+
+        // Scale with forward speed
+        double scaled = baseMax + 0.5 * forwardVel; // 0.5 is a scaling factor
+
+        // Clip to reasonable range
+        return Range.clip(scaled, baseMax, maxCap);
+    }
+
+    /**
+     * Sets the target position of the turret based on the desired x and y coordinates of the
+     * target relative to the robot, and the robot's current heading. This method calculates the
+     * necessary turret angle to aim at the target position and sets the turret's target position
+     * accordingly. The heading parameter allows for compensation based on the robot's orientation,
+     * ensuring accurate aiming even when the robot is not facing directly towards the target.
+     *
+     * @param x       X-coordinate of the target position relative to the robot in inches
+     * @param y       Y-coordinate of the target position relative to the robot in inches
+     * @param heading Current heading of the robot in radians, used for calculating the turret
+     *                angle to aim at the target
+     */
+    public void setTurretTargetPosition(double x, double y, double heading) {
+        turret.setTargetPosition(x, y, heading);
     }
 
     @Override
     public void update() {
-        // NO-OP
+        // NO-OP for Mechanism interface
     }
-
 }
