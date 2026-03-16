@@ -209,7 +209,7 @@ public class PedroPathingDrive implements Mechanism {
      * that the robot responds predictably to driver inputs throughout the match.
      *
      * @param useVoltageCompensation Whether to apply voltage compensation to the teleop drive inputs
-     *                              (true to enable, false to disable).
+     *                               (true to enable, false to disable).
      * @return The PedroPathingDrive instance, allowing for method chaining when setting the voltage compensation.
      */
     public PedroPathingDrive setUseVoltageCompensation(boolean useVoltageCompensation) {
@@ -224,7 +224,7 @@ public class PedroPathingDrive implements Mechanism {
      * robot's current position and orientation.
      *
      * @param useCompensation Whether to apply additional compensation to the teleop drive inputs
-     *                       based on the current pose from the localizer (true to enable,
+     *                        based on the current pose from the localizer (true to enable,
      *                        false to disable).
      * @return The PedroPathingDrive instance, allowing for method chaining when setting the compensation based on the localizer pose.
      */
