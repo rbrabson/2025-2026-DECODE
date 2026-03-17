@@ -10,6 +10,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
+import com.qualcomm.robotcore.util.Range;
+import com.rbrabson.control.pid.PID;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Robot;
@@ -43,12 +45,27 @@ public class MecanumDrive implements Drive {
 
     private static final double DEADBAND = 0.05;
 
+    // PID coefficients - tne as necessary
+    public static final double KP_X = 0.2;
+    public static final double KI_X = 0.0;
+    public static final double KD_X = 0.0;
+    public static final double KP_Y = 0.20;
+    public static final double KI_Y = 0.0;
+    public static final double KD_Y = 0.0;
+    public static final double KP_HEADING = 0.12;
+    public static final double KI_HEADING = 0.0;
+    public static final double KD_HEADING = 0.10;
+
     private final DcMotorEx frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor;
     private final Telemetry telemetry;
     private final DriveController driveCtrl;
 
     private final VoltageCompensator voltageComp;
     private FusedLocalizer localizer;
+
+    private final PID pidX;
+    private final PID pidY;
+    private final PID pidHeading;
 
     private Pose targetPose = null;
 
@@ -68,6 +85,10 @@ public class MecanumDrive implements Drive {
         backRightMotor = map.get(DcMotorEx.class, "brm");
 
         this.telemetry = telemetry;
+
+        pidX = new PID(KP_X, KI_X, KD_X);
+        pidY = new PID(KP_Y, KI_Y, KD_Y);
+        pidHeading = new PID(KP_HEADING, KI_HEADING, KD_HEADING);
 
         driveCtrl = new DriveController();
         voltageComp = new VoltageCompensator(Robot.getInstance(hardwareMap, telemetry).voltageSensor);
@@ -157,11 +178,14 @@ public class MecanumDrive implements Drive {
         double maxPower = MathEx.maxAbs(powers);
         if (maxPower > DEADBAND) {
             targetPose = null;
+            pidX.reset();
+            pidY.reset();
+            pidHeading.reset();
         }
     }
 
     /**
-     * Drives the robot toward a specified target pose using simple proportional control.
+     * Drives the robot toward a specified target pose using PID control.
      * This method calculates the required x (strafe), y (forward), and turn (rotation)
      * values to move the robot from its current pose to the target pose, and calls the
      * drive() method to apply these values.
@@ -170,32 +194,55 @@ public class MecanumDrive implements Drive {
      */
     @SuppressLint("DefaultLocale")
     public void driveToPose(@NonNull Pose target) {
-        // Get the current pose from the localizer
         Pose current = getPose();
 
-        // Calculate the error in position and heading
-        double dx = target.getX() - current.getX();
-        double dy = target.getY() - current.getY();
-        double dheading = target.getHeading() - current.getHeading();
+        // --- Calculate errors ---
+        double xError = target.getX() - current.getX();
+        double yError = target.getY() - current.getY();
 
-        // Proportional control gains (tune as needed)
-        double kP_xy = 0.5;      // Gain for x/y movement
-        double kP_heading = 0.5; // Gain for heading
+        // Wrap heading error to [-pi, pi]
+        double headingError = target.getHeading() - current.getHeading();
+        headingError = Math.atan2(Math.sin(headingError), Math.cos(headingError));
 
-        // Calculate drive inputs
-        double x = kP_xy * dx;
-        double y = kP_xy * dy;
-        double turn = kP_heading * dheading;
+        // --- PID outputs ---
+        double x = pidX.calculate(target.getX(), current.getX());
+        double y = pidY.calculate(target.getY(), current.getY());
+        double turn = pidHeading.calculate(0, -headingError);
+        // Equivalent to correcting toward zero error
 
-        // Clamp values to [-1, 1] for safety
-        x = Math.max(-1, Math.min(1, x));
-        y = Math.max(-1, Math.min(1, y));
-        turn = Math.max(-1, Math.min(1, turn));
+        // --- Distance-based scaling (prevents full-speed slamming) ---
+        double distance = Math.hypot(xError, yError);
+        double maxDrivePower = Math.min(1.0, distance * 0.1); // tune 0.1
 
-        // Drive the robot toward the target pose
+        x = Range.clip(x, -maxDrivePower, maxDrivePower);
+        y = Range.clip(y, -maxDrivePower, maxDrivePower);
+
+        // --- Clamp turn separately ---
+        turn = Range.clip(turn, -1.0, 1.0);
+
+        // --- Static friction compensation (optional but helpful) ---
+        double kStatic = 0.05;
+
+        if (Math.abs(x) > 0.01) x += Math.signum(x) * kStatic;
+        if (Math.abs(y) > 0.01) y += Math.signum(y) * kStatic;
+        if (Math.abs(turn) > 0.01) turn += Math.signum(turn) * kStatic;
+
+        // --- Final Range.clip ---
+        x = Range.clip(x, -1, 1);
+        y = Range.clip(y, -1, 1);
+        turn = Range.clip(turn, -1, 1);
+
         drive(x, y, turn);
 
         targetPose = target;
+
+        // --- Telemetry ---
+        if (telemetry != null) {
+            telemetry.addData("[DRIVE] PID", String.format("x=%.2f y=%.2f turn=%.2f", x, y, turn));
+            telemetry.addData("[DRIVE] Error", String.format(
+                    "xErr=%.2f yErr=%.2f hErr=%.2f dist=%.2f",
+                    xError, yError, headingError, distance));
+        }
     }
 
     /**
