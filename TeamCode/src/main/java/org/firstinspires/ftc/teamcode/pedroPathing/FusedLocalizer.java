@@ -368,10 +368,9 @@ public class FusedLocalizer implements Localizer {
             return 1.0;
         }
 
-        double maxDistance = 0.0;
+        // Extract the X/Y positions of all tags
         double[] xs = new double[tags.size()];
         double[] ys = new double[tags.size()];
-
         for (int i = 0; i < tags.size(); i++) {
             LLResultTypes.FiducialResult tag = tags.get(i);
             Pose3D robotSpace = tag.getTargetPoseRobotSpace();
@@ -384,20 +383,23 @@ public class FusedLocalizer implements Localizer {
             }
         }
 
+        // Calculate the maximum distance between any two tags in the camera's view
+        double maxDistance = 0.0;
         for (int i = 0; i < tags.size(); i++) {
             for (int j = i + 1; j < tags.size(); j++) {
                 double dx = xs[i] - xs[j];
                 double dy = ys[i] - ys[j];
                 double dist = Math.hypot(dx, dy);
-                if (dist > maxDistance) {
-                    maxDistance = dist;
-                }
+                maxDistance = Math.max(maxDistance, dist);
             }
         }
 
+        // Calculate and return the spread bonus, between 1.0 and 1.5, based on the max distance between tags
         double minSpread = 2.0;   // inches
         double maxSpread = 24.0;  // inches
-        return 1.0 + 0.5 * Range.clip((maxDistance - minSpread) / (maxSpread - minSpread), 0.0, 1.0);
+        double normalizedSpread = (maxDistance - minSpread) / (maxSpread - minSpread);
+        double clippedSpread = Range.clip(normalizedSpread, 0.0, 1.0);
+        return 1.0 + (0.5 * clippedSpread);
     }
 
     /**
