@@ -25,11 +25,10 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * This class implements a teleop mode for the robot that utilizes the Pedro Pathing library for
- * localization and path following. The robot's starting pose is determined by checking if a pose
- * was stored on the blackboard during the autonomous period; if not, it defaults to a predefined
- * starting pose. The teleop mode includes input processors for controlling the robot's mechanisms
- * based on gamepad inputs, and it updates the robot's state and telemetry on each loop.
+ * BaseTeleOp is an abstract class that serves as the foundation for TeleOpModes. It
+ * handles the initialization of the robot hardware, setting up the localizer, configuring input
+ * handlers for controlling the robot's mechanisms, and managing the main loop for processing
+ * user inputs and updating the robot's state.
  */
 public abstract class BaseTeleOp extends OpMode {
     private static final Pose DEFAULT_STARTING_POSE = new Pose(7.5, 7.5, Math.toRadians(90));
