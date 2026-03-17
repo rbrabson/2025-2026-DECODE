@@ -5,7 +5,6 @@ import androidx.annotation.NonNull;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.localization.Localizer;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.decode.Alliance;
@@ -76,6 +75,7 @@ public class Shooter implements Mechanism {
      */
     @NonNull
     public Shooter setAlliancePose(@NonNull Alliance alliance, @NonNull Pose startingPose) {
+        this.alliance = alliance;
         shooterModel = shooterModel.setAlliancePose(alliance, startingPose);
         return this;
     }
@@ -232,24 +232,6 @@ public class Shooter implements Mechanism {
      */
     public void setTurretTargetPosition(double x, double y, double heading) {
         turret.setTargetPosition(x, y, heading);
-    }
-
-    /**
-     * Calculates a dynamic maximum lateral velocity based on the current forward velocity.
-     *
-     * @param forwardVel Current forward velocity of the robot in inches per second
-     * @return Maximum allowed lateral velocity in inches per second, scaled based on forward velocity
-     */
-    private double getMaxLateralVelocity(double forwardVel) {
-        // Base max lateral velocity at low forward speed
-        double baseMax = 30.0;      // in/sec
-        double maxCap = 60.0;       // in/sec, absolute max
-
-        // Scale with forward speed
-        double scaled = baseMax + 0.5 * forwardVel; // 0.5 is a scaling factor
-
-        // Clip to reasonable range
-        return Range.clip(scaled, baseMax, maxCap);
     }
 
     @Override

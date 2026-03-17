@@ -26,14 +26,12 @@ import java.util.List;
  * path, checks for motif detection, and updates the blackboard with the robot's pose and turret position.
  */
 public abstract class AutonomousOpMode extends OpMode {
-    protected Follower follower;
     protected FusedLocalizer localizer;
     protected Robot robot;
     protected AutonomousPathing path;
-    private Drive drive;
+    private PedroPathingDrive drive;
     private final Timer timer = new Timer();
     private List<Mechanism> mechanisms;
-    private Alliance alliance;
 
     /**
      * This abstract method should be implemented by subclasses to specify the desired
@@ -84,12 +82,14 @@ public abstract class AutonomousOpMode extends OpMode {
         robot = Robot.getInstance(hardwareMap, telemetry);
 
         drive = new PedroPathingDrive(hardwareMap, robot.limelight.getSensor(), telemetry);
+        drive.setStartingPose(getStartingPose());
         localizer = PedroFollower.getFusedLocalizer(hardwareMap, robot.limelight.getSensor()).withMode(FusedLocalizer.Mode.AUTO);
-        follower = PedroFollower.create(hardwareMap, localizer);
-        follower.setStartingPose(getStartingPose());
         path = getPath();
-        alliance = getAlliance();
+        Alliance alliance = getAlliance();
         robot.shooter.setTurretBaseValues(alliance.getBaseX(), alliance.getBaseY());
+        robot.shooter.setTurretBaseValues(alliance.getBaseX(), alliance.getBaseY())
+                .setAlliancePose(alliance, getStartingPose())
+                .setLocalizer(drive.getLocalizer());
 
         // Set all Lynx module hubs to manual bulk caching mode. This allows us to control when
         // the bulk cache is cleared, which can improve performance by reducing the number of reads
@@ -119,8 +119,8 @@ public abstract class AutonomousOpMode extends OpMode {
     public void start() {
         robot.intake.startIntakeMotor();
         robot.light.enable();
-        follower.activateAllPIDFs();
-        robot.shooter.update(drive.getLocalizer(), alliance);
+        drive.activateAllPIDFs();
+        robot.shooter.update();
 
         // Update the blackboard with default values to be preserved across OpModes
         blackboard.put("robotPose", localizer.getPose());
@@ -142,12 +142,10 @@ public abstract class AutonomousOpMode extends OpMode {
             hub.clearBulkCache();
         }
 
-        // Update any hardware components on each loop
+        // Update any hardware components and the pathing on each loop
         for (Mechanism mechanism : mechanisms) {
             mechanism.update();
         }
-
-        follower.update();
         path.update();
 
         if (!robot.limelight.isMotifDetected()) {
@@ -159,15 +157,19 @@ public abstract class AutonomousOpMode extends OpMode {
             }
         }
 
-        blackboard.put("robotPose", localizer.getPose());
+        blackboard.put("robotPose", drive.getPose());
         blackboard.put("turretPosition", robot.shooter.getTurretCurrentPosition());
 
-        telemetry.addData("Pose", localizer.getPose());
+        telemetry.addData("Pose", drive.getPose());
         telemetry.addData("Loop Time (s)", "%.2f", timer.getElapsedTimeSeconds());
 
         telemetry.update();
     }
 
+    /**
+     * This method is called once when the driver hits the "Stop" button on the driver station.
+     * It stops the intake to perform any necessary cleanup actions.
+     */
     @Override
     public void stop() {
         robot.intake.close();

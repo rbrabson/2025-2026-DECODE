@@ -278,6 +278,13 @@ public class PedroPathingDrive implements Drive {
     }
 
     /**
+     * Activates all PIDF controllers used by the follower.
+     */
+    public void activateAllPIDFs() {
+        follower.activateAllPIDFs();
+    }
+
+    /**
      * Returns a string representation of the PedroPathingDrive object,
      * including localizer class, robot-centric status, voltage compensation,
      * compensation status, and current pose.
