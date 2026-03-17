@@ -31,4 +31,14 @@ public interface Drive extends Mechanism {
      * @param turn    The rotational speed of the robot. Positive values turn the robot to the right, while negative values turn it to the left.
      */
     void drive(double forward, double strafe, double turn);
+
+    /**
+     * Drives the robot to a specific target pose using the localizer for feedback.
+     * This method should implement a control algorithm (e.g., PID) to move the robot towards the
+     * target pose while minimizing error.
+     *
+     * @param target The target Pose that the robot should drive to, including the desired
+     *               position (x, y) and heading (theta).
+     */
+    void driveToPose(Pose target);
 }

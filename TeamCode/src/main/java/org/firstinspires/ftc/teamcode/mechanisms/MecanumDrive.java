@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.mechanisms;
 
+import android.annotation.SuppressLint;
+
 import androidx.annotation.NonNull;
 
 import com.pedropathing.geometry.Pose;
@@ -146,6 +148,42 @@ public class MecanumDrive implements Drive {
         double[] powers = mecanumSolve(driveValues.getX(), driveValues.getY(), driveValues.getTurn());
         powers = voltageComp.compensate(powers);
         setMotorPowers(powers[0], powers[1], powers[2], powers[3]);
+    }
+
+    /**
+     * Drives the robot toward a specified target pose using simple proportional control.
+     * This method calculates the required x (strafe), y (forward), and turn (rotation)
+     * values to move the robot from its current pose to the target pose, and calls the
+     * drive() method to apply these values.
+     *
+     * @param target the target pose to drive toward (x, y, heading).
+     */
+    @SuppressLint("DefaultLocale")
+    public void driveToPose(Pose target) {
+        // Get the current pose from the localizer
+        Pose current = getPose();
+
+        // Calculate the error in position and heading
+        double dx = target.getX() - current.getX();
+        double dy = target.getY() - current.getY();
+        double dheading = target.getHeading() - current.getHeading();
+
+        // Proportional control gains (tune as needed)
+        double kP_xy = 0.5;      // Gain for x/y movement
+        double kP_heading = 0.5; // Gain for heading
+
+        // Calculate drive inputs
+        double x = kP_xy * dx;
+        double y = kP_xy * dy;
+        double turn = kP_heading * dheading;
+
+        // Clamp values to [-1, 1] for safety
+        x = Math.max(-1, Math.min(1, x));
+        y = Math.max(-1, Math.min(1, y));
+        turn = Math.max(-1, Math.min(1, turn));
+
+        // Drive the robot toward the target pose
+        drive(x, y, turn);
     }
 
     /**
