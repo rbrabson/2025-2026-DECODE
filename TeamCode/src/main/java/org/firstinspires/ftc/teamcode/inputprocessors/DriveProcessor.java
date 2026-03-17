@@ -52,7 +52,7 @@ public class DriveProcessor implements UserInputProcessor {
 
         double x = -gamepad1.left_stick_x * gain;
         double y = -gamepad1.left_stick_y * gain;
-        double turn = -gamepad1.right_stick_x * TURN_MULTIPLIER * gain;
+        double turn = -gamepad1.right_stick_x * gain * TURN_MULTIPLIER;
 
         drive.drive(x, y, turn);
 
