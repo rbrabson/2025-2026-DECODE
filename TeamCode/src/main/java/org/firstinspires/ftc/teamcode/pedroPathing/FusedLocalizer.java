@@ -202,7 +202,7 @@ public class FusedLocalizer implements Localizer {
             return false;
         }
 
-        // Apply jump filter
+        // Check jump amount
         double jump = Math.hypot(llX - odoPose.getX(), llY - odoPose.getY());
         if (jump > MAX_JUMP_IN) {
             return false;
