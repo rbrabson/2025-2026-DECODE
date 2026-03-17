@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * BaseTeleOp is an abstract class that serves as the foundation for TeleOpModes. It
+ * TeleOpMode is an abstract class that serves as the foundation for TeleOp OpModes. It
  * handles the initialization of the robot hardware, setting up the localizer, configuring input
  * handlers for controlling the robot's mechanisms, and managing the main loop for processing
  * user inputs and updating the robot's state.
