@@ -278,6 +278,18 @@ public class PedroPathingDrive implements Drive {
     }
 
     /**
+     * Returns the Follower instance being used to control the robot's movement based on the current
+     * pose and target paths. The Follower is responsible for calculating the necessary drive outputs
+     * to follow the specified paths and reach the target poses accurately.
+     *
+     * @return The Follower instance being used to control the robot's movement based on the current
+     *         pose and target paths.
+     */
+    public Follower getFollower() {
+        return follower;
+    }
+
+    /**
      * Activates all PIDF controllers used by the follower.
      */
     public void activateAllPIDFs() {

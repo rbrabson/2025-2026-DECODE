@@ -23,7 +23,7 @@ public class RedClose extends AutonomousOpMode {
      */
     @Override
     protected AutonomousPathing getPath() {
-        return new RedClosePathing(follower, robot.intake, robot.shooter, robot.transfer);
+        return new RedClosePathing(drive.getFollower(), robot.intake, robot.shooter, robot.transfer);
     }
 
     /**

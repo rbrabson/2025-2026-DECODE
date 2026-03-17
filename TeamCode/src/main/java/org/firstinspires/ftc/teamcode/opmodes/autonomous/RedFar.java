@@ -23,7 +23,7 @@ public class RedFar extends AutonomousOpMode {
      */
     @Override
     protected AutonomousPathing getPath() {
-        return new RedFarPathing(follower, robot.intake, robot.shooter, robot.transfer);
+        return new RedFarPathing(drive.getFollower(), robot.intake, robot.shooter, robot.transfer);
     }
 
     /**

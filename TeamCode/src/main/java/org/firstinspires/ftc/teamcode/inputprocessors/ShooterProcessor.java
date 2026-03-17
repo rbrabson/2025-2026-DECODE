@@ -28,7 +28,6 @@ public class ShooterProcessor implements UserInputProcessor {
     @Nullable private final Telemetry telemetry;
 
     private boolean automateShooting = true;
-    private boolean flywheelSpeedLow = true;
 
     private boolean turretAligned = false;
 
@@ -77,7 +76,7 @@ public class ShooterProcessor implements UserInputProcessor {
 
         double llError = limelight.getError();
         if (automateShooting) {
-            shooter.update(localizer, alliance);
+            shooter.update();
             boolean aligned = !Double.isNaN(llError) && Math.abs(llError) <= ACCEPTABLE_TURRET_ERROR;
             // Only rumble the once when the turret is aligned
             if (aligned && !turretAligned) {
@@ -91,8 +90,9 @@ public class ShooterProcessor implements UserInputProcessor {
 
         if (telemetry != null) {
             telemetry.addData("[SHOOTER] Auto", automateShooting);
-            telemetry.addData("[SHOOTER] Flywheel Low", flywheelSpeedLow);
+            telemetry.addData("[SHOOTER] Flywheel RPM", shooter.getFlywheelRPM());
             telemetry.addData("[SHOOTER] Turret Aligned", turretAligned);
+            telemetry.addData("[SHOOTER] Hood Position", shooter.getHoodPosition());
             telemetry.addData("[SHOOTER] Limelight Error", llError);
         }
     }
