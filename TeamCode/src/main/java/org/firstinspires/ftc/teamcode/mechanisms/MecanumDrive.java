@@ -32,8 +32,7 @@ import java.util.Objects;
  *         drive() method.
  *     </li>
  *     <li>
- *         This mechanism is current unused. To use it, change the alliance TeleOps to inherit
- *         from MedanumTeleOp.
+ *         This mechanism is current unused. To use it, set TeleOpMode.USE_PEDRO_PATHING to false;
  *     </li>
  * </ol>
  */
