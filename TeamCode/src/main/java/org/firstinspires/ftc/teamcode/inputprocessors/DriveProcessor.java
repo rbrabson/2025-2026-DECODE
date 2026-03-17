@@ -20,6 +20,7 @@ public class DriveProcessor implements UserInputProcessor {
     private static final double TURN_MULTIPLIER = 0.75; // Max turning speed multiplier
     private static final double NORMAL_GAIN = 1.0;
     private static final double SLOW_GAIN = 0.5;
+    private static final double DEADBAND = 0.05;
 
     private final Drive drive;
     @Nullable private final Telemetry telemetry;
@@ -54,6 +55,9 @@ public class DriveProcessor implements UserInputProcessor {
         double y = -gamepad1.left_stick_y * gain;
         double turn = -gamepad1.right_stick_x * gain * TURN_MULTIPLIER;
 
+        boolean userIsDriving = Math.abs(x) > DEADBAND || Math.abs(y) > DEADBAND || Math.abs(turn) > DEADBAND;
+        drive.userDriving(userIsDriving);
+
         drive.drive(x, y, turn);
 
         if (telemetry != null) {
@@ -62,6 +66,16 @@ public class DriveProcessor implements UserInputProcessor {
             telemetry.addData("[DRIVE] Turn", turn);
             telemetry.addData("[DRIVE] Slow Mode", slowMode);
         }
+    }
+
+    /**
+     * Sets whether the user is currently driving the robot. This can be used to disable certain
+     * features when the user is not driving, such as automatic alignment or path following.
+     *
+     * @param isDriving whether the user is currently driving the robot
+     */
+    public void userDriving(boolean isDriving) {
+        drive.userDriving(isDriving);
     }
 
     /**

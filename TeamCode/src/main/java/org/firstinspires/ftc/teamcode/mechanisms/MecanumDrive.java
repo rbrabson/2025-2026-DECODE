@@ -80,7 +80,7 @@ public class MecanumDrive implements Drive {
     private final PID pidHeading;
 
     private Pose targetPose = null;
-    boolean fieldCentricEnabled = true;
+    private boolean fieldCentricEnabled = true;
 
     /**
      * Constructor for the MecanumDrive mechanism.
@@ -245,15 +245,6 @@ public class MecanumDrive implements Drive {
         double[] powers = mecanumSolve(driveValues.getX(), driveValues.getY(), driveValues.getTurn());
         powers = voltageComp.compensate(powers);
         setMotorPowers(powers[0], powers[1], powers[2], powers[3]);
-
-        // Stop driving to the target pose if the driver provides manual input
-        double maxPower = MathEx.maxAbs(powers);
-        if (maxPower > DEADBAND) {
-            targetPose = null;
-            pidX.reset();
-            pidY.reset();
-            pidHeading.reset();
-        }
     }
 
     // --- Autonomous Drive to Target Pose ---
@@ -328,6 +319,21 @@ public class MecanumDrive implements Drive {
                     "xErr=%.2f yErr=%.2f hErr=%.2f dist=%.2f",
                     xError, yError, headingError, distance));
             telemetry.addData("[DRIVE] Target Pose", target);
+        }
+    }
+
+    /**
+     * Sets whether the user is currently driving the robot. This can be used to disable certain
+     * features when the user is not driving, such as automatic alignment or path following.
+     *
+     * @param isDriving whether the user is currently driving the robot
+     */
+    public void userDriving(boolean isDriving) {
+        if (isDriving) {
+            pidX.reset();
+            pidY.reset();
+            pidHeading.reset();
+            targetPose = null;
         }
     }
 

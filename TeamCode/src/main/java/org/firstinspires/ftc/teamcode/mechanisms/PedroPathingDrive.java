@@ -129,6 +129,16 @@ public class PedroPathingDrive implements Drive {
     }
 
     /**
+     * Determine whether the user is driving. For PedroPathing, this is a no-op.
+     *
+     * @param userDriving true if the user is currently driving the robot, false otherwise
+     */
+    @Override
+    public void userDriving(boolean userDriving) {
+        // NO-OP
+    }
+
+    /**
      * Returns the current pose of the robot as determined by the localizer.
      *
      * @return The current pose of the robot, including its position (x, y) and orientation (heading).

@@ -43,4 +43,13 @@ public interface Drive extends Mechanism {
      *               position (x, y) and heading (theta).
      */
     void driveToPose(@NonNull Pose target);
+
+    /**
+     * Sets whether the user is currently driving the robot. This can be used to enable or disable
+     * certain features (e.g., auto-alignment, path following) when the user is actively controlling
+     * the robot.
+     *
+     * @param userDriving true if the user is currently driving the robot, false otherwise
+     */
+    void userDriving(boolean userDriving);
 }
