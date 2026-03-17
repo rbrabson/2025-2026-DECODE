@@ -15,7 +15,6 @@ import org.firstinspires.ftc.teamcode.inputprocessors.ShooterProcessor;
 import org.firstinspires.ftc.teamcode.inputprocessors.UserInputProcessor;
 import org.firstinspires.ftc.teamcode.mechanisms.Mechanism;
 import org.firstinspires.ftc.teamcode.mechanisms.PedroPathingDrive;
-import org.firstinspires.ftc.teamcode.mechanisms.Shooter;
 import org.firstinspires.ftc.teamcode.pedroPathing.FusedLocalizer;
 
 import java.util.Arrays;
@@ -36,7 +35,6 @@ public abstract class PedroPathingTeleOp extends OpMode {
     private final Gamepad currentGamepad2 = new Gamepad();
     private final Timer timer = new Timer();
     private Robot robot;
-    private Shooter shooter;
     private List<UserInputProcessor> inputHandlers;
     private List<Mechanism> mechanisms;
 
