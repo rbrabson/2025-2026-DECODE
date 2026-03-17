@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.localization.Localizer;
 import com.pedropathing.paths.Path;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -25,7 +26,7 @@ import java.util.Objects;
  * configuring the localizer mode. The class utilizes a Follower to control the robot's movement
  * based on the current pose and target paths.
  */
-public class PedroPathingDrive implements Mechanism {
+public class PedroPathingDrive implements DriveMechanism {
     public final FusedLocalizer localizer;
     private final Follower follower;
     private final Telemetry telemetry;
@@ -137,6 +138,17 @@ public class PedroPathingDrive implements Mechanism {
     }
 
     /**
+     * setLocalizer is a no-op method in this implementation because the localizer is already
+     * initialized in the constructor
+     *
+     * @param localizer The localizer to set for the drive mechanism, which is not used in this
+     *                  implementation since the localizer is initialized in the constructor.
+     */
+    public void setLocalizer(Localizer localizer) {
+        // NO-OP
+    }
+
+    /**
      * Sets the current pose of the robot for the localizer. This can be used to manually update the
      * robot's pose if necessary, such as after a significant movement or if the localizer's estimate
      * is believed to be inaccurate.
@@ -182,12 +194,20 @@ public class PedroPathingDrive implements Mechanism {
      * Starts the teleop drive mode, allowing for manual control of the robot while still utilizing
      * the localizer for accurate movement. This method should be called at the beginning of the
      * teleop period to enable teleop control.
-     *
-     * @return The PedroPathingDrive instance, allowing for method chaining when starting the teleop drive mode.
      */
-    public PedroPathingDrive startTeleopDrive() {
+    public void startTeleopDrive() {
         follower.startTeleopDrive();
-        return this;
+    }
+
+    /**
+     * Returns the localizer being used by the follower, which provides the current pose of the
+     * robot based on sensor data and the configured localization mode.
+     *
+     * @return The Localizer instance being used by the follower to estimate the robot's pose.
+     */
+    @Override
+    public Localizer getLocalizer() {
+        return follower.poseTracker.getLocalizer();
     }
 
     /**

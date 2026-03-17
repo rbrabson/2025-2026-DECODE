@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.mechanisms;
 import androidx.annotation.NonNull;
 
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.localization.Localizer;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -36,7 +37,7 @@ import java.util.Objects;
  *     </li>
  * </ol>
  */
-public class MecanumDrive implements Mechanism {
+public class MecanumDrive implements DriveMechanism {
     private static final double STRAFING_ADJUSTMENT = 1.1;
 
     private final DcMotorEx frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor;
@@ -207,6 +208,42 @@ public class MecanumDrive implements Mechanism {
         telemetry.addData("[DRIVE] Right Rear Power", rightRearPower);
     }
 
+    /**
+     * getLocalizer returns the localizer instance used by the mecanum drive mechanism for pose estimation.
+     *
+     * @return the localizer instance used by the mecanum drive mechanism.
+     */
+    @Override
+    public Localizer getLocalizer() {
+        return localizer;
+    }
+
+    /**
+     * getPose returns the current pose of the robot as determined by the localizer. This method is
+     * used to retrieve the robot's position and orientation on the field, which can be used for
+     * field-centric control and autonomous navigation.
+     *
+     * @return the current pose of the robot, including its position (x, y) and heading (theta).
+     */
+    @Override
+    public Pose getPose() {
+        return localizer.getPose();
+    }
+
+    /**
+     * setLocalizer is a no-op for the MecanumDrive mechanism, as the localizer should be set using
+     * the setLocalizer(FusedLocalizer localizer) method to ensure that the correct type of localizer
+     * is used for pose estimation.
+     *
+     * @param localizer the localizer to be set, which is ignored in this implementation.
+     */
+    public void setLocalizer(Localizer localizer) {
+        // NO-OP
+    }
+
+    /**
+     * update is a no-op for the MecanumDrive mechanism,
+     */
     @Override
     public void update() {
         // NO-OP

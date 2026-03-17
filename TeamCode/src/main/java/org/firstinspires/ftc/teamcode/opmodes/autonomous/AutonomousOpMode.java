@@ -102,7 +102,7 @@ public abstract class AutonomousOpMode extends OpMode {
         }
 
         mechanisms = Arrays.asList(
-                robot.mecanumDrive,
+                robot.drive,
                 robot.intake,
                 robot.shooter,
                 robot.transfer

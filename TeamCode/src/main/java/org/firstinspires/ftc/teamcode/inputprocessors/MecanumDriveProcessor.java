@@ -16,7 +16,7 @@ import java.util.Objects;
  * turning of the robot. The left bumper on gamepad1 can be used to toggle the gain for the X
  * axis, Y axis, and turn speed.
  */
-public class MecanumDriveProcessor implements UserInputProcessor {
+public class MecanumDriveProcessor implements DriveProcessor {
     private static final double TURN_MULTIPLIER = 0.75; // Max turning speed multiplier
     private static final double NORMAL_GAIN = 1.0;
     private static final double SLOW_GAIN = 0.5;

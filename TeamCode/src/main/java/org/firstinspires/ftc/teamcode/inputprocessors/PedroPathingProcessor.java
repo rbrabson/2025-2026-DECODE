@@ -16,7 +16,7 @@ import java.util.Objects;
  * buttons to automatically drive to predefined poses on the field, while still allowing manual
  * control when not auto-driving.
  */
-public class PedroPathingProcessor implements UserInputProcessor {
+public class PedroPathingProcessor implements DriveProcessor {
     private static final double NORMAL_GAIN = 1.0;
     private static final double SLOW_GAIN = 0.5;
 
