@@ -39,10 +39,9 @@ public abstract class TeleOpMode extends OpMode {
     private final Timer timer = new Timer();
     private Robot robot;
     private Drive drive;
+    private Alliance alliance;
     private List<UserInputProcessor> inputHandlers;
     private List<Mechanism> mechanisms;
-
-    private Alliance alliance;
 
     /**
      * The init method is called once when the driver hits the "Init" button on the driver station.
