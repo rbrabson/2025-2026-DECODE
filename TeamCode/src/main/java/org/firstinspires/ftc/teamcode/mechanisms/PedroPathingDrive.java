@@ -194,9 +194,12 @@ public class PedroPathingDrive implements DriveMechanism {
      * Starts the teleop drive mode, allowing for manual control of the robot while still utilizing
      * the localizer for accurate movement. This method should be called at the beginning of the
      * teleop period to enable teleop control.
+     *
+     * @return The PedroPathingDrive instance, allowing for method chaining when starting the teleop drive mode.
      */
-    public void startTeleopDrive() {
+    public PedroPathingDrive startTeleopDrive() {
         follower.startTeleopDrive();
+        return this;
     }
 
     /**

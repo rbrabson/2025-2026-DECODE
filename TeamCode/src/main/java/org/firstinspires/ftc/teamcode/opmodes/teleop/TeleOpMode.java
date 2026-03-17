@@ -66,22 +66,17 @@ public abstract class TeleOpMode extends OpMode {
 
         // Drive-specific initialization.
         if (USE_PEDRO_PATHING) {
-            PedroPathingDrive drive = new PedroPathingDrive(hardwareMap, robot.limelight.getSensor(), telemetry);
-            drive.setRobotCentric(false)
+            drive = new PedroPathingDrive(hardwareMap, robot.limelight.getSensor(), telemetry)
+                    .setRobotCentric(false)
                     .setUseCompensation(true)
                     .setUseVoltageCompensation(true)
                     .setMode(FusedLocalizer.Mode.TELEOP)
-                    .setStartingPose(startingPose);
-            drive.startTeleopDrive();
-            drive.update();
-            this.drive = drive;
+                    .setStartingPose(startingPose)
+                    .startTeleopDrive();
         } else {
-            MecanumDrive drive = new MecanumDrive(hardwareMap, telemetry);
-            Localizer localizer = PedroFollower.getFusedLocalizer(hardwareMap, robot.limelight.getSensor()).withMode(FusedLocalizer.Mode.TELEOP);
-            localizer.setStartPose(startingPose);
-            drive.setLocalizer(localizer);
-            localizer.update();
-            this.drive = drive;
+            drive = new MecanumDrive(hardwareMap, telemetry)
+                    .setLocalizer(PedroFollower.getFusedLocalizer(hardwareMap, robot.limelight.getSensor()).withMode(FusedLocalizer.Mode.TELEOP))
+                    .setStartPose(startingPose);
         }
 
         // Get the alliance-specific information
@@ -117,6 +112,7 @@ public abstract class TeleOpMode extends OpMode {
     @Override
     public void start() {
         robot.shooter.setFlywheelRPMToLow();
+        drive.update();
     }
 
     /**

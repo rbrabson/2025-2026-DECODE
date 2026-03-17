@@ -95,9 +95,11 @@ public class MecanumDrive implements DriveMechanism {
      * the robot, which can be used for field-centric control and autonomous navigation.
      *
      * @param localizer the FusionLocalizer instance to be used for pose estimation.
+     * @return the MecanumDrive instance for method chaining.
      */
-    public void setLocalizer(@NonNull FusedLocalizer localizer) {
+    public MecanumDrive setLocalizer(@NonNull FusedLocalizer localizer) {
         this.localizer = localizer;
+        return this;
     }
 
     /**
@@ -231,14 +233,31 @@ public class MecanumDrive implements DriveMechanism {
     }
 
     /**
-     * setLocalizer is a no-op for the MecanumDrive mechanism, as the localizer should be set using
-     * the setLocalizer(FusedLocalizer localizer) method to ensure that the correct type of localizer
-     * is used for pose estimation.
+     * setPose allows you to manually set the robot's pose in the localizer. This can be useful for
+     * resetting the robot's position at the start of a match or after a known event (such as
+     * picking up a game element). It is important to ensure that the pose is set accurately to
+     * maintain correct localization and control of the robot.
      *
-     * @param localizer the localizer to be set, which is ignored in this implementation.
+     * @param pose the new pose to set for the robot, including its position (x, y) and heading (theta).
+     * @return the MecanumDrive instance for method chaining.
      */
-    public void setLocalizer(Localizer localizer) {
-        // NO-OP
+    public MecanumDrive setPose(Pose pose) {
+        localizer.setPose(pose);
+        return this;
+    }
+
+    /**
+     * setStartPose allows you to set the initial pose of the robot in the localizer. This is typically
+     * called during the initialization phase of the robot to establish the starting position and
+     * orientation of the robot on the field. Setting the start pose correctly is crucial for accurate
+     * localization and control throughout the match.
+     *
+     * @param pose the initial pose to set for the robot, including its position (x, y) and heading (theta).
+     * @return the MecanumDrive instance for method chaining.
+     */
+    public MecanumDrive setStartPose(Pose pose) {
+        localizer.setStartPose(pose);
+        return this;
     }
 
     /**
@@ -246,6 +265,6 @@ public class MecanumDrive implements DriveMechanism {
      */
     @Override
     public void update() {
-        // NO-OP
+        localizer.update();
     }
 }
