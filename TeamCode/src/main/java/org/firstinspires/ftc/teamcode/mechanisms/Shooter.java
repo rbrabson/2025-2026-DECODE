@@ -190,22 +190,6 @@ public class Shooter implements Mechanism {
     }
 
     /**
-     * Sets the flywheel to a predefined low RPM setting. This can be used for close-range shots
-     * or when less power is needed.
-     */
-    public void setFlywheelRPMToLow() {
-        flywheel.low();
-    }
-
-    /**
-     * Sets the flywheel to a predefined high RPM setting. This can be used for long-range shots
-     * or when more power is needed.
-     */
-    public void setFlywheelRPMToHigh() {
-        flywheel.high();
-    }
-
-    /**
      * Sets the target position of the turret in encoder ticks. This method allows for precise control
      * of the turret's position, enabling it to aim accurately at the target.
      *

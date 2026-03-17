@@ -25,11 +25,6 @@ public class Flywheel {
     public static final double TICKS_PER_REV = 384;
     public static final double RPM_MAX = 435;
 
-    // RPM presets : (ticksPerSec * 60) / TICKS_PER_REV
-    public static final double RPM_LOW = 183; // 1170 ticks per second
-    public static final double RPM_HIGH = 234; // 1500 ticks per second
-    public static final double RPM_AUTON_CLOSE = 78; // 500 ticks per second
-    public static final double RPM_AUTON_FAR = 175; // 1170 ticks per second
     public static final double RPM_OFF = 0;
 
     private static final double PID_RESET_THRESHOLD = RPM_MAX / 4.0;
@@ -208,35 +203,6 @@ public class Flywheel {
      */
     private static double rpmToTicksPerSecond(double rpm) {
         return (rpm * TICKS_PER_REV) / 60.0;
-    }
-
-    /**
-     * Convenience methods for common RPM presets.
-     */
-    public void high() {
-        setRPM(RPM_HIGH);
-    }
-
-    /**
-     * Sets the flywheel to a lower RPM preset, which can be useful for closer shots or when less
-     * power is needed.
-     */
-    public void low() {
-        setRPM(RPM_LOW);
-    }
-
-    /**
-     * Sets the flywheel to a preset RPM suitable for close-range shots during autonomous.
-     */
-    public void autonomousClose() {
-        setRPM(RPM_AUTON_CLOSE);
-    }
-
-    /**
-     * Sets the flywheel to a preset RPM suitable for long-range shots during autonomous.
-     */
-    public void autonomousFar() {
-        setRPM(RPM_AUTON_FAR);
     }
 
     /**

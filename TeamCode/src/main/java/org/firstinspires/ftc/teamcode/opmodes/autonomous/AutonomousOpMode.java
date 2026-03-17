@@ -33,6 +33,7 @@ public abstract class AutonomousOpMode extends OpMode {
     private Drive drive;
     private final Timer timer = new Timer();
     private List<Mechanism> mechanisms;
+    private Alliance alliance;
 
     /**
      * This abstract method should be implemented by subclasses to specify the desired
@@ -55,14 +56,6 @@ public abstract class AutonomousOpMode extends OpMode {
      *         the turret's target position based on the target's coordinates.
      */
     abstract protected Alliance getAlliance();
-
-    /**
-     * This abstract method should be implemented by subclasses to specify the desired flywheel
-     * RPM for the autonomous routine.
-     *
-     * @return The desired flywheel RPM for the autonomous routine.
-     */
-    abstract protected double getFlywheelRPM();
 
     /**
      * This abstract method should be implemented by subclasses to specify the starting pose of the
@@ -95,7 +88,7 @@ public abstract class AutonomousOpMode extends OpMode {
         follower = PedroFollower.create(hardwareMap, localizer);
         follower.setStartingPose(getStartingPose());
         path = getPath();
-        Alliance alliance = getAlliance();
+        alliance = getAlliance();
         robot.shooter.setTurretBaseValues(alliance.getBaseX(), alliance.getBaseY());
 
         // Set all Lynx module hubs to manual bulk caching mode. This allows us to control when
@@ -124,10 +117,10 @@ public abstract class AutonomousOpMode extends OpMode {
      */
     @Override
     public void start() {
-        robot.shooter.setFlywheelRPM(getFlywheelRPM());
         robot.intake.startIntakeMotor();
         robot.light.enable();
         follower.activateAllPIDFs();
+        robot.shooter.update(drive.getLocalizer(), alliance);
 
         // Update the blackboard with default values to be preserved across OpModes
         blackboard.put("robotPose", localizer.getPose());

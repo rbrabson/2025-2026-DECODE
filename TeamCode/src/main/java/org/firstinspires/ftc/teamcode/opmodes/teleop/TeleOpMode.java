@@ -110,8 +110,8 @@ public abstract class TeleOpMode extends OpMode {
      */
     @Override
     public void start() {
-        robot.shooter.setFlywheelRPMToLow();
         drive.update();
+        robot.shooter.update(drive.getLocalizer(), alliance);
     }
 
     /**

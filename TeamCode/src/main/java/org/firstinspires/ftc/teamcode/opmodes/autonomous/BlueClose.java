@@ -27,18 +27,6 @@ public class BlueClose extends AutonomousOpMode {
     }
 
     /**
-     * This method is called once at the start of the OpMode. It runs all the setup actions,
-     * including building paths and starting the path system
-     *
-     * @return the flywheel RPM to be set for this autonomous routine. In this case, it
-     *         returns the RPM for close-range shooting.
-     */
-    @Override
-    protected double getFlywheelRPM() {
-        return Flywheel.RPM_AUTON_CLOSE;
-    }
-
-    /**
      * This method returns the starting pose for the robot.
      *
      * @return the starting pose of the robot for this autonomous routine.

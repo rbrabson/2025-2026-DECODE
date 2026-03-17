@@ -61,16 +61,6 @@ public class ShooterProcessor implements UserInputProcessor {
             automateShooting = !automateShooting;
         }
 
-        // Toggle flywheel speed
-        if (gamepad1.yWasPressed() || gamepad2.yWasPressed()) {
-            flywheelSpeedLow = !flywheelSpeedLow;
-            if (flywheelSpeedLow) {
-                shooter.setFlywheelRPMToLow();
-            } else {
-                shooter.setFlywheelRPMToHigh();
-            }
-        }
-
         // Shot compensation on gamepad1 dpad
         if (gamepad1.dpadLeftWasPressed()) {
             shooter.shotWasHigh();

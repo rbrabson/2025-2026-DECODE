@@ -27,17 +27,6 @@ public class RedClose extends AutonomousOpMode {
     }
 
     /**
-     * This method returns the flywheel RPM for the opmode.
-     *
-     * @return the flywheel RPM to be set for this autonomous routine. In this case, it
-     *         returns the RPM for close-range shooting.
-     */
-    @Override
-    protected double getFlywheelRPM() {
-        return Flywheel.RPM_AUTON_CLOSE;
-    }
-
-    /**
      * This method returns the starting pose for the robot.
      *
      * @return the starting pose of the robot for this autonomous routine.

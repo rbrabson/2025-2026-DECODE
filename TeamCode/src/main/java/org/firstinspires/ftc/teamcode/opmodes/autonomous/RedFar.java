@@ -27,17 +27,6 @@ public class RedFar extends AutonomousOpMode {
     }
 
     /**
-     * This method returns the flywheel RPM for the opmode.
-     *
-     * @return the flywheel RPM to be set for this autonomous routine. In this case, it
-     *         returns the RPM for far-range shooting.
-     */
-    @Override
-    protected double getFlywheelRPM() {
-        return Flywheel.RPM_AUTON_FAR;
-    }
-
-    /**
      * This method returns the starting pose for the robot.
      *
      * @return the starting pose of the robot for this autonomous routine.
