@@ -23,7 +23,7 @@ public class BlueFar extends AutonomousOpMode {
      */
     @Override
     protected AutonomousPathing getPath() {
-        return new BlueFarPathing(drive.getFollower(), robot.intake, robot.shooter, robot.transfer);
+        return new BlueFarPathing(follower, robot.intake, robot.shooter, robot.transfer);
     }
 
     /**

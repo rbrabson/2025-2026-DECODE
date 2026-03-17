@@ -28,7 +28,7 @@ public abstract class AutonomousOpMode extends OpMode {
     protected FusedLocalizer localizer;
     protected Robot robot;
     protected AutonomousPathing path;
-    protected PedroPathingDrive drive;
+    protected Follower follower;
     private final Timer timer = new Timer();
     private List<Mechanism> mechanisms;
 
@@ -80,15 +80,15 @@ public abstract class AutonomousOpMode extends OpMode {
         Robot.reset();
         robot = Robot.getInstance(hardwareMap, telemetry);
 
-        drive = new PedroPathingDrive(hardwareMap, robot.limelight.getSensor(), telemetry);
-        drive.setStartingPose(getStartingPose());
         localizer = PedroFollower.getFusedLocalizer(hardwareMap, robot.limelight.getSensor()).withMode(FusedLocalizer.Mode.AUTO);
+        follower = PedroFollower.create(hardwareMap, localizer);
+        follower.setStartingPose(getStartingPose());
         path = getPath();
         Alliance alliance = getAlliance();
         robot.shooter.setTurretBaseValues(alliance.getBaseX(), alliance.getBaseY());
         robot.shooter.setTurretBaseValues(alliance.getBaseX(), alliance.getBaseY())
                 .setAlliancePose(alliance, getStartingPose())
-                .setLocalizer(drive.getLocalizer());
+                .setLocalizer(localizer);
 
         // Set all Lynx module hubs to manual bulk caching mode. This allows us to control when
         // the bulk cache is cleared, which can improve performance by reducing the number of reads
@@ -98,7 +98,6 @@ public abstract class AutonomousOpMode extends OpMode {
         }
 
         mechanisms = Arrays.asList(
-                drive,
                 robot.intake,
                 robot.shooter,
                 robot.transfer
@@ -118,7 +117,7 @@ public abstract class AutonomousOpMode extends OpMode {
     public void start() {
         robot.intake.startIntakeMotor();
         robot.light.enable();
-        drive.activateAllPIDFs();
+        follower.activateAllPIDFs();
         robot.shooter.update();
 
         // Update the blackboard with default values to be preserved across OpModes
@@ -145,6 +144,7 @@ public abstract class AutonomousOpMode extends OpMode {
         for (Mechanism mechanism : mechanisms) {
             mechanism.update();
         }
+        follower.update();
         path.update();
 
         if (!robot.limelight.isMotifDetected()) {
@@ -156,10 +156,10 @@ public abstract class AutonomousOpMode extends OpMode {
             }
         }
 
-        blackboard.put("robotPose", drive.getPose());
+        blackboard.put("robotPose", follower.getPose());
         blackboard.put("turretPosition", robot.shooter.getTurretCurrentPosition());
 
-        telemetry.addData("Pose", drive.getPose());
+        telemetry.addData("Pose", follower.getPose());
         telemetry.addData("Loop Time (s)", "%.2f", timer.getElapsedTimeSeconds());
 
         telemetry.update();

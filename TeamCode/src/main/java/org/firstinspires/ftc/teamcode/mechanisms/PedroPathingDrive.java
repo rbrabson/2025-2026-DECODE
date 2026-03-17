@@ -47,10 +47,10 @@ public class PedroPathingDrive implements Drive {
      * @param telemetry   The telemetry instance for sending data to the driver station for
      *                    debugging and monitoring.
      */
-    public PedroPathingDrive(@NonNull HardwareMap hardwareMap, @NonNull Limelight3A limelight, @NonNull Telemetry telemetry) {
+    public PedroPathingDrive(@NonNull HardwareMap hardwareMap, @NonNull Limelight3A limelight, @NonNull FusedLocalizer.Mode mode, @NonNull Telemetry telemetry) {
         HardwareMap map = Objects.requireNonNull(hardwareMap);
         Limelight3A ll = Objects.requireNonNull(limelight);
-        this.localizer = PedroFollower.getFusedLocalizer(map, ll, FusedLocalizer.Mode.TELEOP);
+        this.localizer = PedroFollower.getFusedLocalizer(map, ll, mode);
         this.telemetry = Objects.requireNonNull(telemetry);
         this.follower = PedroFollower.create(map, this.localizer);
         this.driveCtrl = new DriveController();

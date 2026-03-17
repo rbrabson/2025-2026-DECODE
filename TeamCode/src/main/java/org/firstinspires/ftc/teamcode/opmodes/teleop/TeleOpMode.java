@@ -151,7 +151,7 @@ public abstract class TeleOpMode extends OpMode {
      */
     private Drive getDrive(Pose startingPose) {
         if (USE_PEDRO_PATHING) {
-            PedroPathingDrive drive = new PedroPathingDrive(hardwareMap, robot.limelight.getSensor(), telemetry)
+            PedroPathingDrive drive = new PedroPathingDrive(hardwareMap, robot.limelight.getSensor(), FusedLocalizer.Mode.TELEOP, telemetry)
                     .setRobotCentric(false)
                     .setUseCompensation(true)
                     .setUseVoltageCompensation(true)

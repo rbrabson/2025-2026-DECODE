@@ -23,7 +23,7 @@ public class BlueClose extends AutonomousOpMode {
      */
     @Override
     protected AutonomousPathing getPath() {
-        return new BlueClosePathing(drive.getFollower(), robot.intake, robot.shooter, robot.transfer);
+        return new BlueClosePathing(follower, robot.intake, robot.shooter, robot.transfer);
     }
 
     /**
