@@ -267,4 +267,27 @@ public class MecanumDrive implements Drive {
     public void update() {
         localizer.update();
     }
+
+    /**
+     * Returns a string representation of the MecanumDrive object,
+     * including motor names, field-centric status, and current pose.
+     *
+     * @return a string describing the current state of the MecanumDrive.
+     */
+    @NonNull
+    @Override
+    public String toString() {
+        return String.format(
+                "MecanumDrive[" +
+                        "frontLeftMotor=%s, backLeftMotor=%s, frontRightMotor=%s, backRightMotor=%s, " +
+                        "fieldCentricEnabled=%b, pose=%s]",
+                frontLeftMotor.getDeviceName(),
+                backLeftMotor.getDeviceName(),
+                frontRightMotor.getDeviceName(),
+                backRightMotor.getDeviceName(),
+                fieldCentricEnabled,
+                (localizer != null ? localizer.getPose() : "null")
+        );
+    }
+
 }

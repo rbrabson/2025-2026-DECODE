@@ -266,4 +266,25 @@ public class PedroPathingDrive implements Drive {
     public void update() {
         follower.update();
     }
+
+    /**
+     * Returns a string representation of the PedroPathingDrive object,
+     * including localizer class, robot-centric status, voltage compensation,
+     * compensation status, and current pose.
+     *
+     * @return a string describing the current state of the PedroPathingDrive.
+     */
+    @NonNull
+    @Override
+    public String toString() {
+        return String.format(
+                "PedroPathingDrive[" +
+                        "localizerClass=%s, robotCentric=%b, useVoltageCompensation=%b, useCompensation=%b, pose=%s]",
+                (localizer != null ? localizer.getClass().getSimpleName() : "null"),
+                robotCentric,
+                useVoltageCompensation,
+                useCompensation,
+                (localizer != null ? localizer.getPose() : "null")
+        );
+    }
 }
