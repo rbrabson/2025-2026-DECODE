@@ -36,16 +36,16 @@ import java.util.Objects;
  *         drive() method.
  *     </li>
  *     <li>
- *         This mechanism is current unused. To use it, set TeleOpMode.USE_PEDRO_PATHING to false;
+ *         This mechanism is currently unused. To use it, set TeleOpMode.USE_PEDRO_PATHING to false;
  *     </li>
  * </ol>
  */
 public class MecanumDrive implements Drive {
+    // --- Constants and Tunable Parameters ---
     private static final double STRAFING_ADJUSTMENT = 1.1;
-
     private static final double DEADBAND = 0.05;
 
-    // PID coefficients - tne as necessary
+    // PID coefficients - tune as necessary
     public static final double KP_X = 0.2;
     public static final double KI_X = 0.0;
     public static final double KD_X = 0.0;
@@ -56,19 +56,30 @@ public class MecanumDrive implements Drive {
     public static final double KI_HEADING = 0.0;
     public static final double KD_HEADING = 0.10;
 
+    // Completion thresholds for autonomous driving
+    private static final double POSE_THRESHOLD = 0.05;      // meters
+    private static final double HEADING_THRESHOLD = 0.05;   // radians
+
+    // Static friction compensation (can be tuned)
+    private double kStatic = 0.05;
+
+    // Distance scaling factor for autonomous drive (can be tuned)
+    private double driveScaling = 0.1;
+
+    // --- Hardware and State ---
     private final DcMotorEx frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor;
     private final Telemetry telemetry;
     private final DriveController driveCtrl;
-
     private final VoltageCompensator voltageComp;
+
     private FusedLocalizer localizer;
 
+    // PID controllers for autonomous driving
     private final PID pidX;
     private final PID pidY;
     private final PID pidHeading;
 
     private Pose targetPose = null;
-
     boolean fieldCentricEnabled = true;
 
     /**
@@ -98,6 +109,8 @@ public class MecanumDrive implements Drive {
         telemetry.addLine("Mecanum Drive initialized");
     }
 
+    // --- Motor Initialization and Configuration ---
+
     /**
      * Initializes the motor settings for the mecanum drive system, including
      * direction, motor type, zero power behavior, and run mode.
@@ -116,6 +129,8 @@ public class MecanumDrive implements Drive {
         }
     }
 
+    // --- Localizer and Pose Methods ---
+
     /**
      * Sets the localizer for the mecanum drive. The localizer is used to provide pose estimates for
      * the robot, which can be used for field-centric control and autonomous navigation.
@@ -129,38 +144,95 @@ public class MecanumDrive implements Drive {
     }
 
     /**
-     * Enables or disables field-centric control. When field-centric control is enabled, the robot's
-     * movement will be relative to the field rather than the robot's orientation.
+     * getLocalizer returns the localizer instance used by the mecanum drive mechanism for pose estimation.
+     *
+     * @return the localizer instance used by the mecanum drive mechanism.
+     */
+    @Override
+    public Localizer getLocalizer() {
+        return localizer;
+    }
+
+    /**
+     * getPose returns the current pose of the robot as determined by the localizer. This method is
+     * used to retrieve the robot's position and orientation on the field, which can be used for
+     * field-centric control and autonomous navigation.
+     *
+     * @return the current pose of the robot, including its position (x, y) and heading (theta).
+     */
+    @Override
+    public Pose getPose() {
+        return localizer != null ? localizer.getPose() : new Pose(0, 0, 0);
+    }
+
+    /**
+     * setPose allows you to manually set the robot's pose in the localizer. This can be useful for
+     * resetting the robot's position at the start of a match or after a known event (such as
+     * picking up a game element). It is important to ensure that the pose is set accurately to
+     * maintain correct localization and control of the robot.
+     *
+     * @param pose the new pose to set for the robot, including its position (x, y) and heading (theta).
+     * @return the MecanumDrive instance for method chaining.
+     */
+    public MecanumDrive setPose(Pose pose) {
+        if (localizer != null) {
+            localizer.setPose(pose);
+        }
+        return this;
+    }
+
+    /**
+     * setStartPose allows you to set the initial pose of the robot in the localizer. This is typically
+     * called during the initialization phase of the robot to establish the starting position and
+     * orientation of the robot on the field. Setting the start pose correctly is crucial for accurate
+     * localization and control throughout the match.
+     *
+     * @param pose the initial pose to set for the robot, including its position (x, y) and heading (theta).
+     * @return the MecanumDrive instance for method chaining.
+     */
+    public MecanumDrive setStartPose(Pose pose) {
+        if (localizer != null) {
+            localizer.setStartPose(pose);
+        }
+        return this;
+    }
+
+    // --- Field-Centric Control ---
+
+    /**
+     * Enables field-centric control. When enabled, the robot's movement will be relative to the field
+     * rather than the robot's orientation.
      */
     public void enableFieldCentric() {
         fieldCentricEnabled = true;
     }
 
     /**
-     * Disables field-centric control. When field-centric control is disabled, the robot's movement will
-     * be relative to the robot's orientation rather than the field.
+     * Disables field-centric control. When disabled, the robot's movement will be relative to the robot's
+     * orientation rather than the field.
      */
     public void disableFieldCentric() {
         fieldCentricEnabled = false;
     }
 
+    // --- Manual Drive Control ---
+
     /**
-     * Drives the mecanum robot based on joystick inputs for strafing (x), forward/backward
-     * movement (y),
+     * Drives the mecanum robot based on joystick inputs for strafing (x), forward/backward movement (y),
+     * and rotation (turn).
      *
-     * @param x         the left/right strafe input, expected to be in the range of -1 to 1.
-     * @param y         the forward/backward input, expected to be in the range of -1 to 1.
+     * @param x    the left/right strafe input, expected to be in the range of -1 to 1.
+     * @param y    the forward/backward input, expected to be in the range of -1 to 1.
      * @param turn the rotation input, expected to be in the range of -1 to 1, where positive
-     *                  values indicate clockwise rotation, and negative values indicate
-     *                  counterclockwise rotation.
+     *             values indicate clockwise rotation, and negative values indicate
+     *             counterclockwise rotation.
      */
     public void drive(double x, double y, double turn) {
-        // Get the robot's heading, adjusted for the initial robot pose
-        Pose pose = localizer.getPose();
+        // Null check for localizer
+        Pose pose = localizer != null ? localizer.getPose() : new Pose(0, 0, 0);
 
         // If field-centric control is enabled, transform the joystick inputs from robot-centric to
-        // field-centric coordinates based on the current heading of the robot, obtained from the
-        // IMU.
+        // field-centric coordinates based on the current heading of the robot, obtained from the IMU.
         if (fieldCentricEnabled) {
             Vector2 rotated = new Vector2(x, y).rotate(-pose.getHeading());
             x = rotated.x;
@@ -184,11 +256,16 @@ public class MecanumDrive implements Drive {
         }
     }
 
+    // --- Autonomous Drive to Target Pose ---
+
     /**
      * Drives the robot toward a specified target pose using PID control.
      * This method calculates the required x (strafe), y (forward), and turn (rotation)
      * values to move the robot from its current pose to the target pose, and calls the
      * drive() method to apply these values.
+     *<p>
+     * Completion criteria: If the robot is within POSE_THRESHOLD meters and HEADING_THRESHOLD radians
+     * of the target, autonomous driving stops and PIDs are reset.
      *
      * @param target the target pose to drive toward (x, y, heading).
      */
@@ -204,25 +281,33 @@ public class MecanumDrive implements Drive {
         double headingError = target.getHeading() - current.getHeading();
         headingError = Math.atan2(Math.sin(headingError), Math.cos(headingError));
 
+        // --- Completion check ---
+        double distance = Math.hypot(xError, yError);
+        if (distance < POSE_THRESHOLD && Math.abs(headingError) < HEADING_THRESHOLD) {
+            // Robot has reached the target pose; stop autonomous driving
+            targetPose = null;
+            pidX.reset();
+            pidY.reset();
+            pidHeading.reset();
+            if (telemetry != null) {
+                telemetry.addData("[DRIVE] Target Pose", "Reached");
+            }
+            return;
+        }
+
         // --- PID outputs ---
         double x = pidX.calculate(target.getX(), current.getX());
         double y = pidY.calculate(target.getY(), current.getY());
         double turn = pidHeading.calculate(0, -headingError);
-        // Equivalent to correcting toward zero error
 
         // --- Distance-based scaling (prevents full-speed slamming) ---
-        double distance = Math.hypot(xError, yError);
-        double maxDrivePower = Math.min(1.0, distance * 0.1); // tune 0.1
+        double maxDrivePower = Math.min(1.0, distance * driveScaling);
 
         x = Range.clip(x, -maxDrivePower, maxDrivePower);
         y = Range.clip(y, -maxDrivePower, maxDrivePower);
-
-        // --- Clamp turn separately ---
         turn = Range.clip(turn, -1.0, 1.0);
 
-        // --- Static friction compensation (optional but helpful) ---
-        double kStatic = 0.05;
-
+        // --- Static friction compensation ---
         if (Math.abs(x) > 0.01) x += Math.signum(x) * kStatic;
         if (Math.abs(y) > 0.01) y += Math.signum(y) * kStatic;
         if (Math.abs(turn) > 0.01) turn += Math.signum(turn) * kStatic;
@@ -242,8 +327,11 @@ public class MecanumDrive implements Drive {
             telemetry.addData("[DRIVE] Error", String.format(
                     "xErr=%.2f yErr=%.2f hErr=%.2f dist=%.2f",
                     xError, yError, headingError, distance));
+            telemetry.addData("[DRIVE] Target Pose", target);
         }
     }
+
+    // --- Motor Power Calculation and Setting ---
 
     /**
      * Calculates the power for each motor based on the desired x (strafe), y (forward/backward),
@@ -300,72 +388,53 @@ public class MecanumDrive implements Drive {
         frontRightMotor.setPower(rightFrontPower);
         backRightMotor.setPower(rightRearPower);
 
-        telemetry.addData("[DRIVE] Left Front Power", leftFrontPower);
-        telemetry.addData("[DRIVE] Left Rear Power", leftRearPower);
-        telemetry.addData("[DRIVE] Right Front Power", rightFrontPower);
-        telemetry.addData("[DRIVE] Right Rear Power", rightRearPower);
+        if (telemetry != null) {
+            telemetry.addData("[DRIVE] Left Front Power", leftFrontPower);
+            telemetry.addData("[DRIVE] Left Rear Power", leftRearPower);
+            telemetry.addData("[DRIVE] Right Front Power", rightFrontPower);
+            telemetry.addData("[DRIVE] Right Rear Power", rightRearPower);
+        }
     }
 
-    /**
-     * getLocalizer returns the localizer instance used by the mecanum drive mechanism for pose estimation.
-     *
-     * @return the localizer instance used by the mecanum drive mechanism.
-     */
-    @Override
-    public Localizer getLocalizer() {
-        return localizer;
-    }
+    // --- Update Loop ---
 
     /**
-     * getPose returns the current pose of the robot as determined by the localizer. This method is
-     * used to retrieve the robot's position and orientation on the field, which can be used for
-     * field-centric control and autonomous navigation.
-     *
-     * @return the current pose of the robot, including its position (x, y) and heading (theta).
-     */
-    @Override
-    public Pose getPose() {
-        return localizer.getPose();
-    }
-
-    /**
-     * setPose allows you to manually set the robot's pose in the localizer. This can be useful for
-     * resetting the robot's position at the start of a match or after a known event (such as
-     * picking up a game element). It is important to ensure that the pose is set accurately to
-     * maintain correct localization and control of the robot.
-     *
-     * @param pose the new pose to set for the robot, including its position (x, y) and heading (theta).
-     * @return the MecanumDrive instance for method chaining.
-     */
-    public MecanumDrive setPose(Pose pose) {
-        localizer.setPose(pose);
-        return this;
-    }
-
-    /**
-     * setStartPose allows you to set the initial pose of the robot in the localizer. This is typically
-     * called during the initialization phase of the robot to establish the starting position and
-     * orientation of the robot on the field. Setting the start pose correctly is crucial for accurate
-     * localization and control throughout the match.
-     *
-     * @param pose the initial pose to set for the robot, including its position (x, y) and heading (theta).
-     * @return the MecanumDrive instance for method chaining.
-     */
-    public MecanumDrive setStartPose(Pose pose) {
-        localizer.setStartPose(pose);
-        return this;
-    }
-
-    /**
-     * update is a no-op for the MecanumDrive mechanism,
+     * update is called each loop for the MecanumDrive mechanism.
+     * Updates the localizer and, if a target pose is set, drives toward it.
      */
     @Override
     public void update() {
-        localizer.update();
+        if (localizer != null) {
+            localizer.update();
+        }
         if (targetPose != null) {
             driveToPose(targetPose);
         }
     }
+
+    // --- Tuning Methods (Optional for Dashboard) ---
+
+    /**
+     * Sets the static friction compensation value.
+     * Useful for tuning via dashboard.
+     *
+     * @param kStatic the new static friction compensation value.
+     */
+    public void setStaticFriction(double kStatic) {
+        this.kStatic = kStatic;
+    }
+
+    /**
+     * Sets the drive scaling factor for autonomous drive.
+     * Useful for tuning via dashboard.
+     *
+     * @param scaling the new drive scaling factor.
+     */
+    public void setDriveScaling(double scaling) {
+        this.driveScaling = scaling;
+    }
+
+    // --- String Representation ---
 
     /**
      * Returns a string representation of the MecanumDrive object,
@@ -388,5 +457,4 @@ public class MecanumDrive implements Drive {
                 (localizer != null ? localizer.getPose() : "null")
         );
     }
-
 }
