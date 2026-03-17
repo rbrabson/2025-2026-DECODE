@@ -8,7 +8,9 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.decode.Alliance;
+import org.firstinspires.ftc.teamcode.mechanisms.DriveMechanism;
 import org.firstinspires.ftc.teamcode.mechanisms.Mechanism;
+import org.firstinspires.ftc.teamcode.mechanisms.PedroPathingDrive;
 import org.firstinspires.ftc.teamcode.pedroPathing.FusedLocalizer;
 import org.firstinspires.ftc.teamcode.opmodes.autonomous.pathing.AutonomousPathing;
 import org.firstinspires.ftc.teamcode.pedroPathing.PedroFollower;
@@ -28,6 +30,7 @@ public abstract class AutonomousOpMode extends OpMode {
     protected FusedLocalizer localizer;
     protected Robot robot;
     protected AutonomousPathing path;
+    private DriveMechanism drive;
     private final Timer timer = new Timer();
     private List<Mechanism> mechanisms;
 
@@ -87,6 +90,7 @@ public abstract class AutonomousOpMode extends OpMode {
         Robot.reset();
         robot = Robot.getInstance(hardwareMap, telemetry);
 
+        drive = new PedroPathingDrive(hardwareMap, robot.limelight.getSensor(), telemetry);
         localizer = PedroFollower.getFusedLocalizer(hardwareMap, robot.limelight.getSensor()).withMode(FusedLocalizer.Mode.AUTO);
         follower = PedroFollower.create(hardwareMap, localizer);
         follower.setStartingPose(getStartingPose());
@@ -102,7 +106,7 @@ public abstract class AutonomousOpMode extends OpMode {
         }
 
         mechanisms = Arrays.asList(
-                robot.drive,
+                drive,
                 robot.intake,
                 robot.shooter,
                 robot.transfer

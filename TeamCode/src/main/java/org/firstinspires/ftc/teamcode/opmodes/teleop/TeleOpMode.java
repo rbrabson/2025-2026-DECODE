@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.inputprocessors.PedroPathingProcessor;
 import org.firstinspires.ftc.teamcode.inputprocessors.ShootArtifactProcessor;
 import org.firstinspires.ftc.teamcode.inputprocessors.ShooterProcessor;
 import org.firstinspires.ftc.teamcode.inputprocessors.UserInputProcessor;
+import org.firstinspires.ftc.teamcode.mechanisms.DriveMechanism;
 import org.firstinspires.ftc.teamcode.mechanisms.MecanumDrive;
 import org.firstinspires.ftc.teamcode.mechanisms.Mechanism;
 import org.firstinspires.ftc.teamcode.mechanisms.PedroPathingDrive;
@@ -31,12 +32,14 @@ import java.util.Objects;
  * user inputs and updating the robot's state.
  */
 public abstract class TeleOpMode extends OpMode {
+    private static final boolean USE_PEDRO_PATHING = true; // PedroPathing or private MecanumDrive logic for TeleOp
     private static final Pose DEFAULT_STARTING_POSE = new Pose(7.5, 7.5, Math.toRadians(90));
 
     private final Gamepad currentGamepad1 = new Gamepad();
     private final Gamepad currentGamepad2 = new Gamepad();
     private final Timer timer = new Timer();
     private Robot robot;
+    private DriveMechanism drive;
     private List<UserInputProcessor> inputHandlers;
     private List<Mechanism> mechanisms;
 
@@ -62,8 +65,8 @@ public abstract class TeleOpMode extends OpMode {
         }
 
         // Drive-specific initialization.
-        if (Robot.USE_PEDRO_PATHING) {
-            PedroPathingDrive drive = (PedroPathingDrive) robot.drive;
+        if (USE_PEDRO_PATHING) {
+            PedroPathingDrive drive = new PedroPathingDrive(hardwareMap, robot.limelight.getSensor(), telemetry);
             drive.setRobotCentric(false)
                     .setUseCompensation(true)
                     .setUseVoltageCompensation(true)
@@ -71,12 +74,14 @@ public abstract class TeleOpMode extends OpMode {
                     .setStartingPose(startingPose);
             drive.startTeleopDrive();
             drive.update();
+            this.drive = drive;
         } else {
-            MecanumDrive drive = (MecanumDrive) robot.drive;
+            MecanumDrive drive = new MecanumDrive(hardwareMap, telemetry);
             Localizer localizer = PedroFollower.getFusedLocalizer(hardwareMap, robot.limelight.getSensor()).withMode(FusedLocalizer.Mode.TELEOP);
             localizer.setStartPose(startingPose);
             drive.setLocalizer(localizer);
             localizer.update();
+            this.drive = drive;
         }
 
         // Get the alliance-specific information
@@ -87,9 +92,9 @@ public abstract class TeleOpMode extends OpMode {
 
         // Initialize the input handlers for each mechanism.
         inputHandlers = Arrays.asList(
-                new PedroPathingProcessor((PedroPathingDrive) robot.drive, telemetry),
+                new PedroPathingProcessor((PedroPathingDrive) drive, telemetry),
                 new IntakeProcessor(robot.intake, telemetry),
-                new ShooterProcessor(robot.shooter, robot.limelight, robot.drive.getLocalizer(), alliance, telemetry),
+                new ShooterProcessor(robot.shooter, robot.limelight, drive.getLocalizer(), alliance, telemetry),
                 new ShootArtifactProcessor(robot.intake, robot.transfer, robot.shooter, telemetry)
         );
 
@@ -97,7 +102,7 @@ public abstract class TeleOpMode extends OpMode {
         // This ensures that any necessary updates (such as setting motor powers or updating sensor
         // readings) are performed on each mechanism during the loop.
         mechanisms = Arrays.asList(
-                robot.drive,
+                drive,
                 robot.intake,
                 robot.shooter,
                 robot.transfer
@@ -133,11 +138,11 @@ public abstract class TeleOpMode extends OpMode {
         currentGamepad2.copy(gamepad2);
 
         // Update the robot's pose
-        robot.drive.update();
+        drive.update();
 
         // Adjust the shooter's flywheel velocity, hood position, and turret angle based on the
         // robot's current location
-        robot.shooter.update(robot.drive.getLocalizer(), alliance);
+        robot.shooter.update(drive.getLocalizer(), alliance);
 
         // Update any hardware components on each loop
         for (Mechanism mechanism : mechanisms) {
@@ -150,7 +155,7 @@ public abstract class TeleOpMode extends OpMode {
             controller.process(currentGamepad1, currentGamepad2);
         }
 
-        telemetry.addData("Pose", robot.drive.getPose());
+        telemetry.addData("Pose", drive.getPose());
         telemetry.addData("Loop Time (s)", "%.2f", timer.getElapsedTimeSeconds());
 
         telemetry.update();

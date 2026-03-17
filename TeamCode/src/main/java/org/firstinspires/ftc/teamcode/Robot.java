@@ -8,10 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.hardware.Light;
 import org.firstinspires.ftc.teamcode.hardware.VoltageSensor;
-import org.firstinspires.ftc.teamcode.mechanisms.DriveMechanism;
 import org.firstinspires.ftc.teamcode.mechanisms.Intake;
-import org.firstinspires.ftc.teamcode.mechanisms.MecanumDrive;
-import org.firstinspires.ftc.teamcode.mechanisms.PedroPathingDrive;
 import org.firstinspires.ftc.teamcode.mechanisms.Shooter;
 import org.firstinspires.ftc.teamcode.mechanisms.Transfer;
 import org.firstinspires.ftc.teamcode.sensors.Limelight;
@@ -23,11 +20,9 @@ import java.util.List;
  * It follows the singleton pattern to ensure that only one instance of the robot exists throughout the program.
  */
 public class Robot{
-    public static final boolean USE_PEDRO_PATHING = true; // PedroPathing or private MecanumDrive logic for TeleOp
     private static Robot robot;
 
     // Public fields for each mechanism and subsystem of the robot.
-    public final DriveMechanism drive;
     public final Intake intake;
     public Shooter shooter;
     public final Transfer transfer;
@@ -45,11 +40,6 @@ public class Robot{
      */
     private Robot(HardwareMap hardwareMap, Telemetry telemetry) {
         limelight = new Limelight(hardwareMap, telemetry);
-        if (USE_PEDRO_PATHING) {
-            drive = new PedroPathingDrive(hardwareMap, limelight.getSensor(), telemetry);
-        } else {
-            drive = new MecanumDrive(hardwareMap, telemetry);
-        }
         intake = new Intake(hardwareMap, telemetry);
         shooter = new Shooter(hardwareMap, telemetry);
         transfer = new Transfer(hardwareMap, telemetry);
