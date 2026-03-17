@@ -64,22 +64,12 @@ public abstract class TeleOpMode extends OpMode {
         }
 
         // Drive-specific initialization.
-        if (USE_PEDRO_PATHING) {
-            drive = new PedroPathingDrive(hardwareMap, robot.limelight.getSensor(), telemetry)
-                    .setRobotCentric(false)
-                    .setUseCompensation(true)
-                    .setUseVoltageCompensation(true)
-                    .setMode(FusedLocalizer.Mode.TELEOP)
-                    .setStartingPose(startingPose)
-                    .startTeleopDrive();
-        } else {
-            drive = new MecanumDrive(hardwareMap, telemetry)
-                    .setLocalizer(PedroFollower.getFusedLocalizer(hardwareMap, robot.limelight.getSensor()).withMode(FusedLocalizer.Mode.TELEOP))
-                    .setStartPose(startingPose);
-        }
+        drive = getDrive(startingPose);
 
         // Get the alliance-specific information
         alliance = getAlliance();
+
+        // Initialize the scoring mechanism
         robot.shooter = robot.shooter
                 .setTurretBaseValues(alliance.getBaseX(), alliance.getBaseY())
                 .setAllianceAndPose(alliance, startingPose);
@@ -162,6 +152,34 @@ public abstract class TeleOpMode extends OpMode {
     @Override
     public void stop() {
         robot.intake.close();
+    }
+
+    /**
+     * Helper method to initialize the drive mechanism based on the specified starting pose.
+     *
+     * @param startingPose The initial pose of the robot on the field, including its position
+     *                     (x, y) and heading (theta). This
+     * @return An initialized Drive instance configured for TeleOp control, using either PedroPathing
+     *         or a MecanumDrive implementation based on the USE_PEDRO_PATHING flag.
+     */
+    private Drive getDrive(Pose startingPose) {
+        // Drive-specific initialization.
+        Drive drive;
+        if (USE_PEDRO_PATHING) {
+            drive = new PedroPathingDrive(hardwareMap, robot.limelight.getSensor(), telemetry)
+                    .setRobotCentric(false)
+                    .setUseCompensation(true)
+                    .setUseVoltageCompensation(true)
+                    .setMode(FusedLocalizer.Mode.TELEOP)
+                    .setStartingPose(startingPose)
+                    .startTeleopDrive();
+        } else {
+            drive = new MecanumDrive(hardwareMap, telemetry)
+                    .setLocalizer(PedroFollower.getFusedLocalizer(hardwareMap, robot.limelight.getSensor()).withMode(FusedLocalizer.Mode.TELEOP))
+                    .setStartPose(startingPose);
+        }
+
+        return drive;
     }
 
     /**
