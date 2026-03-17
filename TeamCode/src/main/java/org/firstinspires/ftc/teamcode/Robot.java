@@ -23,7 +23,7 @@ import java.util.List;
  * It follows the singleton pattern to ensure that only one instance of the robot exists throughout the program.
  */
 public class Robot{
-    public static final boolean USE_PEDRO_PATHING = true;
+    public static final boolean USE_PEDRO_PATHING = true; // PedroPathing or private MecanumDrive logic for TeleOp
     private static Robot robot;
 
     // Public fields for each mechanism and subsystem of the robot.
