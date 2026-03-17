@@ -39,7 +39,6 @@ public abstract class TeleOpMode extends OpMode {
     private final Timer timer = new Timer();
     private Robot robot;
     private Drive drive;
-    private Alliance alliance;
     private List<UserInputProcessor> inputHandlers;
     private List<Mechanism> mechanisms;
 
@@ -62,18 +61,14 @@ public abstract class TeleOpMode extends OpMode {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
         }
 
-        // Drive-specific initialization.
         drive = getDrive(startingPose);
+        Alliance alliance = getAlliance();
+        robot.shooter.setTurretBaseValues(alliance.getBaseX(), alliance.getBaseY())
+                .setAlliancePose(alliance, startingPose)
+                .setLocalizer(drive.getLocalizer());
 
-        // Get the alliance-specific information
-        alliance = getAlliance();
-
-        // Initialize the scoring mechanism
-        robot.shooter = robot.shooter
-                .setTurretBaseValues(alliance.getBaseX(), alliance.getBaseY())
-                .setAllianceAndPose(alliance, startingPose);
-
-        // Initialize the input handlers for each mechanism.
+        // Initialize the input handlers for each mechanism. This ensures the input handlers are
+        // updated during the loop.
         inputHandlers = Arrays.asList(
                 new DriveProcessor(drive, telemetry),
                 new IntakeProcessor(robot.intake, telemetry),
@@ -100,7 +95,7 @@ public abstract class TeleOpMode extends OpMode {
     @Override
     public void start() {
         drive.update();
-        robot.shooter.update(drive.getLocalizer(), alliance);
+        robot.shooter.update();
     }
 
     /**
@@ -120,13 +115,6 @@ public abstract class TeleOpMode extends OpMode {
         // so this ensures that a consistent set of values is used within each mechanism.
         currentGamepad1.copy(gamepad1);
         currentGamepad2.copy(gamepad2);
-
-        // Update the robot's pose
-        drive.update();
-
-        // Adjust the shooter's flywheel velocity, hood position, and turret angle based on the
-        // robot's current location
-        robot.shooter.update(drive.getLocalizer(), alliance);
 
         // Update any hardware components on each loop
         for (Mechanism mechanism : mechanisms) {
@@ -162,10 +150,8 @@ public abstract class TeleOpMode extends OpMode {
      *         or a MecanumDrive implementation based on the USE_PEDRO_PATHING flag.
      */
     private Drive getDrive(Pose startingPose) {
-        // Drive-specific initialization.
-        Drive drive;
         if (USE_PEDRO_PATHING) {
-            drive = new PedroPathingDrive(hardwareMap, robot.limelight.getSensor(), telemetry)
+            return new PedroPathingDrive(hardwareMap, robot.limelight.getSensor(), telemetry)
                     .setRobotCentric(false)
                     .setUseCompensation(true)
                     .setUseVoltageCompensation(true)
@@ -173,12 +159,10 @@ public abstract class TeleOpMode extends OpMode {
                     .setStartingPose(startingPose)
                     .startTeleopDrive();
         } else {
-            drive = new MecanumDrive(hardwareMap, telemetry)
+            return new MecanumDrive(hardwareMap, telemetry)
                     .setLocalizer(PedroFollower.getFusedLocalizer(hardwareMap, robot.limelight.getSensor()).withMode(FusedLocalizer.Mode.TELEOP))
                     .setStartPose(startingPose);
         }
-
-        return drive;
     }
 
     /**

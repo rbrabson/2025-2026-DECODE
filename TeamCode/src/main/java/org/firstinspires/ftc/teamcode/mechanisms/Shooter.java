@@ -19,6 +19,8 @@ import java.util.Objects;
 /**
  * Shooter mechanism class controlling turret, flywheel, and hood.
  * Fully LUT-driven via ShooterController.
+ * <p>
+ * <b>Note</b>: You must call setLocalizer() and setAlliancePose() before using the shooter.
  */
 public class Shooter implements Mechanism {
     private static final Pose BLUE_GOAL_SCORE = new Pose(25, 18.5, 0);
@@ -29,6 +31,8 @@ public class Shooter implements Mechanism {
     private final Hood hood;
     private final Telemetry telemetry;
     private ShooterController shooterModel;
+    private Localizer localizer;
+    private Alliance alliance;
 
     /**
      * Initializes shooter subsystems and telemetry.
@@ -47,6 +51,21 @@ public class Shooter implements Mechanism {
     }
 
     /**
+     * Fluent interface method to set the localizer for the shooter mechanism. This allows for chaining
+     * this configuration after constructing the Shooter object, providing flexibility in how the shooter
+     * is initialized and configured.
+     *
+     * @param localizer The Localizer instance that provides the current pose and velocity of the
+     *                  robot, which is used by the shooter model to calculate the necessary adjustments
+     *                  for aiming and shooting.
+     * @return The Shooter instance with the updated localizer, allowing for method chaining.
+     */
+    public Shooter setLocalizer(@NonNull Localizer localizer) {
+        this.localizer = localizer;
+        return this;
+    }
+
+    /**
      * Fluent interface method to set alliance and starting pose for the shooter model. This
      * allows for chaining this configuration after constructing the Shooter object,
      * providing flexibility in how the shooter is initialized and configured.
@@ -56,7 +75,7 @@ public class Shooter implements Mechanism {
      * @return The Shooter instance with the updated shooter model based on the specified alliance and starting pose, allowing for method chaining.
      */
     @NonNull
-    public Shooter setAllianceAndPose(@NonNull Alliance alliance, @NonNull Pose startingPose) {
+    public Shooter setAlliancePose(@NonNull Alliance alliance, @NonNull Pose startingPose) {
         shooterModel = shooterModel.setAlliancePose(alliance, startingPose);
         return this;
     }
@@ -200,52 +219,6 @@ public class Shooter implements Mechanism {
     }
 
     /**
-     * Updates the shooter mechanism based on the current pose and velocity of the robot, as well
-     * as the alliance color. This method calculates the necessary adjustments to the flywheel RPM,
-     * hood position, and turret angle to accurately aim and shoot at the target goal.
-     *
-     * @param localizer Localizer providing the current pose and velocity of the robot, which is
-     *                  used to calculate the
-     * @param alliance  The alliance color (BLUE or RED) to determine which goal to target
-     */
-    public void update(@NonNull Localizer localizer, @NonNull Alliance alliance) {
-        // Determine goal based on alliance
-        Pose goal = (alliance == Alliance.BLUE) ? BLUE_GOAL_SCORE : RED_GOAL_SCORE;
-        Pose pose = localizer.getPose();
-        Pose velocity = localizer.getVelocity();
-
-        double heading = pose.getHeading();
-        double forwardVel = velocity.getY();
-        double lateralVel = velocity.getX();
-        double angularVel = velocity.getHeading();
-
-        // Convert robot-relative velocity to field-relative
-        double cos = Math.cos(heading);
-        double sin = Math.sin(heading);
-        double fieldVx = forwardVel * cos - lateralVel * sin;
-        double fieldVy = forwardVel * sin + lateralVel * cos;
-
-        // Distance to target
-        double dx = goal.getX() - pose.getX();
-        double dy = goal.getY() - pose.getY();
-        double distanceToTarget = Math.hypot(dx, dy);
-
-        // Shooter LUTs and predictive calculations
-        double targetRPM = shooterModel.getFlywheelRPM(distanceToTarget);
-        double hoodPosition = shooterModel.getHoodPosition(distanceToTarget);
-        double turretLeadAngle = shooterModel.getTurretLeadAngle(
-                pose.getX(), pose.getY(), heading,
-                fieldVx, fieldVy, angularVel,
-                goal.getX(), goal.getY()
-        );
-
-        // Apply outputs to hardware
-        setFlywheelRPM(targetRPM);
-        setHoodPosition(hoodPosition);
-        setTurretTargetPosition(dx, dy, heading + turretLeadAngle);
-    }
-
-    /**
      * Sets the target position of the turret based on the desired x and y coordinates of the
      * target relative to the robot, and the robot's current heading. This method calculates the
      * necessary turret angle to aim at the target position and sets the turret's target position
@@ -281,6 +254,39 @@ public class Shooter implements Mechanism {
 
     @Override
     public void update() {
-        // NO-OP for Mechanism interface
+        // Determine goal based on alliance
+        Pose goal = (alliance == Alliance.BLUE) ? BLUE_GOAL_SCORE : RED_GOAL_SCORE;
+        Pose pose = localizer.getPose();
+        Pose velocity = localizer.getVelocity();
+
+        double heading = pose.getHeading();
+        double forwardVel = velocity.getY();
+        double lateralVel = velocity.getX();
+        double angularVel = velocity.getHeading();
+
+        // Convert robot-relative velocity to field-relative
+        double cos = Math.cos(heading);
+        double sin = Math.sin(heading);
+        double fieldVx = forwardVel * cos - lateralVel * sin;
+        double fieldVy = forwardVel * sin + lateralVel * cos;
+
+        // Distance to target
+        double dx = goal.getX() - pose.getX();
+        double dy = goal.getY() - pose.getY();
+        double distanceToTarget = Math.hypot(dx, dy);
+
+        // Shooter LUTs and predictive calculations
+        double targetRPM = shooterModel.getFlywheelRPM(distanceToTarget);
+        double hoodPosition = shooterModel.getHoodPosition(distanceToTarget);
+        double turretLeadAngle = shooterModel.getTurretLeadAngle(
+                pose.getX(), pose.getY(), heading,
+                fieldVx, fieldVy, angularVel,
+                goal.getX(), goal.getY()
+        );
+
+        // Apply outputs to hardware
+        setFlywheelRPM(targetRPM);
+        setHoodPosition(hoodPosition);
+        setTurretTargetPosition(dx, dy, heading + turretLeadAngle);
     }
 }
