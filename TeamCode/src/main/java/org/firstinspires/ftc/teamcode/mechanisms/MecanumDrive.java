@@ -41,12 +41,16 @@ import java.util.Objects;
 public class MecanumDrive implements Drive {
     private static final double STRAFING_ADJUSTMENT = 1.1;
 
+    private static final double DEADBAND = 0.05;
+
     private final DcMotorEx frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor;
     private final Telemetry telemetry;
     private final DriveController driveCtrl;
 
     private final VoltageCompensator voltageComp;
     private FusedLocalizer localizer;
+
+    private Pose targetPose = null;
 
     boolean fieldCentricEnabled = true;
 
@@ -148,6 +152,12 @@ public class MecanumDrive implements Drive {
         double[] powers = mecanumSolve(driveValues.getX(), driveValues.getY(), driveValues.getTurn());
         powers = voltageComp.compensate(powers);
         setMotorPowers(powers[0], powers[1], powers[2], powers[3]);
+
+        // Stop driving to the target pose if the driver provides manual input
+        double maxPower = MathEx.maxAbs(powers);
+        if (maxPower > DEADBAND) {
+            targetPose = null;
+        }
     }
 
     /**
@@ -159,7 +169,7 @@ public class MecanumDrive implements Drive {
      * @param target the target pose to drive toward (x, y, heading).
      */
     @SuppressLint("DefaultLocale")
-    public void driveToPose(Pose target) {
+    public void driveToPose(@NonNull Pose target) {
         // Get the current pose from the localizer
         Pose current = getPose();
 
@@ -184,6 +194,8 @@ public class MecanumDrive implements Drive {
 
         // Drive the robot toward the target pose
         drive(x, y, turn);
+
+        targetPose = target;
     }
 
     /**
@@ -228,7 +240,7 @@ public class MecanumDrive implements Drive {
      * @param rightRearPower  the power for the right rear motor.
      * @param rightFrontPower the power for the right front motor.
      */
-    public void setMotorPowers(double leftFrontPower, double leftRearPower, double rightRearPower, double rightFrontPower) {
+    private void setMotorPowers(double leftFrontPower, double leftRearPower, double rightRearPower, double rightFrontPower) {
         // Normalize the motor powers so that no value exceeds 1.0
         double maxPower = MathEx.maxAbs(1.0, leftFrontPower, leftRearPower, rightFrontPower, rightRearPower);
         leftFrontPower /= maxPower;
@@ -303,6 +315,9 @@ public class MecanumDrive implements Drive {
     @Override
     public void update() {
         localizer.update();
+        if (targetPose != null) {
+            driveToPose(targetPose);
+        }
     }
 
     /**

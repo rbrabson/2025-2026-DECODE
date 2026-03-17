@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.mechanisms;
 
+import androidx.annotation.NonNull;
+
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.localization.Localizer;
 
@@ -40,5 +42,5 @@ public interface Drive extends Mechanism {
      * @param target The target Pose that the robot should drive to, including the desired
      *               position (x, y) and heading (theta).
      */
-    void driveToPose(Pose target);
+    void driveToPose(@NonNull Pose target);
 }

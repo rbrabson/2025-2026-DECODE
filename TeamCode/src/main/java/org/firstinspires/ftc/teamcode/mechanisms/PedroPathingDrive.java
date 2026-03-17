@@ -122,7 +122,7 @@ public class PedroPathingDrive implements Drive {
      * @param target The target pose to which the robot should drive, including its position (x, y)
      *               and orientation (heading).
      */
-    public void driveToPose(Pose target) {
+    public void driveToPose(@NonNull Pose target) {
         Pose start = follower.getPose();
         Path path = new Path(new BezierLine(start, target));
         follower.followPath(path);
