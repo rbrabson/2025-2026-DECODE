@@ -25,9 +25,9 @@ import java.util.List;
  * path, checks for motif detection, and updates the blackboard with the robot's pose and turret position.
  */
 public abstract class AutonomousOpMode extends OpMode {
-    protected FusedLocalizer localizer;
+    private FusedLocalizer localizer;
     protected Robot robot;
-    protected AutonomousPathing path;
+    private AutonomousPathing path;
     protected Follower follower;
     private final Timer timer = new Timer();
     private List<Mechanism> mechanisms;
