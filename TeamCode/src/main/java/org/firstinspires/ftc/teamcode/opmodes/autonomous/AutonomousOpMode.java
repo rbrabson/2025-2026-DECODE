@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.decode.Alliance;
-import org.firstinspires.ftc.teamcode.mechanisms.DriveMechanism;
+import org.firstinspires.ftc.teamcode.mechanisms.Drive;
 import org.firstinspires.ftc.teamcode.mechanisms.Mechanism;
 import org.firstinspires.ftc.teamcode.mechanisms.PedroPathingDrive;
 import org.firstinspires.ftc.teamcode.pedroPathing.FusedLocalizer;
@@ -30,7 +30,7 @@ public abstract class AutonomousOpMode extends OpMode {
     protected FusedLocalizer localizer;
     protected Robot robot;
     protected AutonomousPathing path;
-    private DriveMechanism drive;
+    private Drive drive;
     private final Timer timer = new Timer();
     private List<Mechanism> mechanisms;
 

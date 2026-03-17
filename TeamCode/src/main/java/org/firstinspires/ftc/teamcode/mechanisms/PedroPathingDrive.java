@@ -26,7 +26,7 @@ import java.util.Objects;
  * configuring the localizer mode. The class utilizes a Follower to control the robot's movement
  * based on the current pose and target paths.
  */
-public class PedroPathingDrive implements DriveMechanism {
+public class PedroPathingDrive implements Drive {
     public final FusedLocalizer localizer;
     private final Follower follower;
     private final Telemetry telemetry;

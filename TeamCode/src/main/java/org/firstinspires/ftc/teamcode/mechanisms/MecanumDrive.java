@@ -37,7 +37,7 @@ import java.util.Objects;
  *     </li>
  * </ol>
  */
-public class MecanumDrive implements DriveMechanism {
+public class MecanumDrive implements Drive {
     private static final double STRAFING_ADJUSTMENT = 1.1;
 
     private final DcMotorEx frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor;

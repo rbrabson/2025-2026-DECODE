@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.inputprocessors.PedroPathingProcessor;
 import org.firstinspires.ftc.teamcode.inputprocessors.ShootArtifactProcessor;
 import org.firstinspires.ftc.teamcode.inputprocessors.ShooterProcessor;
 import org.firstinspires.ftc.teamcode.inputprocessors.UserInputProcessor;
-import org.firstinspires.ftc.teamcode.mechanisms.DriveMechanism;
+import org.firstinspires.ftc.teamcode.mechanisms.Drive;
 import org.firstinspires.ftc.teamcode.mechanisms.MecanumDrive;
 import org.firstinspires.ftc.teamcode.mechanisms.Mechanism;
 import org.firstinspires.ftc.teamcode.mechanisms.PedroPathingDrive;
@@ -38,7 +38,7 @@ public abstract class TeleOpMode extends OpMode {
     private final Gamepad currentGamepad2 = new Gamepad();
     private final Timer timer = new Timer();
     private Robot robot;
-    private DriveMechanism drive;
+    private Drive drive;
     private List<UserInputProcessor> inputHandlers;
     private List<Mechanism> mechanisms;
 

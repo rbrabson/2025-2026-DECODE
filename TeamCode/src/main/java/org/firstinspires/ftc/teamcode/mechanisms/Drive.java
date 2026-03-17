@@ -8,7 +8,7 @@ import com.pedropathing.localization.Localizer;
  * implemented by any drive system (e.g., mecanum, tank, swerve) to ensure consistent control and
  * integration with the robot's overall mechanism management.
  */
-public interface DriveMechanism extends Mechanism {
+public interface Drive extends Mechanism {
     /**
      * Gets the current localizer associated with this drive mechanism.
      *
