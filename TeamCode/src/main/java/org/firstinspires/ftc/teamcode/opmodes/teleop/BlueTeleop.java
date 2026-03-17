@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.decode.Alliance;
  * Teleop for the blue alliance.
  */
 @TeleOp(name = "Blue Teleop", group = "Active")
-public class BlueTeleop extends BaseTeleOp {
+public class BlueTeleop extends TeleOpMode {
 
     /**
      * Returns the alliance that the robot is on, which is BLUE for this teleop mode.

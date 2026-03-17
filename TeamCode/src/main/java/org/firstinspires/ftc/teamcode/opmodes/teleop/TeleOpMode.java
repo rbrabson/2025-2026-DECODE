@@ -30,7 +30,7 @@ import java.util.Objects;
  * handlers for controlling the robot's mechanisms, and managing the main loop for processing
  * user inputs and updating the robot's state.
  */
-public abstract class BaseTeleOp extends OpMode {
+public abstract class TeleOpMode extends OpMode {
     private static final Pose DEFAULT_STARTING_POSE = new Pose(7.5, 7.5, Math.toRadians(90));
 
     private final Gamepad currentGamepad1 = new Gamepad();
