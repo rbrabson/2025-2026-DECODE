@@ -22,4 +22,13 @@ public interface Drive extends Mechanism {
      * @return The current Pose of the robot, including its position (x, y) and heading (theta).
      */
     Pose getPose();
+
+    /**
+     * Drives the robot using the specified forward, strafe, and turn values.
+     *
+     * @param forward The forward/backward speed of the robot. Positive values move the robot forward, while negative values move it backward.
+     * @param strafe  The left/right speed of the robot. Positive values move the robot to the right, while negative values move it to the left.
+     * @param turn    The rotational speed of the robot. Positive values turn the robot to the right, while negative values turn it to the left.
+     */
+    void drive(double forward, double strafe, double turn);
 }

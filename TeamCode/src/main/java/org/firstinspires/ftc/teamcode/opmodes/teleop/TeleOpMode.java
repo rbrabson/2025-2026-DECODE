@@ -8,8 +8,8 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.decode.Alliance;
+import org.firstinspires.ftc.teamcode.inputprocessors.DriveProcessor;
 import org.firstinspires.ftc.teamcode.inputprocessors.IntakeProcessor;
-import org.firstinspires.ftc.teamcode.inputprocessors.PedroPathingProcessor;
 import org.firstinspires.ftc.teamcode.inputprocessors.ShootArtifactProcessor;
 import org.firstinspires.ftc.teamcode.inputprocessors.ShooterProcessor;
 import org.firstinspires.ftc.teamcode.inputprocessors.UserInputProcessor;
@@ -86,7 +86,7 @@ public abstract class TeleOpMode extends OpMode {
 
         // Initialize the input handlers for each mechanism.
         inputHandlers = Arrays.asList(
-                new PedroPathingProcessor((PedroPathingDrive) drive, telemetry),
+                new DriveProcessor(drive, telemetry),
                 new IntakeProcessor(robot.intake, telemetry),
                 new ShooterProcessor(robot.shooter, robot.limelight, drive.getLocalizer(), alliance, telemetry),
                 new ShootArtifactProcessor(robot.intake, robot.transfer, robot.shooter, telemetry)
