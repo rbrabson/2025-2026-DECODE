@@ -5,6 +5,11 @@ import androidx.annotation.NonNull;
 import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+/**
+ * An extension of the Telemetry interface that supports log levels for telemetry data. This allows
+ * you to control which telemetry messages are sent based on their severity, making it easier to
+ * filter out less important information during operation.
+ */
 public interface TelemetryEx extends Telemetry {
     /**
      * Wraps a Telemetry object in a TelemetryEx implementation with the default log level of INFO.
