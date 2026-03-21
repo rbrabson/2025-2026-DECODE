@@ -7,17 +7,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public interface TelemetryEx extends Telemetry {
     /**
-     * Log levels in increasing order of severity. Messages with a level less than or equal to the
-     * current log level will be sent to telemetry.
-     */
-    enum Level {
-        DEBUG,
-        INFO,
-        WARNING,
-        ERROR
-    }
-
-    /**
      * Wraps a Telemetry object in a TelemetryEx implementation with the default log level of INFO.
      * The returned TelemetryExImpl will send messages with level INFO, WARNING, and ERROR to the
      * given Telemetry object, but will ignore messages with level DEBUG.
@@ -28,7 +17,7 @@ public interface TelemetryEx extends Telemetry {
      */
     @NonNull
     static TelemetryEx wrap(@NonNull Telemetry telemetry) {
-        return TelemetryEx.wrap(TelemetryExImpl.Level.INFO, telemetry);
+        return TelemetryEx.wrap(Level.INFO, telemetry);
     }
 
     /**
@@ -100,7 +89,7 @@ public interface TelemetryEx extends Telemetry {
      * @param args    The arguments to be formatted into the value string.
      * @return The telemetry Item that was added, or null if the log level was too low to add the item.
      */
-    Item addData(TelemetryExImpl.Level level, String caption, String format, Object... args);
+    Item addData(Level level, String caption, String format, Object... args);
 
     /** Adds a telemetry data item with the specified caption and value if the specified log level is less than
      * or equal to the current log level. Otherwise, does nothing and returns null.
@@ -146,7 +135,7 @@ public interface TelemetryEx extends Telemetry {
      * @param value   The value for the telemetry data item.
      * @return The telemetry Item that was added, or null if the log level was too low to add the item.
      */
-    Item addData(TelemetryExImpl.Level level, String caption, Object value);
+    Item addData(Level level, String caption, Object value);
 
     /** Adds a telemetry data item with the specified caption and value produced by the given
      * function if the specified log level is less than or equal to the current log level.
@@ -197,7 +186,7 @@ public interface TelemetryEx extends Telemetry {
      * @param valueProducer A function that produces the value for the telemetry data item when called.
      * @return The telemetry Item that was added, or null if the log level was too low to add the item.
      */
-    <T> Item addData(TelemetryExImpl.Level level, String caption, Func<T> valueProducer);
+    <T> Item addData(Level level, String caption, Func<T> valueProducer);
 
     /** Adds a telemetry line with the specified caption if the specified log level is less than or
      *  equal to the current log level.  Otherwise, does nothing and returns null.
@@ -238,7 +227,7 @@ public interface TelemetryEx extends Telemetry {
      * @param lineCaption The caption for the telemetry line.
      * @return The telemetry Line that was added, or null if the log level was too low to add the line.
      */
-    Line addLine(TelemetryExImpl.Level level, String lineCaption);
+    Line addLine(Level level, String lineCaption);
 
     /**
      * Gets the current log level. Messages with a level less than or equal to this level will be
@@ -246,7 +235,7 @@ public interface TelemetryEx extends Telemetry {
      *
      * @return The current log level.
      */
-    TelemetryExImpl.Level getLevel();
+    Level getLevel();
 
     /**
      * Sets the current log level. Messages with a level less than or equal to this level will be sent to
@@ -254,5 +243,5 @@ public interface TelemetryEx extends Telemetry {
      *
      * @param level The log level to set. Must not be null.
      */
-    void setLevel(@NonNull TelemetryExImpl.Level level);
+    void setLevel(@NonNull Level level);
 }
