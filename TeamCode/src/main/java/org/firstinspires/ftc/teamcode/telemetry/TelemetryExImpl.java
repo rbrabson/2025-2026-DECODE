@@ -12,17 +12,6 @@ import java.util.Objects;
  * You can set the log level to control which messages are actually sent to telemetry.
  */
 public class TelemetryExImpl implements TelemetryEx {
-    /**
-     * Log levels in increasing order of severity. Messages with a level less than or equal to the
-     * current log level will be sent to telemetry.
-     */
-    public enum Level {
-        DEBUG,
-        INFO,
-        WARNING,
-        ERROR
-    }
-
     private final Telemetry telemetry;
     private Level level;
 
