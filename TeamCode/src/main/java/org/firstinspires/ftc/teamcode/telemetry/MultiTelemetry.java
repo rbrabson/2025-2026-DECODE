@@ -34,11 +34,6 @@ public class MultiTelemetry implements TelemetryEx {
     public MultiTelemetry(@NonNull Level level, @NonNull Telemetry... telemetries) {
         this.level = Objects.requireNonNull(level);
         this.telemetry = Objects.requireNonNull(telemetries);
-        for (Telemetry t : telemetries) {
-            if (t instanceof TelemetryEx) {
-                ((TelemetryEx) t).setLevel(level);
-            }
-        }
     }
 
     /**
@@ -329,11 +324,6 @@ public class MultiTelemetry implements TelemetryEx {
      */
     public MultiTelemetry setLevel(@NonNull Level level) {
         this.level = Objects.requireNonNull(level);
-        for (Telemetry t : telemetry) {
-            if (t instanceof TelemetryEx) {
-                ((TelemetryEx) t).setLevel(level);
-            }
-        }
         return this;
     }
 
