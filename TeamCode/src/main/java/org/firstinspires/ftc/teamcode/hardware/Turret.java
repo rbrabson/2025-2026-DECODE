@@ -33,7 +33,7 @@ public class Turret {
     private static final double DEFAULT_BY = 144;
 
     private final DcMotorEx turret;
-    @Nullable private final Telemetry telemetry;
+    private final Telemetry telemetry;
 
     private double baseX = DEFAULT_BX;
     private double baseY = DEFAULT_BY;
@@ -45,29 +45,17 @@ public class Turret {
      * the appropriate mode and direction.
      *
      * @param hardwareMap The hardware map to access the turret motor.
-     */
-    public Turret(@NonNull HardwareMap hardwareMap) {
-        this(hardwareMap, null);
-    }
-
-    /**
-     * Constructor for the Turret class. Initializes the turret motor and sets it to
-     * the appropriate mode and direction.
-     *
-     * @param hardwareMap The hardware map to access the turret motor.
      * @param telemetry   The telemetry object to log initialization status and
      *                    target positions.
      */
-    public Turret(@NonNull HardwareMap hardwareMap, @Nullable Telemetry telemetry) {
+    public Turret(@NonNull HardwareMap hardwareMap, @NonNull Telemetry telemetry) {
         HardwareMap map = Objects.requireNonNull(hardwareMap, "hardwareMap");
         this.turret = map.get(DcMotorEx.class, "turret");
         this.telemetry = telemetry;
 
         initializeTurretMotor();
 
-        if (telemetry != null) {
-            telemetry.addLine("Turret initialized");
-        }
+        telemetry.addLine("Turret initialized");
     }
 
     /**
@@ -126,9 +114,7 @@ public class Turret {
         turret.setTargetPosition(targetPosition);
         turret.setPower(RUN_POWER);
 
-        if (telemetry != null) {
-            telemetry.addData("[TURRET] target ticks", targetPosition);
-        }
+        telemetry.addData("[TURRET] target ticks", targetPosition);
     }
 
     /**

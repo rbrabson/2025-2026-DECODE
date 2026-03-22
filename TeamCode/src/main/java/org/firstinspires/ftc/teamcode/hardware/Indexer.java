@@ -37,7 +37,7 @@ public class Indexer implements AutoCloseable{
 
     private final Servo indexer;
     private final ColorProcessor colorProcessor;
-    @Nullable private final Telemetry telemetry;
+    private final Telemetry telemetry;
 
     private final ElapsedTime timer = new ElapsedTime();
     private final Color[] artifactColors = new Color[3];
@@ -69,15 +69,13 @@ public class Indexer implements AutoCloseable{
         HardwareMap map = Objects.requireNonNull(hardwareMap, "hardwareMap");
         this.indexer = map.get(Servo.class, "index");
         this.colorProcessor = new ColorProcessor(hardwareMap, telemetry);
-        this.telemetry = telemetry;
+        this.telemetry = Objects.requireNonNull(telemetry);
 
         Arrays.fill(artifactColors, null);
 
         currentPosition = Position.INTAKE_1; // Start at the first intake position
 
-        if (telemetry != null) {
-            telemetry.addLine("Indexer initialized");
-        }
+        telemetry.addLine("Indexer initialized");
     }
 
     /**

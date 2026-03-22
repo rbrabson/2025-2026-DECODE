@@ -17,7 +17,7 @@ import java.util.Objects;
 public class IntakeProcessor implements UserInputProcessor {
     private final static long INTAKE_TOGGLE_DELAY = 500;
     private final Intake intake;
-    @Nullable private final Telemetry telemetry;
+    private final Telemetry telemetry;
 
     private final Timer rightTriggerDuration = new Timer();
     private boolean isIntakeRunning = true;
@@ -28,9 +28,9 @@ public class IntakeProcessor implements UserInputProcessor {
      * @param intake    the Intake mechanism to control
      * @param telemetry the Telemetry for debugging and feedback
      */
-    public IntakeProcessor(@NonNull Intake intake, @Nullable Telemetry telemetry) {
+    public IntakeProcessor(@NonNull Intake intake, @NonNull Telemetry telemetry) {
         this.intake = Objects.requireNonNull(intake);
-        this.telemetry = telemetry;
+        this.telemetry = Objects.requireNonNull(telemetry);
     }
 
     /**
@@ -56,7 +56,7 @@ public class IntakeProcessor implements UserInputProcessor {
             intake.stopIntakeMotor();
         }
 
-        if (telemetry != null && isIntakeRunning != oldIsIntakeRunning) {
+        if (isIntakeRunning != oldIsIntakeRunning) {
             telemetry.addData("[INTAKE] IsRunning", isIntakeRunning);
         }
     }

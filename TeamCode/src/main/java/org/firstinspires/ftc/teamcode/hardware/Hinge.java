@@ -24,7 +24,7 @@ public class Hinge {
     private static final double POSITION_EPSILON =1e-4;
 
     private final Servo hinge;
-    @Nullable private final Telemetry telemetry;
+    private final Telemetry telemetry;
 
     private final ElapsedTime timer = new ElapsedTime();
 
@@ -32,25 +32,14 @@ public class Hinge {
      * Constructor for the Hinge class.
      *
      * @param hardwareMap the hardware map to access the servo
-     */
-    public Hinge(@NonNull HardwareMap hardwareMap) {
-        this(hardwareMap, null);
-    }
-
-    /**
-     * Constructor for the Hinge class.
-     *
-     * @param hardwareMap the hardware map to access the servo
      * @param telemetry   the telemetry object for logging information
      */
-    public Hinge(@NonNull HardwareMap hardwareMap, @Nullable Telemetry telemetry) {
+    public Hinge(@NonNull HardwareMap hardwareMap, @NonNull Telemetry telemetry) {
         HardwareMap map = Objects.requireNonNull(hardwareMap, "hardwareMap");
         this.hinge = map.get(Servo.class, "h");
-        this.telemetry = telemetry;
+        this.telemetry =Objects.requireNonNull(telemetry);
 
-        if (telemetry != null) {
-            telemetry.addLine("Hinge initialized");
-        }
+        telemetry.addLine("Hinge initialized");
     }
 
     /**
@@ -58,9 +47,7 @@ public class Hinge {
      */
     public void raise() {
         setPosition(RAISED_POSITION);
-        if (telemetry != null) {
-            telemetry.addLine("[HINGE] Raised");
-        }
+        telemetry.addLine("[HINGE] Raised");
     }
 
     /**
@@ -74,9 +61,7 @@ public class Hinge {
         }
         hinge.setPosition(position);
         timer.reset();
-        if (telemetry != null) {
-            telemetry.addData("[HINGE] Position", position);
-        }
+        telemetry.addData("[HINGE] Position", position);
     }
 
     /**
@@ -84,9 +69,7 @@ public class Hinge {
      */
     public void lower() {
         setPosition(LOWERED_POSITION);
-        if (telemetry != null) {
-            telemetry.addLine("[HINGE] Lowered");
-        }
+        telemetry.addLine("[HINGE] Lowered");
     }
 
     /**

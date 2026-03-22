@@ -23,7 +23,7 @@ public class DriveProcessor implements UserInputProcessor {
     private static final double DEADBAND = 0.05;
 
     private final Drive drive;
-    @Nullable private final Telemetry telemetry;
+    private final Telemetry telemetry;
 
     private boolean slowMode = false;
 
@@ -33,9 +33,9 @@ public class DriveProcessor implements UserInputProcessor {
      * @param drive     the drive to control.
      * @param telemetry the telemetry used to display data on the driver station.
      */
-    public DriveProcessor(@NonNull Drive drive, @Nullable Telemetry telemetry) {
+    public DriveProcessor(@NonNull Drive drive, @NonNull Telemetry telemetry) {
         this.drive = Objects.requireNonNull(drive);
-        this.telemetry = telemetry;
+        this.telemetry = Objects.requireNonNull(telemetry);
     }
 
     /**
@@ -60,12 +60,10 @@ public class DriveProcessor implements UserInputProcessor {
 
         drive.drive(x, y, turn);
 
-        if (telemetry != null) {
-            telemetry.addData("[DRIVE] X", x);
-            telemetry.addData("[DRIVE] Y", y);
-            telemetry.addData("[DRIVE] Turn", turn);
-            telemetry.addData("[DRIVE] Slow Mode", slowMode);
-        }
+        telemetry.addData("[DRIVE] X", x);
+        telemetry.addData("[DRIVE] Y", y);
+        telemetry.addData("[DRIVE] Turn", turn);
+        telemetry.addData("[DRIVE] Slow Mode", slowMode);
     }
 
     /**
