@@ -19,7 +19,7 @@ public class IntakeMotor {
     private static final double INTAKE_POWER =1.0;
 
     private final DcMotorEx intake;
-    @Nullable private final Telemetry telemetry;
+    private final Telemetry telemetry;
 
     /**
      * Constructor for the IntakeMotor class.
@@ -30,13 +30,11 @@ public class IntakeMotor {
     public IntakeMotor(@NonNull HardwareMap hardwareMap, @Nullable Telemetry telemetry) {
         HardwareMap map = Objects.requireNonNull(hardwareMap, "hardwareMap");
         this.intake = map.get(DcMotorEx.class, "intake");
-        this.telemetry = telemetry;
+        this.telemetry = Objects.requireNonNull(telemetry);
 
         initializeIntakeMotor();
 
-        if (this.telemetry != null) {
-            this.telemetry.addLine("IntakeMotor initialized");
-        }
+        this.telemetry.addLine("IntakeMotor initialized");
     }
 
     /**

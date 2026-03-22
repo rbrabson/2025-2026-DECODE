@@ -24,17 +24,7 @@ public class Hood {
     private static final double POSITION_EPSILON = 1e-4;
 
     private final Servo hood;
-    @Nullable private final Telemetry telemetry;
-
-    /**
-     * Constructor for the Hood class, which initializes the hood servo without
-     * telemetry.
-     *
-     * @param hardwareMap The hardware map to access the hood servo.
-     */
-    public Hood(@NonNull HardwareMap hardwareMap) {
-        this(hardwareMap, null);
-    }
+    private final Telemetry telemetry;
 
     /**
      * Constructor for the Hood class, which initializes the hood servo and telemetry.
@@ -43,14 +33,12 @@ public class Hood {
      * @param telemetry   The telemetry object for logging data related to the hood
      *                    mechanism.
      */
-    public Hood(@NonNull HardwareMap hardwareMap, @Nullable Telemetry telemetry) {
+    public Hood(@NonNull HardwareMap hardwareMap, @NonNull Telemetry telemetry) {
         HardwareMap map = Objects.requireNonNull(hardwareMap, "hardwareMap");
         this.hood = map.get(Servo.class, "s1");
         this.telemetry = telemetry;
 
-        if (telemetry != null) {
-            telemetry.addLine("Hood initialized");
-        }
+        telemetry.addLine("Hood initialized");
     }
 
     /**
@@ -100,9 +88,7 @@ public class Hood {
             return;
         }
         hood.setPosition(clippedPosition);
-        if (telemetry != null) {
-            telemetry.addData("[HOOD] Position", clippedPosition);
-        }
+        telemetry.addData("[HOOD] Position", clippedPosition);
     }
 
     /**

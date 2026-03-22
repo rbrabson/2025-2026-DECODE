@@ -17,30 +17,19 @@ import java.util.Objects;
 public class Light {
     private final DcMotorEx light;
 
-
-    /**
-     * Constructor for the Light class. Initializes the light motor and enables it.
-     *
-     * @param hardwareMap The hardware map to access the light motor.
-     */
-    public Light(@NonNull HardwareMap hardwareMap) {
-        this(hardwareMap, null);
-    }
-
     /**
      * Constructor for the Light class. Initializes the light motor and enables it.
      *
      * @param hardwareMap The hardware map to access the light motor.
      * @param telemetry   The telemetry object to log initialization status.
      */
-    public Light(@NonNull HardwareMap hardwareMap, @Nullable Telemetry telemetry) {
+    public Light(@NonNull HardwareMap hardwareMap, @NonNull Telemetry telemetry) {
         HardwareMap map = Objects.requireNonNull(hardwareMap, "hardwareMap");
+        Objects.requireNonNull(telemetry);
         light = map.get(DcMotorEx.class, "l");
         enable();
 
-        if (telemetry != null) {
-            telemetry.addLine("Light initialized");
-        }
+        telemetry.addLine("Light initialized");
     }
 
     /**

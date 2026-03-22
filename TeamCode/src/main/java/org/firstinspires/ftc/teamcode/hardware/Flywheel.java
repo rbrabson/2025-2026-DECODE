@@ -44,7 +44,6 @@ public class Flywheel {
 
     private final DcMotorEx motor;
 
-    @Nullable
     private final Telemetry telemetry;
 
     private double targetRPM = 0;
@@ -59,24 +58,15 @@ public class Flywheel {
     private double pidOutput = 0;
 
     /**
-     * Constructor for Flywheel subsystem.
-     *
-     * @param hardwareMap HardwareMap to access motors
-     */
-    public Flywheel(@NonNull HardwareMap hardwareMap) {
-        this(hardwareMap, null);
-    }
-
-    /**
      * Constructor for Flywheel subsystem with telemetry.
      *
      * @param hardwareMap HardwareMap to access motors
-     * @param telemetry   Telemetry for debugging (can be null)
+     * @param telemetry   Telemetry for debugging
      */
     public Flywheel(@NonNull HardwareMap hardwareMap, @Nullable Telemetry telemetry) {
         HardwareMap map = Objects.requireNonNull(hardwareMap);
         this.motor = map.get(DcMotorEx.class, "shoot1");
-        this.telemetry = telemetry;
+        this.telemetry = Objects.requireNonNull(telemetry);
 
         velocityPID = new PID(kP, kI, kD).withOutputLimits(-1.0, 1.0);
         feedForward = new FeedForward(kS, kV, kA);
@@ -114,14 +104,12 @@ public class Flywheel {
 
         lastTargetRPM = targetRPM;
 
-        if (telemetry != null) {
-            telemetry.addData("Flywheel RPM", getRPM());
-            telemetry.addData("Flywheel Target RPM", targetRPM);
-            telemetry.addData("Flywheel Feedforward", ff);
-            telemetry.addData("Flywheel PID Output", pidOutput);
-            telemetry.addData("Flywheel Total Power", power);
-            telemetry.addData("Flywheel RPM Error", targetRPM - getRPM());
-        }
+        telemetry.addData("Flywheel RPM", getRPM());
+        telemetry.addData("Flywheel Target RPM", targetRPM);
+        telemetry.addData("Flywheel Feedforward", ff);
+        telemetry.addData("Flywheel PID Output", pidOutput);
+        telemetry.addData("Flywheel Total Power", power);
+        telemetry.addData("Flywheel RPM Error", targetRPM - getRPM());
     }
 
     /**

@@ -15,16 +15,7 @@ import java.util.Objects;
  */
 public class VoltageSensor {
     private final Iterable<com.qualcomm.robotcore.hardware.VoltageSensor> sensors;
-    @Nullable private final Telemetry telemetry;
-
-    /**
-    * Constructor for the VoltageSensor class.
-    *
-    * @param hardwareMap The hardware map to access the voltage sensor.
-    */
-    public VoltageSensor(@NonNull HardwareMap hardwareMap) {
-        this(hardwareMap, null);
-    }
+    private final Telemetry telemetry;
 
     /**
      * Constructor for the VoltageSensor class.
@@ -32,13 +23,13 @@ public class VoltageSensor {
      * @param hardwareMap The hardware map to access the voltage sensor.
      * @param telemetry   The telemetry object for logging voltage readings.
      */
-    public VoltageSensor(@NonNull HardwareMap hardwareMap, @Nullable Telemetry telemetry) {
+    public VoltageSensor(@NonNull HardwareMap hardwareMap, @NonNull Telemetry telemetry) {
         HardwareMap map = Objects.requireNonNull(hardwareMap, "hardwareMap");
         if (!map.voltageSensor.iterator().hasNext()) {
             throw new IllegalStateException("No voltage sensors found in HardwareMap");
         }
         this.sensors = map.voltageSensor;
-        this.telemetry = telemetry;
+        this.telemetry = Objects.requireNonNull(telemetry);
     }
 
     /**
@@ -58,9 +49,7 @@ public class VoltageSensor {
 
         double result = Double.isInfinite(minPositiveVoltage) ? 0.0 : minPositiveVoltage;
 
-        if (telemetry != null) {
-            telemetry.addData("Battery Voltage", result);
-        }
+        telemetry.addData("Battery Voltage", result);
 
         return result;
     }
