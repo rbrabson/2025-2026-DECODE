@@ -248,5 +248,5 @@ public interface TelemetryEx extends Telemetry {
      *
      * @param level The log level to set. Must not be null.
      */
-    void setLevel(@NonNull Level level);
+    TelemetryEx setLevel(@NonNull Level level);
 }

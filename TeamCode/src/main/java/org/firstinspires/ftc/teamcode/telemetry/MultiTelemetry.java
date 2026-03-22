@@ -327,13 +327,14 @@ public class MultiTelemetry implements TelemetryEx {
      *
      * @param level The log level to set. Must not be null.
      */
-    public void setLevel(@NonNull Level level) {
+    public MultiTelemetry setLevel(@NonNull Level level) {
         this.level = Objects.requireNonNull(level);
         for (Telemetry t : telemetry) {
             if (t instanceof TelemetryEx) {
                 ((TelemetryEx) t).setLevel(level);
             }
         }
+        return this;
     }
 
     @Override

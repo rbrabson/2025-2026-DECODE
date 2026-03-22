@@ -299,8 +299,9 @@ public class TelemetryExImpl implements TelemetryEx {
      *
      * @param level The log level to set. Must not be null.
      */
-    public void setLevel(@NonNull Level level) {
+    public TelemetryExImpl setLevel(@NonNull Level level) {
         this.level = Objects.requireNonNull(level);
+        return this;
     }
 
     // ---------- Telemetry interface methods ----------
