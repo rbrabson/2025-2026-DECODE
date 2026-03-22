@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -27,7 +26,7 @@ public class IntakeMotor {
      * @param hardwareMap The hardware map to initialize the intake motor.
      * @param telemetry The telemetry object for logging purposes.
      */
-    public IntakeMotor(@NonNull HardwareMap hardwareMap, @Nullable Telemetry telemetry) {
+    public IntakeMotor(@NonNull HardwareMap hardwareMap, @NonNull Telemetry telemetry) {
         HardwareMap map = Objects.requireNonNull(hardwareMap, "hardwareMap");
         this.intake = map.get(DcMotorEx.class, "intake");
         this.telemetry = Objects.requireNonNull(telemetry);

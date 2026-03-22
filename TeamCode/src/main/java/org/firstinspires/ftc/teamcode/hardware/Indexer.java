@@ -50,23 +50,14 @@ public class Indexer implements AutoCloseable{
     private Position currentPosition;
 
     /**
-     * Constructor for the Indexer class that initializes the indexer servo and color processor using
-     * the provided hardware map.
-     *
-     * @param hardwareMap the hardware map to access the servo and color sensor
-     */
-    public Indexer(@NonNull HardwareMap hardwareMap) {
-        this(hardwareMap, null);
-    }
-
-    /**
      * Constructor for the Indexer class.
      *
      * @param hardwareMap the hardware map to access the servo and color sensor
      * @param telemetry   the telemetry object for logging information
      */
-    public Indexer(@NonNull HardwareMap hardwareMap, @Nullable Telemetry telemetry) {
+    public Indexer(@NonNull HardwareMap hardwareMap, @NonNull Telemetry telemetry) {
         HardwareMap map = Objects.requireNonNull(hardwareMap, "hardwareMap");
+        Objects.requireNonNull(telemetry);
         this.indexer = map.get(Servo.class, "index");
         this.colorProcessor = new ColorProcessor(hardwareMap, telemetry);
         this.telemetry = Objects.requireNonNull(telemetry);

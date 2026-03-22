@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -63,7 +62,7 @@ public class Flywheel {
      * @param hardwareMap HardwareMap to access motors
      * @param telemetry   Telemetry for debugging
      */
-    public Flywheel(@NonNull HardwareMap hardwareMap, @Nullable Telemetry telemetry) {
+    public Flywheel(@NonNull HardwareMap hardwareMap, @NonNull Telemetry telemetry) {
         HardwareMap map = Objects.requireNonNull(hardwareMap);
         this.motor = map.get(DcMotorEx.class, "shoot1");
         this.telemetry = Objects.requireNonNull(telemetry);
