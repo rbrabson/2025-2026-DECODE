@@ -102,13 +102,6 @@ public class Flywheel {
         motor.setPower(power);
 
         lastTargetRPM = targetRPM;
-
-        telemetry.addData("Flywheel RPM", getRPM());
-        telemetry.addData("Flywheel Target RPM", targetRPM);
-        telemetry.addData("Flywheel Feedforward", ff);
-        telemetry.addData("Flywheel PID Output", pidOutput);
-        telemetry.addData("Flywheel Total Power", power);
-        telemetry.addData("Flywheel RPM Error", targetRPM - getRPM());
     }
 
     /**

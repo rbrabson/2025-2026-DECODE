@@ -260,6 +260,32 @@ public class Shooter implements Mechanism {
     }
 
     /**
+     * Rotates the turret to the left by a specified increment in encoder ticks. This method adjusts
+     * the turret's target position by subtracting the increment from the current turret position,
+     * effectively rotating it to the left. The method ensures that the turret's target position is
+     * updated based on the current position, allowing for relative adjustments to the turret's aim
+     * without needing to specify an absolute position.
+     *
+     * @param increment Amount to rotate the turret to the left in encoder ticks (positive value)
+     */
+    public void rotateTurretLeft(int increment) {
+        setTurretTargetPosition(getTurretCurrentPosition() - increment);
+    }
+
+    /**
+     * Rotates the turret to the right by a specified increment in encoder ticks. This method adjusts
+     * the turret's target position by adding the increment to the current turret position,
+     * effectively rotating it to the right. The method ensures that the turret's target position is
+     * updated based on the current position, allowing for relative adjustments to the turret's aim
+     * without needing to specify an absolute position.
+     *
+     * @param increment Amount to rotate the turret to the right in encoder ticks (positive value)
+     */
+    public void rotateTurretRight(int increment) {
+        setTurretTargetPosition(getTurretCurrentPosition() + increment);
+    }
+
+    /**
      * Enables or disables manual control of the shooter mechanism. When manual control is enabled,
      * the shooter will not automatically adjust its settings based on the target position and robot
      * state, allowing for direct control by the operator. When manual control is disabled, the

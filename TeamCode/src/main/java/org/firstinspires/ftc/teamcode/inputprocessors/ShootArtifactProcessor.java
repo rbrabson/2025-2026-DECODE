@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.inputprocessors;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.rbrabson.behave.Status;
@@ -21,7 +20,7 @@ public class ShootArtifactProcessor implements UserInputProcessor {
     private final Intake intake;
     private final Transfer transfer;
     private final Shooter shooter;
-    @Nullable private final Telemetry telemetry;
+    private final Telemetry telemetry;
 
     // State to manage the FSM for shooting an artifact
     private enum FlowState {
@@ -41,11 +40,11 @@ public class ShootArtifactProcessor implements UserInputProcessor {
      * @param shooter   the shooter mechanism to control.
      * @param telemetry the telemetry used to display data on the driver station.
      */
-    public ShootArtifactProcessor(@NonNull Intake intake, @NonNull Transfer transfer, @NonNull Shooter shooter, @Nullable Telemetry telemetry) {
+    public ShootArtifactProcessor(@NonNull Intake intake, @NonNull Transfer transfer, @NonNull Shooter shooter, @NonNull Telemetry telemetry) {
         this.intake = Objects.requireNonNull(intake);
         this.transfer = Objects.requireNonNull(transfer);
         this.shooter = Objects.requireNonNull(shooter);
-        this.telemetry = telemetry;
+        this.telemetry = Objects.requireNonNull(telemetry);
     }
 
     /**
@@ -98,9 +97,7 @@ public class ShootArtifactProcessor implements UserInputProcessor {
 
         leftTriggerLatched = triggerPressed;
 
-        if (telemetry != null) {
-            telemetry.addData("[SHOOT] State", flowState);
-            telemetry.addData("[SHOOT] Trigger Latched", leftTriggerLatched);
-        }
+        telemetry.addData("[SHOOT] State", flowState);
+        telemetry.addData("[SHOOT] Trigger Latched", leftTriggerLatched);
     }
 }

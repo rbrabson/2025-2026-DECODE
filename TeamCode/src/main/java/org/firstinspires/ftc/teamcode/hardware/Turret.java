@@ -112,8 +112,6 @@ public class Turret {
         targetPosition = Range.clip(corrected, TURRET_MAX_RIGHT, TURRET_MAX_LEFT);
         turret.setTargetPosition(targetPosition);
         turret.setPower(RUN_POWER);
-
-        telemetry.addData("[TURRET] target ticks", targetPosition);
     }
 
     /**
