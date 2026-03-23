@@ -80,6 +80,7 @@ public class ShooterProcessor implements UserInputProcessor {
         }
 
         double llError = limelight.getError();
+        // If automate shooting is set, then rumble the gamepad when aligned
         if (automateShooting) {
             boolean aligned = !Double.isNaN(llError) && Math.abs(llError) <= ACCEPTABLE_TURRET_ERROR;
             // Only rumble the once when the turret is aligned
