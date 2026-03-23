@@ -32,6 +32,8 @@ public class Shooter implements Mechanism {
     private Localizer localizer;
     private Alliance alliance;
 
+    private boolean isManualControl = false; // Flag to indicate if manual control is active
+
     /**
      * Initializes shooter subsystems and telemetry.
      *
@@ -258,6 +260,28 @@ public class Shooter implements Mechanism {
     }
 
     /**
+     * Enables or disables manual control of the shooter mechanism. When manual control is enabled,
+     * the shooter will not automatically adjust its settings based on the target position and robot
+     * state, allowing for direct control by the operator. When manual control is disabled, the
+     * shooter will operate in its normal automatic mode, adjusting its settings based on the target
+     * position and robot state as calculated in the update() method.
+     *
+     * @param isManual True to enable manual control, false to disable manual control and allow
+     *                 automatic adjustments
+     */
+    public void setManualControl(boolean isManual) {
+        this.isManualControl = isManual;
+    }
+
+    public double getDistanceToTarget() {
+        Pose goal = (alliance == Alliance.BLUE) ? BLUE_GOAL_SCORE : RED_GOAL_SCORE;
+        Pose pose = localizer.getPose();
+        double dx = goal.getX() - pose.getX();
+        double dy = goal.getY() - pose.getY();
+        return Math.hypot(dx, dy);
+    }
+
+    /**
      * Main update loop for the shooter mechanism. This method should be called periodically
      * (e.g., in a main loop) to update the shooter's state based on the current robot pose,
      * velocity, and the target goal position. It calculates the necessary flywheel RPM,
@@ -267,6 +291,10 @@ public class Shooter implements Mechanism {
      */
     @Override
     public void update() {
+        if (isManualControl) {
+            return; // Skip automatic updates when manual control is active
+        }
+
         // Determine goal based on alliance
         Pose goal = (alliance == Alliance.BLUE) ? BLUE_GOAL_SCORE : RED_GOAL_SCORE;
         Pose pose = localizer.getPose();

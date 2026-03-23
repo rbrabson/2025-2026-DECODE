@@ -98,6 +98,7 @@ public class ShooterProcessor implements UserInputProcessor {
         telemetry.addData("[SHOOTER] Flywheel RPM", shooter.getFlywheelRPM());
         telemetry.addData("[SHOOTER] Hood Position", shooter.getHoodPosition());
         telemetry.addData("[SHOOTER] Turret Aligned", turretAligned);
+        telemetry.addData("[SHOOTER] Distance", shooter.getDistanceToTarget());
         telemetry.addData("[SHOOTER] Limelight Error", llError);
     }
 }
