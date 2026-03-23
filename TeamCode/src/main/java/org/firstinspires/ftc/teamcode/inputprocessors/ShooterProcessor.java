@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.inputprocessors;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.pedropathing.localization.Localizer;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -25,7 +24,7 @@ public class ShooterProcessor implements UserInputProcessor {
     private final Limelight limelight;
     private final Localizer localizer;
     private final Alliance alliance;
-    @Nullable private final Telemetry telemetry;
+    private final Telemetry telemetry;
 
     private boolean automateShooting = true;
 
@@ -40,12 +39,12 @@ public class ShooterProcessor implements UserInputProcessor {
      * @param alliance  the Alliance to determine scoring positions
      * @param telemetry the Telemetry for debugging and feedback
      */
-    public ShooterProcessor(@NonNull Shooter shooter, @NonNull Limelight limelight, @NonNull Localizer localizer, @NonNull Alliance alliance, @Nullable Telemetry telemetry) {
+    public ShooterProcessor(@NonNull Shooter shooter, @NonNull Limelight limelight, @NonNull Localizer localizer, @NonNull Alliance alliance, @NonNull Telemetry telemetry) {
         this.shooter = Objects.requireNonNull(shooter);
         this.limelight = Objects.requireNonNull(limelight);
         this.localizer = Objects.requireNonNull(localizer);
         this.alliance = Objects.requireNonNull(alliance);
-        this.telemetry = telemetry;
+        this.telemetry = Objects.requireNonNull(telemetry);
     }
 
     /**
@@ -74,6 +73,13 @@ public class ShooterProcessor implements UserInputProcessor {
             shooter.increaseHoodPosition(HOOD_INCREMENT);
         }
 
+        // RPM adjustment on gamepad2 dpad
+        if (gamepad2.dpadUpWasPressed()) {
+            shooter.increaseFlywheelRPM(50);
+        } else if (gamepad2.dpadDownWasPressed()) {
+            shooter.decreaseFlywheelRPM(50);
+        }
+
         double llError = limelight.getError();
         if (automateShooting) {
             shooter.update();
@@ -88,12 +94,10 @@ public class ShooterProcessor implements UserInputProcessor {
             turretAligned = false;
         }
 
-        if (telemetry != null) {
-            telemetry.addData("[SHOOTER] Auto", automateShooting);
-            telemetry.addData("[SHOOTER] Flywheel RPM", shooter.getFlywheelRPM());
-            telemetry.addData("[SHOOTER] Turret Aligned", turretAligned);
-            telemetry.addData("[SHOOTER] Hood Position", shooter.getHoodPosition());
-            telemetry.addData("[SHOOTER] Limelight Error", llError);
-        }
+        telemetry.addData("[SHOOTER] Auto", automateShooting);
+        telemetry.addData("[SHOOTER] Flywheel RPM", shooter.getFlywheelRPM());
+        telemetry.addData("[SHOOTER] Hood Position", shooter.getHoodPosition());
+        telemetry.addData("[SHOOTER] Turret Aligned", turretAligned);
+        telemetry.addData("[SHOOTER] Limelight Error", llError);
     }
 }

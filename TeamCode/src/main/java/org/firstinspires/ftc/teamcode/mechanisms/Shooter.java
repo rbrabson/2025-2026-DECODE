@@ -28,7 +28,6 @@ public class Shooter implements Mechanism {
     private final Turret turret;
     private final Flywheel flywheel;
     private final Hood hood;
-    private final Telemetry telemetry;
     private ShooterController shooterModel;
     private Localizer localizer;
     private Alliance alliance;
@@ -41,7 +40,7 @@ public class Shooter implements Mechanism {
      */
     public Shooter(@NonNull HardwareMap hardwareMap, @NonNull Telemetry telemetry) {
         HardwareMap map = Objects.requireNonNull(hardwareMap);
-        this.telemetry = Objects.requireNonNull(telemetry);
+        Objects.requireNonNull(telemetry);
         this.turret = new Turret(map, telemetry);
         this.flywheel = new Flywheel(map, telemetry);
         this.hood = new Hood(map, telemetry);
@@ -119,17 +118,6 @@ public class Shooter implements Mechanism {
     }
 
     /**
-     * Increases the hood position by a specified increment. The increment is added to the current
-     * hood position, and the resulting position is set as the new hood position. The method ensures
-     * that the hood position remains within the valid range of 0.0 to 1.0.
-     *
-     * @param increment Amount to increase the hood position by (positive value)
-     */
-    public void increaseHoodPosition(double increment) {
-        setHoodPosition(getHoodPosition() + increment);
-    }
-
-    /**
      * Returns the current position of the hood as a normalized value (0.0 to 1.0).
      * 0.0 corresponds to the lowest hood position, and 1.0 corresponds to the highest hood position.
      *
@@ -150,6 +138,17 @@ public class Shooter implements Mechanism {
     }
 
     /**
+     * Increases the hood position by a specified increment. The increment is added to the current
+     * hood position, and the resulting position is set as the new hood position. The method ensures
+     * that the hood position remains within the valid range of 0.0 to 1.0.
+     *
+     * @param increment Amount to increase the hood position by (positive value)
+     */
+    public void increaseHoodPosition(double increment) {
+        setHoodPosition(getHoodPosition() + increment);
+    }
+
+    /**
      * Decreases the hood position by a specified increment. The increment is subtracted from the current
      * hood position, and the resulting position is set as the new hood position. The method ensures
      * that the hood position remains within the valid range of 0.0 to 1.0.
@@ -158,6 +157,30 @@ public class Shooter implements Mechanism {
      */
     public void decreaseHoodPosition(double increment) {
         setHoodPosition(getHoodPosition() - increment);
+    }
+
+    /**
+     * Increases the target RPM of the flywheel by a specified increment. The increment is added
+     * to the current flywheel RPM, and the resulting RPM is set as the new target RPM for the
+     * flywheel. This allows for dynamic adjustments to the flywheel speed based on user input
+     * or other factors
+     *
+     * @param increment Amount to increase the flywheel RPM by (positive value)
+     */
+    public void increaseFlywheelRPM(double increment) {
+        setFlywheelRPM(getFlywheelRPM() + increment);
+    }
+
+    /**
+     * Decreases the target RPM of the flywheel by a specified increment. The increment is subtracted
+     * from the current flywheel RPM, and the resulting RPM is set as the new target RPM for the
+     * flywheel. This allows for dynamic adjustments to the flywheel speed based on user input
+     * or other factors.
+     *
+     * @param increment Amount to decrease the flywheel RPM by (positive value)
+     */
+    public void decreaseFlywheelRPM(double increment) {
+        setFlywheelRPM(getFlywheelRPM() - increment);
     }
 
     /**
@@ -234,6 +257,14 @@ public class Shooter implements Mechanism {
         turret.setTargetPosition(x, y, heading);
     }
 
+    /**
+     * Main update loop for the shooter mechanism. This method should be called periodically
+     * (e.g., in a main loop) to update the shooter's state based on the current robot pose,
+     * velocity, and the target goal position. It calculates the necessary flywheel RPM,
+     * hood position, and turret angle to aim at the target, and applies these settings to the
+     * hardware. The calculations are based on the current distance to the target and the robot's
+     * motion, allowing for dynamic adjustments to improve shooting accuracy.
+     */
     @Override
     public void update() {
         // Determine goal based on alliance
