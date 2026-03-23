@@ -80,9 +80,15 @@ public class ShooterProcessor implements UserInputProcessor {
             shooter.decreaseFlywheelRPM(50);
         }
 
+        // Turret adjustment on gamepad2 x/b buttons
+        if (gamepad2.xWasPressed()) {
+            shooter.rotateTurretLeft(100);
+        } else if (gamepad2.bWasPressed()) {
+            shooter.rotateTurretRight(100);
+        }
+
         double llError = limelight.getError();
         if (automateShooting) {
-            shooter.update();
             boolean aligned = !Double.isNaN(llError) && Math.abs(llError) <= ACCEPTABLE_TURRET_ERROR;
             // Only rumble the once when the turret is aligned
             if (aligned && !turretAligned) {
@@ -94,10 +100,9 @@ public class ShooterProcessor implements UserInputProcessor {
             turretAligned = false;
         }
 
-        telemetry.addData("[SHOOTER] Auto", automateShooting);
         telemetry.addData("[SHOOTER] Flywheel RPM", shooter.getFlywheelRPM());
         telemetry.addData("[SHOOTER] Hood Position", shooter.getHoodPosition());
-        telemetry.addData("[SHOOTER] Turret Aligned", turretAligned);
+        telemetry.addData("[SHOOTER] Turret Position}", shooter.getTurretCurrentPosition());
         telemetry.addData("[SHOOTER] Distance", shooter.getDistanceToTarget());
         telemetry.addData("[SHOOTER] Limelight Error", llError);
     }
