@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.robotcontrol;
 import androidx.annotation.NonNull;
 
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.MathFunctions;
+import com.qualcomm.robotcore.util.Range;
 import com.rbrabson.control.interplut.InterpLUT;
 
 import org.firstinspires.ftc.teamcode.decode.Alliance;
@@ -12,16 +14,27 @@ import org.firstinspires.ftc.teamcode.decode.Alliance;
  * based on distance to target and feedback from previous shots.
  */
 public class ShooterController {
-    private static final double RPM_SMOOTHING = 0.15;
     private static final double ANGLE_SMOOTHING = 0.1;
 
-    private final InterpLUT flywheelLUT;
-    private final InterpLUT hoodLUT;
-    private final InterpLUT flightTimeLUT;
+    // Tunable RPM quadratic regression coefficients
+    private static final double RPM_COEFFICIENT_A = 0.0204772;
+    private static final double RPM_COEFFICIENT_B = 0.643162;
+    private static final double RPM_COEFFICIENT_C = 712.90909;
+
+    // Tunable hood position cubic regression coefficients
+    private static final double HOOD_COEFFICIENT_A = -2.34831e-7;
+    private static final double HOOD_COEFFICIENT_B = 0.0000936893;
+    private static final double HOOD_COEFFICIENT_C = 0.0165033;
+    private static final double HOOD_COEFFICIENT_D = 1.25724;
+
+    private static final double RPM_MIN = 0.0;
+    private static final double RPM_MAX = 1400.0;
+
+    private static final double HOOD_MIN = 0.11;
+    private static final double HOOD_MAX = 0.904;
 
     private double flywheelRPMOffset = 0.0;
     private double hoodOffset = 0.0;
-    private double smoothedRPM = 0.0;
     private double smoothedLeadAngle = 0.0;
 
     /**
@@ -29,9 +42,6 @@ public class ShooterController {
      * and flight time.
      */
     public ShooterController() {
-        this.flywheelLUT = getFlywheelLUT();
-        this.hoodLUT = getHoodLUT();
-        this.flightTimeLUT = getFlightTimeLUT();
     }
 
     /**
@@ -53,10 +63,8 @@ public class ShooterController {
         double dx = goalX - pose.getX();
         double dy = goalY - pose.getY();
         double distance = Math.hypot(dx, dy);
-        double angleToGoal = Math.atan2(dy, dx) - pose.getHeading();
 
-        this.smoothedRPM = flywheelLUT.get(distance);
-        this.smoothedLeadAngle = angleToGoal;
+        this.smoothedLeadAngle = Math.atan2(dy, dx) - pose.getHeading();;
         return this;
     }
 
@@ -76,23 +84,34 @@ public class ShooterController {
     /**
      * Returns the target flywheel RPM for a given distance, applying smoothing to prevent abrupt changes.
      *
-     * @param distance the distance to the target, used to look up the base RPM from the LUT
+     * @param goalDist the distance to the target, used in the quadratic regression to calculate the
+     *                 flywheel RPM.
      * @return the smoothed target flywheel RPM to use for shooting at the given distance
      */
-    public double getFlywheelRPM(double distance) {
-        double targetRPM = flywheelLUT.get(distance) + flywheelRPMOffset;
-        smoothedRPM += RPM_SMOOTHING * (targetRPM - smoothedRPM);
-        return smoothedRPM;
+    public double getFlywheelRPM(double goalDist) {
+        double rpm = RPM_COEFFICIENT_A * Math.pow(goalDist, 2)
+                + RPM_COEFFICIENT_B * goalDist
+                + RPM_COEFFICIENT_C;
+        rpm = Range.clip(rpm, RPM_MIN, RPM_MAX);
+        rpm += flywheelRPMOffset;
+        return rpm;
     }
 
     /**
      * Returns the target hood position for a given distance, applying the current hood offset.
      *
-     * @param distance the distance to the target, used to look up the base hood position from the LUT
+     * @param goalDist the distance to the target, used in the cubic regression to calculate the
+     *                 hood position.
      * @return the target hood position to use for shooting at the given distance
      */
-    public double getHoodPosition(double distance) {
-        return hoodLUT.get(distance) + hoodOffset;
+    public double getHoodPosition(double goalDist) {
+        double position = HOOD_COEFFICIENT_A * Math.pow(goalDist, 3)
+                + HOOD_COEFFICIENT_B * Math.pow(goalDist, 2)
+                - HOOD_COEFFICIENT_C * goalDist
+                + HOOD_COEFFICIENT_D;
+        position = Range.clip(position, HOOD_MIN, HOOD_MAX);
+        position += hoodOffset;
+        return position;
     }
 
     /**
@@ -115,12 +134,9 @@ public class ShooterController {
         double dy = targetY - y;
         double distance = Math.hypot(dx, dy);
 
-        // Flight time from LUT
-        double flightTime = flightTimeLUT.get(distance);
-
         // Predict future target position in field frame
-        double futureX = targetX + fieldVx * flightTime;
-        double futureY = targetY + fieldVy * flightTime;
+        double futureX = targetX + fieldVx;
+        double futureY = targetY + fieldVy;
 
         double pdx = futureX - x;
         double pdy = futureY - y;
@@ -129,58 +145,10 @@ public class ShooterController {
         double leadAngle = angleToTarget - heading;
 
         // Add rotational compensation
-        leadAngle += angularVel * flightTime * 0.5;
+        leadAngle += angularVel * 0.5;
 
         // Smooth the lead angle
         smoothedLeadAngle += ANGLE_SMOOTHING * (leadAngle - smoothedLeadAngle);
         return smoothedLeadAngle;
-    }
-
-    /**
-     * Defines the flywheel RPM LUT based on distance to target.
-     *
-     * @return an InterpLUT mapping distance to flywheel RPM, which can be used to determine the
-     *         base RPM for shooting at different distances.
-     */
-    private InterpLUT getFlywheelLUT() {
-        return new InterpLUT()
-                .withPoint(20, 500)
-                .withPoint(50, 1170)
-                .withPoint(75, 1750)
-                .withPoint(100, 2000)
-                .build();
-    }
-
-    /**
-     * Defines the hood position LUT based on distance to target.
-     *
-     * @return an InterpLUT mapping distance to hood position, which can be used to determine the base
-     *         hood angle for shooting at different distances.
-     */
-    private InterpLUT getHoodLUT() {
-        return new InterpLUT()
-                .withPoint(0, 0.0)
-                .withPoint(20, 0.0)
-                .withPoint(50, 0.1)
-                .withPoint(75, 0.2)
-                .withPoint(100, 0.4)
-                .build();
-    }
-
-    /**
-     * Defines the flight time LUT based on distance to target, which can be used for predictive aiming.
-     *
-     * @return an InterpLUT mapping distance to estimated flight time, which can be used to predict
-     *         where the target will be when the projectile arrives, allowing for lead compensation
-     *         in the turret aiming.
-     */
-    private InterpLUT getFlightTimeLUT() {
-        return new InterpLUT()
-                .withPoint(20, 0.05)
-                .withPoint(40, 0.08)
-                .withPoint(60, 0.11)
-                .withPoint(80, 0.15)
-                .withPoint(100, 0.20)
-                .build();
     }
 }
