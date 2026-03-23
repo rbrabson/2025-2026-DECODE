@@ -2,11 +2,9 @@ package org.firstinspires.ftc.teamcode.inputprocessors;
 
 import androidx.annotation.NonNull;
 
-import com.pedropathing.localization.Localizer;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.decode.Alliance;
 import org.firstinspires.ftc.teamcode.mechanisms.Shooter;
 import org.firstinspires.ftc.teamcode.sensors.Limelight;
 
@@ -22,8 +20,6 @@ public class ShooterProcessor implements UserInputProcessor {
 
     private final Shooter shooter;
     private final Limelight limelight;
-    private final Localizer localizer;
-    private final Alliance alliance;
     private final Telemetry telemetry;
 
     private boolean automateShooting = true;
@@ -35,15 +31,11 @@ public class ShooterProcessor implements UserInputProcessor {
      *
      * @param shooter   the Shooter mechanism to control
      * @param limelight the Limelight sensor for targeting
-     * @param localizer the Localizer for robot position tracking
-     * @param alliance  the Alliance to determine scoring positions
      * @param telemetry the Telemetry for debugging and feedback
      */
-    public ShooterProcessor(@NonNull Shooter shooter, @NonNull Limelight limelight, @NonNull Localizer localizer, @NonNull Alliance alliance, @NonNull Telemetry telemetry) {
+    public ShooterProcessor(@NonNull Shooter shooter, @NonNull Limelight limelight, @NonNull Telemetry telemetry) {
         this.shooter = Objects.requireNonNull(shooter);
         this.limelight = Objects.requireNonNull(limelight);
-        this.localizer = Objects.requireNonNull(localizer);
-        this.alliance = Objects.requireNonNull(alliance);
         this.telemetry = Objects.requireNonNull(telemetry);
     }
 

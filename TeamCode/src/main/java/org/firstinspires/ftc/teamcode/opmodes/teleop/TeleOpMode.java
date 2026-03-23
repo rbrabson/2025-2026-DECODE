@@ -72,7 +72,7 @@ public abstract class TeleOpMode extends OpMode {
         inputHandlers = Arrays.asList(
                 new DriveProcessor(drive, telemetry),
                 new IntakeProcessor(robot.intake, telemetry),
-                new ShooterProcessor(robot.shooter, robot.limelight, drive.getLocalizer(), alliance, telemetry),
+                new ShooterProcessor(robot.shooter, robot.limelight, telemetry),
                 new ShootArtifactProcessor(robot.intake, robot.transfer, robot.shooter, telemetry)
         );
 
