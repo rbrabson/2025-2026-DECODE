@@ -5,7 +5,6 @@ import androidx.annotation.NonNull;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.math.MathFunctions;
 import com.qualcomm.robotcore.util.Range;
-import com.rbrabson.control.interplut.InterpLUT;
 
 import org.firstinspires.ftc.teamcode.decode.Alliance;
 
@@ -14,18 +13,24 @@ import org.firstinspires.ftc.teamcode.decode.Alliance;
  * based on distance to target and feedback from previous shots.
  */
 public class ShooterController {
+
     private static final double ANGLE_SMOOTHING = 0.1;
 
-    // Tunable RPM quadratic regression coefficients
-    private static final double RPM_COEFFICIENT_A = 0.0204772;
-    private static final double RPM_COEFFICIENT_B = 0.643162;
-    private static final double RPM_COEFFICIENT_C = 712.90909;
+    // RPM regression coefficients
+    private static final double RPM_A = 0.0204772;
+    private static final double RPM_B = 0.643162;
+    private static final double RPM_C = 712.90909;
 
-    // Tunable hood position cubic regression coefficients
-    private static final double HOOD_COEFFICIENT_A = -2.34831e-7;
-    private static final double HOOD_COEFFICIENT_B = 0.0000936893;
-    private static final double HOOD_COEFFICIENT_C = 0.0165033;
-    private static final double HOOD_COEFFICIENT_D = 1.25724;
+    // Hood regression coefficients
+    private static final double HOOD_A = -2.34831e-7;
+    private static final double HOOD_B = 0.0000936893;
+    private static final double HOOD_C = 0.0165033;
+    private static final double HOOD_D = 1.25724;
+
+    // Flight time regression coefficients
+    private static final double FLIGHT_TIME_A = 0.00001;
+    private static final double FLIGHT_TIME_B = 0.001;
+    private static final double FLIGHT_TIME_C = 0.1;
 
     private static final double RPM_MIN = 0.0;
     private static final double RPM_MAX = 1400.0;
@@ -33,28 +38,23 @@ public class ShooterController {
     private static final double HOOD_MIN = 0.11;
     private static final double HOOD_MAX = 0.904;
 
+    // Offset limits (prevents runaway drift)
+    private static final double RPM_OFFSET_LIMIT = 200.0;
+    private static final double HOOD_OFFSET_LIMIT = 0.1;
+
+    private static final double MIN_FLIGHT_TIME = 0.25;
+    private static final double MAX_FLIGHT_TIME = 0.7;
+
+    // Flight time model (tune this)
+    private static final double FLIGHT_TIME_PER_UNIT = 0.0025;
+
     private double flywheelRPMOffset = 0.0;
     private double hoodOffset = 0.0;
     private double smoothedLeadAngle = 0.0;
 
-    /**
-     * Initializes the ShooterController with predefined LUTs for flywheel RPM, hood position,
-     * and flight time.
-     */
     public ShooterController() {
     }
 
-    /**
-     * Sets the alliance and current pose to calculate the distance and angle to the goal, which are
-     * used to initialize the smoothed RPM and lead angle. This allows the controller to start
-     * with reasonable values based on the robot's initial position relative to the target, improving
-     * the accuracy of the first few shots before feedback adjustments take effect.
-     *
-     * @param alliance the alliance the robot is on, used to determine the goal position for calculations
-     * @param pose     the current pose of the robot, used to calculate the distance and angle to
-     *                 the goal for setting
-     * @return the ShooterController instance, allowing for method chaining if desired
-     */
     @NonNull
     public ShooterController setAlliancePose(@NonNull Alliance alliance, @NonNull Pose pose) {
         double goalX = alliance.getBaseX();
@@ -62,93 +62,129 @@ public class ShooterController {
 
         double dx = goalX - pose.getX();
         double dy = goalY - pose.getY();
-        double distance = Math.hypot(dx, dy);
 
-        this.smoothedLeadAngle = Math.atan2(dy, dx) - pose.getHeading();;
+        double angle = Math.atan2(dy, dx);
+        smoothedLeadAngle = MathFunctions.normalizeAngle(angle - pose.getHeading());
+
         return this;
     }
 
     /**
-     * Adjusts flywheel RPM and hood position offsets based on whether the last shot was high or low.
-     *
-     * @param wasHigh true if the last shot was high, false if it was low. This will adjust the
-     *                offsets to try to correct for the error.
+     * Adjusts offsets based on shot feedback.
      */
     public void adjustShot(boolean wasHigh) {
         double deltaRPM = 20.0;
         double deltaHood = 0.01;
+
         flywheelRPMOffset += wasHigh ? -deltaRPM : deltaRPM;
         hoodOffset += wasHigh ? -deltaHood : deltaHood;
+
+        // Clamp to prevent runaway tuning
+        flywheelRPMOffset = Range.clip(flywheelRPMOffset, -RPM_OFFSET_LIMIT, RPM_OFFSET_LIMIT);
+        hoodOffset = Range.clip(hoodOffset, -HOOD_OFFSET_LIMIT, HOOD_OFFSET_LIMIT);
     }
 
     /**
-     * Returns the target flywheel RPM for a given distance, applying smoothing to prevent abrupt changes.
+     * Predicts flywheel RPM based on distance using a quadratic regression model.
      *
-     * @param goalDist the distance to the target, used in the quadratic regression to calculate the
-     *                 flywheel RPM.
-     * @return the smoothed target flywheel RPM to use for shooting at the given distance
+     * @param goalDist Distance to target in inches
+     * @return Predicted flywheel RPM, adjusted by offset and clamped to limits
      */
     public double getFlywheelRPM(double goalDist) {
-        double rpm = RPM_COEFFICIENT_A * Math.pow(goalDist, 2)
-                + RPM_COEFFICIENT_B * goalDist
-                + RPM_COEFFICIENT_C;
+        double rpm = RPM_A * goalDist * goalDist
+                + RPM_B * goalDist
+                + RPM_C;
+
         rpm = Range.clip(rpm, RPM_MIN, RPM_MAX);
         rpm += flywheelRPMOffset;
+
         return rpm;
     }
 
     /**
-     * Returns the target hood position for a given distance, applying the current hood offset.
+     * Predicts hood position based on distance using a cubic regression model.
      *
-     * @param goalDist the distance to the target, used in the cubic regression to calculate the
-     *                 hood position.
-     * @return the target hood position to use for shooting at the given distance
+     * @param goalDist Distance to target in inches
+     * @return Predicted hood position (0.0 to 1.0), adjusted by offset and clamped to limits
      */
     public double getHoodPosition(double goalDist) {
-        double position = HOOD_COEFFICIENT_A * Math.pow(goalDist, 3)
-                + HOOD_COEFFICIENT_B * Math.pow(goalDist, 2)
-                - HOOD_COEFFICIENT_C * goalDist
-                + HOOD_COEFFICIENT_D;
+        double position = HOOD_A * Math.pow(goalDist, 3)
+                + HOOD_B * Math.pow(goalDist, 2)
+                - HOOD_C * goalDist
+                + HOOD_D;
+
         position = Range.clip(position, HOOD_MIN, HOOD_MAX);
         position += hoodOffset;
+
         return position;
     }
 
+
     /**
-     * Returns predictive turret lead angle based on velocity and angular motion
+     * Predicts turret lead angle based on current robot state and target motion.
      *
-     * @param x          current x position of the robot
-     * @param y          current y position of the robot
-     * @param heading    current heading of the robot in radians
-     * @param fieldVx    current velocity of the target in the x direction (field frame)
-     * @param fieldVy    current velocity of the target in the y direction (field frame)
-     * @param angularVel current angular velocity of the target in radians per second
-     * @param targetX    current x position of the target
-     * @param targetY    current y position of the target
-     * @return the predictive lead angle to aim the turret, in radians, which accounts for the
-     *         target's motion and the projectile's flight time, allowing for more accurate shots
-     *         against moving targets.
+     * @param x          Current robot X position
+     * @param y          Current robot Y position
+     * @param heading    Current robot heading in radians
+     * @param fieldVx    Target velocity in X direction (field-relative)
+     * @param fieldVy    Target velocity in Y direction (field-relative)
+     * @param angularVel Target angular velocity (radians/sec)
+     * @param targetX    Current target X position
+     * @param targetY    Current target Y position
+     * @return Predicted turret lead angle in radians, smoothed over time
      */
-    public double getTurretLeadAngle(double x, double y, double heading, double fieldVx, double fieldVy, double angularVel, double targetX, double targetY) {
+    public double getTurretLeadAngle(
+            double x,
+            double y,
+            double heading,
+            double fieldVx,
+            double fieldVy,
+            double angularVel,
+            double targetX,
+            double targetY
+    ) {
+
+        // Current vector to target
         double dx = targetX - x;
         double dy = targetY - y;
         double distance = Math.hypot(dx, dy);
 
-        // Predict future target position in field frame
-        double futureX = targetX + fieldVx;
-        double futureY = targetY + fieldVy;
+        // Estimate projectile flight time
+        double flightTime = getFlightTime(distance);
 
+        // Predict future target position
+        double futureX = targetX + fieldVx * flightTime;
+        double futureY = targetY + fieldVy * flightTime;
+
+        // Recompute vector to predicted position
         double pdx = futureX - x;
         double pdy = futureY - y;
 
         double angleToTarget = Math.atan2(pdy, pdx);
-        double leadAngle = angleToTarget - heading;
 
-        // Add rotational compensation
-        leadAngle += angularVel * 0.5;
+        // Normalize relative angle
+        double leadAngle = MathFunctions.normalizeAngle(angleToTarget - heading);
 
-        // Smooth the lead angle
+        // Add rotational compensation (scaled properly by time)
+        leadAngle += angularVel * flightTime;
+
+        // Smooth output
         smoothedLeadAngle += ANGLE_SMOOTHING * (leadAngle - smoothedLeadAngle);
+
         return smoothedLeadAngle;
+    }
+
+    /**
+     * Predicts projectile flight time based on distance using a quadratic regression model.
+     *
+     * @param goalDist Distance to target in inches
+     * @return Predicted flight time in seconds
+     */
+    private double getFlightTime(double goalDist) {
+        double flightTime = FLIGHT_TIME_A * Math.pow(goalDist, 2)
+                + FLIGHT_TIME_B * goalDist
+                + FLIGHT_TIME_C;
+        flightTime = Range.clip(flightTime, MIN_FLIGHT_TIME, MAX_FLIGHT_TIME);
+        return flightTime;
     }
 }
