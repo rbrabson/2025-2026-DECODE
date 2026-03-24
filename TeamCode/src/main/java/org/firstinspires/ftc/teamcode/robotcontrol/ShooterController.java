@@ -41,7 +41,7 @@ public class ShooterController {
     private static final double RPM_MIN = 0.0;
     private static final double RPM_MAX = 1400.0;
 
-    private static final double HOOD_MIN = 0.11;
+    private static final double HOOD_MIN = 0.0;
     private static final double HOOD_MAX = 0.904;
 
     private static final double RPM_OFFSET_LIMIT = 200.0;
