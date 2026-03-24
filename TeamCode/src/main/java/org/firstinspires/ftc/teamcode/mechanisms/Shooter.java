@@ -321,6 +321,11 @@ public class Shooter implements Mechanism {
             return; // Skip automatic updates when manual control is active
         }
 
+        // Ensure localizer and alliance are set before proceeding
+        if (localizer == null || alliance == null) {
+            return;
+        }
+
         // Determine goal based on alliance
         Pose goal = (alliance == Alliance.BLUE) ? BLUE_GOAL_SCORE : RED_GOAL_SCORE;
         Pose pose = localizer.getPose();
@@ -331,23 +336,25 @@ public class Shooter implements Mechanism {
         double lateralVel = velocity.getX();
         double angularVel = velocity.getHeading();
 
-        // Convert robot-relative velocity to field-relative
+        // Convert robot-relative velocity to field-relative velocity
         double cos = Math.cos(heading);
         double sin = Math.sin(heading);
         double fieldVx = forwardVel * cos - lateralVel * sin;
         double fieldVy = forwardVel * sin + lateralVel * cos;
 
-        // Distance to target
+        // Calculate vector and distance to target
         double dx = goal.getX() - pose.getX();
         double dy = goal.getY() - pose.getY();
         double distanceToTarget = Math.hypot(dx, dy);
 
         // Shooter LUTs and predictive calculations
-        double targetRPM = shooterModel.getFlywheelRPM(distanceToTarget, fieldVx, fieldVy, dx, dy);
-        double hoodPosition = shooterModel.getHoodPosition(distanceToTarget, fieldVx, fieldVy, dx, dy);
+        double targetRPM = shooterModel.getFlywheelRPM(dx, dy, fieldVx, fieldVy);
+        double hoodPosition = shooterModel.getHoodPosition(dx, dy, fieldVx, fieldVy);
         double turretLeadAngle = shooterModel.getTurretLeadAngle(
                 pose.getX(), pose.getY(), heading,
-                fieldVx, fieldVy, angularVel,
+                fieldVx, fieldVy,
+                0.0, 0.0, // targetVx, targetVy (stationary goal)
+                angularVel,
                 goal.getX(), goal.getY()
         );
 
