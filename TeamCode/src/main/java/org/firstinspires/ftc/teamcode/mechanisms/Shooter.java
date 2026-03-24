@@ -343,8 +343,8 @@ public class Shooter implements Mechanism {
         double distanceToTarget = Math.hypot(dx, dy);
 
         // Shooter LUTs and predictive calculations
-        double targetRPM = shooterModel.getFlywheelRPM(distanceToTarget);
-        double hoodPosition = shooterModel.getHoodPosition(distanceToTarget);
+        double targetRPM = shooterModel.getFlywheelRPM(distanceToTarget, fieldVx, fieldVy, dx, dy);
+        double hoodPosition = shooterModel.getHoodPosition(distanceToTarget, fieldVx, fieldVy, dx, dy);
         double turretLeadAngle = shooterModel.getTurretLeadAngle(
                 pose.getX(), pose.getY(), heading,
                 fieldVx, fieldVy, angularVel,

@@ -9,8 +9,7 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.teamcode.decode.Alliance;
 
 /**
- * ShooterController manages flywheel RPM, hood position, and predictive turret lead angle
- * based on distance to target and feedback from previous shots.
+ * ShooterController manages flywheel RPM, hood position, and predictive turret lead angle.
  */
 public class ShooterController {
 
@@ -45,16 +44,27 @@ public class ShooterController {
     private static final double MIN_FLIGHT_TIME = 0.25;
     private static final double MAX_FLIGHT_TIME = 0.7;
 
-    // Flight time model (tune this)
-    private static final double FLIGHT_TIME_PER_UNIT = 0.0025;
+    /**
+     * Tuning gain for velocity compensation.
+     * 1.0 = physics-based
+     * <1.0 = conservative
+     * >1.0 = aggressive
+     */
+    private static final double VELOCITY_COMP_GAIN = 1.0;
 
     private double flywheelRPMOffset = 0.0;
     private double hoodOffset = 0.0;
     private double smoothedLeadAngle = 0.0;
 
-    public ShooterController() {
-    }
+    public ShooterController() {}
 
+    /**
+     * Sets the turret lead angle based on the robot's current pose and alliance target position.
+     *
+     * @param alliance the current alliance (RED or BLUE) to determine target position
+     * @param pose     the current pose of the robot, including x, y, and heading
+     * @return the ShooterController instance for chaining
+     */
     @NonNull
     public ShooterController setAlliancePose(@NonNull Alliance alliance, @NonNull Pose pose) {
         double goalX = alliance.getBaseX();
@@ -79,20 +89,46 @@ public class ShooterController {
         flywheelRPMOffset += wasHigh ? -deltaRPM : deltaRPM;
         hoodOffset += wasHigh ? -deltaHood : deltaHood;
 
-        // Clamp to prevent runaway tuning
         flywheelRPMOffset = Range.clip(flywheelRPMOffset, -RPM_OFFSET_LIMIT, RPM_OFFSET_LIMIT);
         hoodOffset = Range.clip(hoodOffset, -HOOD_OFFSET_LIMIT, HOOD_OFFSET_LIMIT);
     }
 
     /**
-     * Predicts flywheel RPM based on distance using a quadratic regression model.
-     *
-     * @param goalDist Distance to target in inches
-     * @return Predicted flywheel RPM, adjusted by offset and clamped to limits
+     * Computes radial velocity (velocity toward/away from target).
+     * <ul>
+     * <li>Positive = moving toward target
+     * <li>Negative = moving away
+     * </ul>
      */
-    public double getFlywheelRPM(double goalDist) {
-        double rpm = RPM_A * goalDist * goalDist
-                + RPM_B * goalDist
+    private double getRadialVelocity(double robotVx, double robotVy, double dx, double dy) {
+        double distance = Math.hypot(dx, dy);
+        if (distance < 1e-6) return 0.0;
+
+        double ux = dx / distance;
+        double uy = dy / distance;
+
+        return robotVx * ux + robotVy * uy;
+    }
+
+    /**
+     * Computes effective shooting distance adjusted for robot motion.
+     */
+    private double getEffectiveDistance(double goalDist, double robotVx, double robotVy, double dx, double dy) {
+        double radialVelocity = getRadialVelocity(robotVx, robotVy, dx, dy);
+        double flightTime = getFlightTime(goalDist);
+        double effectiveDist = goalDist + VELOCITY_COMP_GAIN * radialVelocity * flightTime;
+
+        return Math.max(0.0, effectiveDist);
+    }
+
+    /**
+     * Predicts flywheel RPM with velocity compensation.
+     */
+    public double getFlywheelRPM(double goalDist, double robotVx, double robotVy, double dx, double dy) {
+        double effectiveDist = getEffectiveDistance(goalDist, robotVx, robotVy, dx, dy);
+
+        double rpm = RPM_A * effectiveDist * effectiveDist
+                + RPM_B * effectiveDist
                 + RPM_C;
 
         rpm = Range.clip(rpm, RPM_MIN, RPM_MAX);
@@ -102,15 +138,14 @@ public class ShooterController {
     }
 
     /**
-     * Predicts hood position based on distance using a cubic regression model.
-     *
-     * @param goalDist Distance to target in inches
-     * @return Predicted hood position (0.0 to 1.0), adjusted by offset and clamped to limits
+     * Predicts hood position with velocity compensation.
      */
-    public double getHoodPosition(double goalDist) {
-        double position = HOOD_A * Math.pow(goalDist, 3)
-                + HOOD_B * Math.pow(goalDist, 2)
-                - HOOD_C * goalDist
+    public double getHoodPosition(double goalDist, double robotVx, double robotVy, double dx, double dy) {
+        double effectiveDist = getEffectiveDistance(goalDist, robotVx, robotVy, dx, dy);
+
+        double position = HOOD_A * Math.pow(effectiveDist, 3)
+                + HOOD_B * Math.pow(effectiveDist, 2)
+                - HOOD_C * effectiveDist
                 + HOOD_D;
 
         position = Range.clip(position, HOOD_MIN, HOOD_MAX);
@@ -119,53 +154,27 @@ public class ShooterController {
         return position;
     }
 
-
     /**
-     * Predicts turret lead angle based on current robot state and target motion.
-     *
-     * @param x          Current robot X position
-     * @param y          Current robot Y position
-     * @param heading    Current robot heading in radians
-     * @param fieldVx    Target velocity in X direction (field-relative)
-     * @param fieldVy    Target velocity in Y direction (field-relative)
-     * @param angularVel Target angular velocity (radians/sec)
-     * @param targetX    Current target X position
-     * @param targetY    Current target Y position
-     * @return Predicted turret lead angle in radians, smoothed over time
+     * Predicts turret lead angle based on motion and target prediction.
      */
-    public double getTurretLeadAngle(
-            double x,
-            double y,
-            double heading,
-            double fieldVx,
-            double fieldVy,
-            double angularVel,
-            double targetX,
-            double targetY
-    ) {
-
-        // Current vector to target
+    public double getTurretLeadAngle(double x, double y, double heading, double fieldVx, double fieldVy, double angularVel, double targetX, double targetY) {
         double dx = targetX - x;
         double dy = targetY - y;
-        double distance = Math.hypot(dx, dy);
 
-        // Estimate projectile flight time
+        double distance = Math.hypot(dx, dy);
         double flightTime = getFlightTime(distance);
 
-        // Predict future target position
         double futureX = targetX + fieldVx * flightTime;
         double futureY = targetY + fieldVy * flightTime;
 
-        // Recompute vector to predicted position
         double pdx = futureX - x;
         double pdy = futureY - y;
 
         double angleToTarget = Math.atan2(pdy, pdx);
 
-        // Normalize relative angle
         double leadAngle = MathFunctions.normalizeAngle(angleToTarget - heading);
 
-        // Add rotational compensation (scaled properly by time)
+        // Rotational compensation
         leadAngle += angularVel * flightTime;
 
         // Smooth output
@@ -175,16 +184,13 @@ public class ShooterController {
     }
 
     /**
-     * Predicts projectile flight time based on distance using a quadratic regression model.
-     *
-     * @param goalDist Distance to target in inches
-     * @return Predicted flight time in seconds
+     * Predicts projectile flight time.
      */
     private double getFlightTime(double goalDist) {
-        double flightTime = FLIGHT_TIME_A * Math.pow(goalDist, 2)
+        double flightTime = FLIGHT_TIME_A * goalDist * goalDist
                 + FLIGHT_TIME_B * goalDist
                 + FLIGHT_TIME_C;
-        flightTime = Range.clip(flightTime, MIN_FLIGHT_TIME, MAX_FLIGHT_TIME);
-        return flightTime;
+
+        return Range.clip(flightTime, MIN_FLIGHT_TIME, MAX_FLIGHT_TIME);
     }
 }
