@@ -169,12 +169,9 @@ public class ShooterController {
     }
 
     /**
-     * Predicts hood position with velocity compensation. Similar to the flywheel RPM prediction,
-     * the effective distance is calculated by adjusting the actual distance to the target based
-     * on the robot's radial velocity towards or away from the target, multiplied by the predicted
-     * flight time of the projectile. This allows the shooter to compensate for the fact that the
-     * robot is moving while shooting, which can affect the required hood position to hit the
-     * target accurately.
+     * Predicts hood position with velocity compensation. This allows the shooter to compensate for
+     * the fact that the robot is moving while shooting, which can affect the required hood position
+     * to hit the target accurately.
      *
      * @param dx      difference in x position to the target
      * @param dy      difference in y position to the target
@@ -189,13 +186,11 @@ public class ShooterController {
     }
 
     /**
-     * Predicts turret lead angle with strafing compensation. This method calculates the angle at
-     * which the turret should aim to hit a moving target, taking into account both the robot's and
-     * the target's velocities, as well as the time it will take for the projectile to reach the
-     * target. The method predicts the future positions of both the robot and the target after the
-     * flight time of the projectile, and then calculates the angle from the future robot position
-     * to the future target position. This allows for accurate aiming even when both the robot and
-     * the target are in motion, including strafing (lateral movement).
+     * Predicts turret lead angle with strafing compensation. The method predicts the future
+     * positions of both the robot and the target after the flight time of the projectile, and
+     * then calculates the angle from the future robot position to the future target position.
+     * This allows for accurate aiming even when both the robot and the target are in motion,
+     * including strafing (lateral movement).
      *
      * @param x          current x position of the robot
      * @param y          current y position of the robot
