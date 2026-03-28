@@ -150,7 +150,7 @@ public abstract class TeleOpMode extends OpMode {
      *         or a MecanumDrive implementation based on the USE_PEDRO_PATHING flag.
      */
     private Drive getDrive(Pose startingPose) {
-        FusedLocalizer localizer = PedroFollower.getFusedLocalizer(hardwareMap, robot.limelight.getSensor()).withMode(FusedLocalizer.Mode.TELEOP);
+        FusedLocalizer localizer = PedroFollower.getFusedLocalizer(hardwareMap, robot.limelight.getSensor());
         if (USE_PEDRO_PATHING) {
             PedroPathingDrive drive = new PedroPathingDrive(hardwareMap, localizer, telemetry)
                     .setMode(FusedLocalizer.Mode.TELEOP)
@@ -163,6 +163,7 @@ public abstract class TeleOpMode extends OpMode {
             return drive;
         } else {
             return new MecanumDrive(hardwareMap, localizer, telemetry)
+                    .setMode(FusedLocalizer.Mode.TELEOP)
                     .setStartPose(startingPose);
         }
     }

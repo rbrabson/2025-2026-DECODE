@@ -431,6 +431,22 @@ public class MecanumDrive implements Drive {
         }
     }
 
+    /**
+     * Sets the mode of the localizer, which can affect how the localizer processes sensor data and
+     * estimates the robot's pose. Different modes may be optimized for different phases of the match
+     * (e.g., autonomous vs. teleop) or for different types of movement.
+     *
+     * @param mode The mode to set for the localizer, which can be one of the predefined modes in
+     *             the FusedLocalizer.Mode enum (e.g., TELEOP, AUTONOMOUS).
+     * @return The PedroPathingDrive instance, allowing for method chaining when configuring the localizer mode.
+     */
+    public MecanumDrive setMode(FusedLocalizer.Mode mode) {
+        if (localizer instanceof FusedLocalizer) {
+            ((FusedLocalizer) localizer).withMode(mode);
+        }
+        return this;
+    }
+
     // --- Tuning Methods (Optional for Dashboard) ---
 
     /**

@@ -59,7 +59,7 @@ public class PedroFollower {
      */
     @NonNull
     public static FusedLocalizer getFusedLocalizer(@NonNull HardwareMap hardwareMap, @NonNull Limelight3A limelight, @NonNull FusedLocalizer.Mode mode) {
-        return new FusedLocalizer(getPinpointLocalizer(hardwareMap), limelight).withMode(mode);
+        return getFusedLocalizer(hardwareMap, limelight).withMode(mode);
     }
 
     /**
