@@ -27,7 +27,7 @@ import java.util.Objects;
  * based on the current pose and target paths.
  */
 public class PedroPathingDrive implements Drive {
-    public final FusedLocalizer localizer;
+    private Localizer localizer;
     private final Follower follower;
     private final Telemetry telemetry;
 
@@ -48,9 +48,22 @@ public class PedroPathingDrive implements Drive {
      *                    debugging and monitoring.
      */
     public PedroPathingDrive(@NonNull HardwareMap hardwareMap, @NonNull Limelight3A limelight, @NonNull FusedLocalizer.Mode mode, @NonNull Telemetry telemetry) {
+        this(hardwareMap, PedroFollower.getFusedLocalizer(hardwareMap, limelight, mode), telemetry);
+    }
+
+    /**
+     * Constructor for the PedroPathingDrive class. It initializes the localizer and follower using
+     * the provided hardware map and localizer, and sets up telemetry for debugging and monitoring.
+     *
+     * @param hardwareMap The hardware map for accessing robot hardware components.
+     * @param localizer   The FusedLocalizer instance for estimating the robot's pose based on sensor
+     *                    data.
+     * @param telemetry   The telemetry instance for sending data to the driver station for
+     *                    debugging and monitoring.
+     */
+    public PedroPathingDrive(@NonNull HardwareMap hardwareMap, @NonNull Localizer localizer, @NonNull Telemetry telemetry) {
         HardwareMap map = Objects.requireNonNull(hardwareMap);
-        Limelight3A ll = Objects.requireNonNull(limelight);
-        this.localizer = PedroFollower.getFusedLocalizer(map, ll, mode);
+        this.localizer = Objects.requireNonNull(localizer);
         this.telemetry = Objects.requireNonNull(telemetry);
         this.follower = PedroFollower.create(map, this.localizer);
         this.driveCtrl = new DriveController();
@@ -154,8 +167,9 @@ public class PedroPathingDrive implements Drive {
      * @param localizer The localizer to set for the drive mechanism, which is not used in this
      *                  implementation since the localizer is initialized in the constructor.
      */
-    public void setLocalizer(Localizer localizer) {
-        // NO-OP
+    public PedroPathingDrive setLocalizer(Localizer localizer) {
+        this.localizer = localizer;
+        return this;
     }
 
     /**
@@ -196,7 +210,9 @@ public class PedroPathingDrive implements Drive {
      * @return The PedroPathingDrive instance, allowing for method chaining when configuring the localizer mode.
      */
     public PedroPathingDrive setMode(FusedLocalizer.Mode mode) {
-        localizer.withMode(mode);
+        if (localizer instanceof FusedLocalizer) {
+            ((FusedLocalizer) localizer).withMode(mode);
+        }
         return this;
     }
 
@@ -307,8 +323,7 @@ public class PedroPathingDrive implements Drive {
     @Override
     public String toString() {
         return String.format(
-                "PedroPathingDrive[" +
-                        "localizerClass=%s, robotCentric=%b, useVoltageCompensation=%b, useCompensation=%b, pose=%s]",
+                "PedroPathingDrive[localizerClass=%s, robotCentric=%b, useVoltageCompensation=%b, useCompensation=%b, pose=%s]",
                 (localizer != null ? localizer.getClass().getSimpleName() : "null"),
                 robotCentric,
                 useVoltageCompensation,

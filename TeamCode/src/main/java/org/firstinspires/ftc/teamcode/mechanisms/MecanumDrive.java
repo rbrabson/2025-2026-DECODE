@@ -72,7 +72,7 @@ public class MecanumDrive implements Drive {
     private final DriveController driveCtrl;
     private final VoltageCompensator voltageComp;
 
-    private FusedLocalizer localizer;
+    private Localizer localizer;
 
     // PID controllers for autonomous driving
     private final PID pidX;
@@ -109,6 +109,19 @@ public class MecanumDrive implements Drive {
         telemetry.addLine("Mecanum Drive initialized");
     }
 
+    /**
+     * Overloaded constructor that allows setting the localizer during initialization. This is
+     * useful if you want to create the MecanumDrive and set up the localizer in one step.
+     *
+     * @param hardwareMap The hardware map to initialize hardware devices.
+     * @param localizer   The FusedLocalizer instance to be used for pose estimation.
+     * @param telemetry   The telemetry object for logging.
+     */
+    public MecanumDrive(@NonNull HardwareMap hardwareMap, @NonNull FusedLocalizer localizer, @NonNull Telemetry telemetry) {
+        this(hardwareMap, telemetry);
+        setLocalizer(localizer);
+    }
+
     // --- Motor Initialization and Configuration ---
 
     /**
@@ -138,7 +151,7 @@ public class MecanumDrive implements Drive {
      * @param localizer the FusionLocalizer instance to be used for pose estimation.
      * @return the MecanumDrive instance for method chaining.
      */
-    public MecanumDrive setLocalizer(@NonNull FusedLocalizer localizer) {
+    public MecanumDrive setLocalizer(@NonNull Localizer localizer) {
         this.localizer = localizer;
         return this;
     }
@@ -452,9 +465,7 @@ public class MecanumDrive implements Drive {
     @Override
     public String toString() {
         return String.format(
-                "MecanumDrive[" +
-                        "frontLeftMotor=%s, backLeftMotor=%s, frontRightMotor=%s, backRightMotor=%s, " +
-                        "fieldCentricEnabled=%b, pose=%s]",
+                "MecanumDrive[frontLeftMotor=%s, backLeftMotor=%s, frontRightMotor=%s, backRightMotor=%s, fieldCentricEnabled=%b, pose=%s]",
                 frontLeftMotor.getDeviceName(),
                 backLeftMotor.getDeviceName(),
                 frontRightMotor.getDeviceName(),
