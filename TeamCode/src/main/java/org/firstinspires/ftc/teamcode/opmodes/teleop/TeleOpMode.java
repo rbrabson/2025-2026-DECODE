@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.mechanisms.MecanumDrive;
 import org.firstinspires.ftc.teamcode.mechanisms.Mechanism;
 import org.firstinspires.ftc.teamcode.mechanisms.PedroPathingDrive;
 import org.firstinspires.ftc.teamcode.pedroPathing.FusedLocalizer;
+import org.firstinspires.ftc.teamcode.pedroPathing.Mode;
 import org.firstinspires.ftc.teamcode.pedroPathing.PedroFollower;
 
 import java.util.Arrays;
@@ -153,7 +154,7 @@ public abstract class TeleOpMode extends OpMode {
         FusedLocalizer localizer = PedroFollower.getFusedLocalizer(hardwareMap, robot.limelight.getSensor());
         if (USE_PEDRO_PATHING) {
             PedroPathingDrive drive = new PedroPathingDrive(hardwareMap, localizer, telemetry)
-                    .setMode(FusedLocalizer.Mode.TELEOP)
+                    .setMode(Mode.TELEOP)
                     .setStartingPose(startingPose)
                     .setRobotCentric(false)
                     .setUseCompensation(true)
@@ -163,7 +164,7 @@ public abstract class TeleOpMode extends OpMode {
             return drive;
         } else {
             return new MecanumDrive(hardwareMap, localizer, telemetry)
-                    .setMode(FusedLocalizer.Mode.TELEOP)
+                    .setMode(Mode.TELEOP)
                     .setStartPose(startingPose);
         }
     }

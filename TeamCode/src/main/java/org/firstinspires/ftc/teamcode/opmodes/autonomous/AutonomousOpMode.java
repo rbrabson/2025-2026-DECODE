@@ -9,9 +9,9 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.decode.Alliance;
 import org.firstinspires.ftc.teamcode.mechanisms.Mechanism;
-import org.firstinspires.ftc.teamcode.mechanisms.PedroPathingDrive;
 import org.firstinspires.ftc.teamcode.pedroPathing.FusedLocalizer;
 import org.firstinspires.ftc.teamcode.opmodes.autonomous.pathing.AutonomousPathing;
+import org.firstinspires.ftc.teamcode.pedroPathing.Mode;
 import org.firstinspires.ftc.teamcode.pedroPathing.PedroFollower;
 import org.firstinspires.ftc.teamcode.decode.Motif;
 
@@ -80,7 +80,7 @@ public abstract class AutonomousOpMode extends OpMode {
         Robot.reset();
         robot = Robot.getInstance(hardwareMap, telemetry);
 
-        localizer = PedroFollower.getFusedLocalizer(hardwareMap, robot.limelight.getSensor()).withMode(FusedLocalizer.Mode.AUTO);
+        localizer = PedroFollower.getFusedLocalizer(hardwareMap, robot.limelight.getSensor()).withMode(Mode.AUTO);
         follower = PedroFollower.create(hardwareMap, localizer);
         follower.setStartingPose(getStartingPose());
         path = getPath();

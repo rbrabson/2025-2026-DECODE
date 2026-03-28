@@ -531,8 +531,6 @@ public class FusedLocalizer implements Localizer {
         fusedPose = setStart;
     }
 
-    public enum Mode {AUTO, TELEOP}
-
     // ================= Pose History for Latency Compensation =================
     private static class TimedPose {
         Pose pose;

@@ -15,6 +15,7 @@ import com.rbrabson.control.pid.PID;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.pedroPathing.Mode;
 import org.firstinspires.ftc.teamcode.robotcontrol.DriveController;
 import org.firstinspires.ftc.teamcode.robotcontrol.DriveController.DriveOutput;
 import org.firstinspires.ftc.teamcode.robotcontrol.VoltageCompensator;
@@ -43,7 +44,6 @@ import java.util.Objects;
 public class MecanumDrive implements Drive {
     // --- Constants and Tunable Parameters ---
     private static final double STRAFING_ADJUSTMENT = 1.1;
-    private static final double DEADBAND = 0.05;
 
     // PID coefficients - tune as necessary
     public static final double KP_X = 0.2;
@@ -440,7 +440,7 @@ public class MecanumDrive implements Drive {
      *             the FusedLocalizer.Mode enum (e.g., TELEOP, AUTONOMOUS).
      * @return The PedroPathingDrive instance, allowing for method chaining when configuring the localizer mode.
      */
-    public MecanumDrive setMode(FusedLocalizer.Mode mode) {
+    public MecanumDrive setMode(Mode mode) {
         if (localizer instanceof FusedLocalizer) {
             ((FusedLocalizer) localizer).withMode(mode);
         }

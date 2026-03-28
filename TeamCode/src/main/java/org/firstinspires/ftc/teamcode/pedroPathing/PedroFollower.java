@@ -58,7 +58,7 @@ public class PedroFollower {
      *         fused localizer for enhanced localization accuracy and reliability.
      */
     @NonNull
-    public static FusedLocalizer getFusedLocalizer(@NonNull HardwareMap hardwareMap, @NonNull Limelight3A limelight, @NonNull FusedLocalizer.Mode mode) {
+    public static FusedLocalizer getFusedLocalizer(@NonNull HardwareMap hardwareMap, @NonNull Limelight3A limelight, @NonNull Mode mode) {
         return getFusedLocalizer(hardwareMap, limelight).withMode(mode);
     }
 

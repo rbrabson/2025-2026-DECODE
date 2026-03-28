@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.pedroPathing.FusedLocalizer;
+import org.firstinspires.ftc.teamcode.pedroPathing.Mode;
 import org.firstinspires.ftc.teamcode.pedroPathing.PedroFollower;
 import org.firstinspires.ftc.teamcode.robotcontrol.DriveController;
 import org.firstinspires.ftc.teamcode.robotcontrol.VoltageCompensator;
@@ -47,7 +48,7 @@ public class PedroPathingDrive implements Drive {
      * @param telemetry   The telemetry instance for sending data to the driver station for
      *                    debugging and monitoring.
      */
-    public PedroPathingDrive(@NonNull HardwareMap hardwareMap, @NonNull Limelight3A limelight, @NonNull FusedLocalizer.Mode mode, @NonNull Telemetry telemetry) {
+    public PedroPathingDrive(@NonNull HardwareMap hardwareMap, @NonNull Limelight3A limelight, @NonNull Mode mode, @NonNull Telemetry telemetry) {
         this(hardwareMap, PedroFollower.getFusedLocalizer(hardwareMap, limelight, mode), telemetry);
     }
 
@@ -209,7 +210,7 @@ public class PedroPathingDrive implements Drive {
      *             the FusedLocalizer.Mode enum (e.g., TELEOP, AUTONOMOUS).
      * @return The PedroPathingDrive instance, allowing for method chaining when configuring the localizer mode.
      */
-    public PedroPathingDrive setMode(FusedLocalizer.Mode mode) {
+    public PedroPathingDrive setMode(Mode mode) {
         if (localizer instanceof FusedLocalizer) {
             ((FusedLocalizer) localizer).withMode(mode);
         }
