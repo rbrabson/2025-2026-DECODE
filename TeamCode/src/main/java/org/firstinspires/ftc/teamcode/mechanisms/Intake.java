@@ -6,8 +6,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.rbrabson.behave.Status;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.hardware.Indexer;
-import org.firstinspires.ftc.teamcode.hardware.IntakeMotor;
+import org.firstinspires.ftc.teamcode.actuators.Indexer;
+import org.firstinspires.ftc.teamcode.actuators.IntakeMotor;
 
 import java.util.Objects;
 

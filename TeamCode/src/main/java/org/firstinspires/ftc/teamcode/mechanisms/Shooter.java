@@ -8,9 +8,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.decode.Alliance;
-import org.firstinspires.ftc.teamcode.hardware.Flywheel;
-import org.firstinspires.ftc.teamcode.hardware.Hood;
-import org.firstinspires.ftc.teamcode.hardware.Turret;
+import org.firstinspires.ftc.teamcode.actuators.Flywheel;
+import org.firstinspires.ftc.teamcode.actuators.Hood;
+import org.firstinspires.ftc.teamcode.actuators.Turret;
 import org.firstinspires.ftc.teamcode.robotcontrol.ShooterController;
 
 import java.util.Objects;

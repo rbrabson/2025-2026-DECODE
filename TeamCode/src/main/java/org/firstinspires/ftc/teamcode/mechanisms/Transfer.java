@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.rbrabson.behave.Status;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.hardware.Hinge;
+import org.firstinspires.ftc.teamcode.actuators.Hinge;
 
 import java.util.Objects;
 

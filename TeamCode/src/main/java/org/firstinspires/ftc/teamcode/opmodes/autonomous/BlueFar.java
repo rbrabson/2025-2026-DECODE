@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.decode.Alliance;
 import org.firstinspires.ftc.teamcode.opmodes.autonomous.pathing.AutonomousPathing;
 import org.firstinspires.ftc.teamcode.opmodes.autonomous.pathing.BlueFarPathing;
-import org.firstinspires.ftc.teamcode.hardware.Flywheel;
 
 /**
  * This is the OpMode for the Blue Far autonomous routine. It initializes the robot, follower, and path,
