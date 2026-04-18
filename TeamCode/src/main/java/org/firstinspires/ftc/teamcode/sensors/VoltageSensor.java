@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.actuators;
+package org.firstinspires.ftc.teamcode.sensors;
 
 import androidx.annotation.NonNull;
 

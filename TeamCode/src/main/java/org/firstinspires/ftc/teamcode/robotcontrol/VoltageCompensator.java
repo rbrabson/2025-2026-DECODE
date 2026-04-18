@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.robotcontrol;
 
 import androidx.annotation.NonNull;
 
-import org.firstinspires.ftc.teamcode.actuators.VoltageSensor;
+import org.firstinspires.ftc.teamcode.sensors.VoltageSensor;
 
 /**
  * Compensates motor powers based on the current voltage of the robot.
