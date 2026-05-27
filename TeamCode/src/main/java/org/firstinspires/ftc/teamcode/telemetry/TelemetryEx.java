@@ -45,9 +45,9 @@ public interface TelemetryEx extends Telemetry {
      * level is less than or equal to the current log level. Otherwise, does nothing and returns null.
      *
      * @param caption The caption for the telemetry data item.
-     * @param format  The format string for the value, using String.format syntax.
+     * @param format  The format string for the value, using String format syntax.
      * @param args    The arguments to be formatted into the value string.
-     * @return The telemetry Item that was added, or null if the log level was too low to add the item.
+     * @return The telemetry item that was added or null if the log level was too low to add the item.
      */
     Item debugData(String caption, String format, Object... args);
 
@@ -56,9 +56,9 @@ public interface TelemetryEx extends Telemetry {
      * level is less than or equal to the current log level. Otherwise, does nothing and returns null.
      *
      * @param caption The caption for the telemetry data item.
-     * @param format  The format string for the value, using String.format syntax.
+     * @param format  The format string for the value, using String format syntax.
      * @param args    The arguments to be formatted into the value string.
-     * @return The telemetry Item that was added, or null if the log level was too low to add the item.
+     * @return The telemetry item that was added or null if the log level was too low to add the item.
      */
     Item infoData(String caption, String format, Object... args);
 
@@ -67,9 +67,9 @@ public interface TelemetryEx extends Telemetry {
      * level is less than or equal to the current log level. Otherwise, does nothing and returns null.
      *
      * @param caption The caption for the telemetry data item.
-     * @param format  The format string for the value, using String.format syntax.
+     * @param format  The format string for the value, using String format syntax.
      * @param args    The arguments to be formatted into the value string.
-     * @return The telemetry Item that was added, or null if the log level was too low to add the item.
+     * @return The telemetry item that was added or null if the log level was too low to add the item.
      */
     Item warningData(String caption, String format, Object... args);
 
@@ -78,9 +78,9 @@ public interface TelemetryEx extends Telemetry {
      * level is less than or equal to the current log level. Otherwise, does nothing and returns null.
      *
      * @param caption The caption for the telemetry data item.
-     * @param format  The format string for the value, using String.format syntax.
+     * @param format  The format string for the value, using String format syntax.
      * @param args    The arguments to be formatted into the value string.
-     * @return The telemetry Item that was added, or null if the log level was too low to add the item.
+     * @return The telemetry item that was added or null if the log level was too low to add the item.
      */
     Item errorData(String caption, String format, Object... args);
 
@@ -90,9 +90,9 @@ public interface TelemetryEx extends Telemetry {
      *
      * @param level   The log level for this telemetry data item.
      * @param caption The caption for the telemetry data item.
-     * @param format  The format string for the value, using String.format syntax.
+     * @param format  The format string for the value, using String format syntax.
      * @param args    The arguments to be formatted into the value string.
-     * @return The telemetry Item that was added, or null if the log level was too low to add the item.
+     * @return The telemetry item that was added or null if the log level was too low to add the item.
      */
     Item addData(Level level, String caption, String format, Object... args);
 
@@ -101,7 +101,7 @@ public interface TelemetryEx extends Telemetry {
      *
      * @param caption The caption for the telemetry data item.
      * @param value   The value for the telemetry data item.
-     * @return The telemetry Item that was added, or null if the log level was too low to add the item.
+     * @return The telemetry item that was added or null if the log level was too low to add the item.
      */
     Item debugData(String caption, Object value) ;
 
@@ -110,7 +110,7 @@ public interface TelemetryEx extends Telemetry {
      *
      * @param caption The caption for the telemetry data item.
      * @param value   The value for the telemetry data item.
-     * @return The telemetry Item that was added, or null if the log level was too low to add the item.
+     * @return The telemetry item that was added or null if the log level was too low to add the item.
      */
     Item infoData(String caption, Object value);
 
@@ -119,7 +119,7 @@ public interface TelemetryEx extends Telemetry {
      *
      * @param caption The caption for the telemetry data item.
      * @param value   The value for the telemetry data item.
-     * @return The telemetry Item that was added, or null if the log level was too low to add the item.
+     * @return The telemetry item that was added or null if the log level was too low to add the item.
      */
     Item warningData(String caption, Object value) ;
 
@@ -128,7 +128,7 @@ public interface TelemetryEx extends Telemetry {
      *
      * @param caption The caption for the telemetry data item.
      * @param value   The value for the telemetry data item.
-     * @return The telemetry Item that was added, or null if the log level was too low to add the item.
+     * @return The telemetry item that was added or null if the log level was too low to add the item.
      */
     Item errorData(String caption, Object value);
 
@@ -138,7 +138,7 @@ public interface TelemetryEx extends Telemetry {
      * @param level   The log level for this telemetry data item.
      * @param caption The caption for the telemetry data item.
      * @param value   The value for the telemetry data item.
-     * @return The telemetry Item that was added, or null if the log level was too low to add the item.
+     * @return The telemetry item that was added or null if the log level was too low to add the item.
      */
     Item addData(Level level, String caption, Object value);
 
@@ -148,7 +148,7 @@ public interface TelemetryEx extends Telemetry {
      *
      * @param caption       The caption for the telemetry data item.
      * @param valueProducer A function that produces the value for the telemetry data item when called.
-     * @return The telemetry Item that was added, or null if the log level was too low to add the item.
+     * @return The telemetry item that was added or null if the log level was too low to add the item.
      */
     <T> Item debugData(String caption, Func<T> valueProducer);
 
@@ -158,7 +158,7 @@ public interface TelemetryEx extends Telemetry {
      *
      * @param caption       The caption for the telemetry data item.
      * @param valueProducer A function that produces the value for the telemetry data item when called.
-     * @return The telemetry Item that was added, or null if the log level was too low to add the item.
+     * @return The telemetry item that was added or null if the log level was too low to add the item.
      */
     <T> Item infoData(String caption, Func<T> valueProducer);
 
@@ -168,7 +168,7 @@ public interface TelemetryEx extends Telemetry {
      *
      * @param caption       The caption for the telemetry data item.
      * @param valueProducer A function that produces the value for the telemetry data item when called.
-     * @return The telemetry Item that was added, or null if the log level was too low to add the item.
+     * @return The telemetry item that was added or null if the log level was too low to add the item.
      */
     <T> Item warningData(String caption, Func<T> valueProducer);
 
@@ -178,7 +178,7 @@ public interface TelemetryEx extends Telemetry {
      *
      * @param caption       The caption for the telemetry data item.
      * @param valueProducer A function that produces the value for the telemetry data item when called.
-     * @return The telemetry Item that was added, or null if the log level was too low to add the item.
+     * @return The telemetry item that was added or null if the log level was too low to add the item.
      */
     <T> Item errorData(String caption, Func<T> valueProducer);
 
@@ -189,7 +189,7 @@ public interface TelemetryEx extends Telemetry {
      * @param level         The log level for this telemetry data item.
      * @param caption       The caption for the telemetry data item.
      * @param valueProducer A function that produces the value for the telemetry data item when called.
-     * @return The telemetry Item that was added, or null if the log level was too low to add the item.
+     * @return The telemetry item that was added or null if the log level was too low to add the item.
      */
     <T> Item addData(Level level, String caption, Func<T> valueProducer);
 
@@ -197,7 +197,7 @@ public interface TelemetryEx extends Telemetry {
      *  equal to the current log level.  Otherwise, does nothing and returns null.
      *
      * @param lineCaption The caption for the telemetry line.
-     * @return The telemetry Line that was added, or null if the log level was too low to add the line.
+     * @return The telemetry line that was added or null if the log level was too low to add the line.
      */
     Line debugLine(String lineCaption);
 
@@ -205,7 +205,7 @@ public interface TelemetryEx extends Telemetry {
      *  equal to the current log level.  Otherwise, does nothing and returns null.
      *
      * @param lineCaption The caption for the telemetry line.
-     * @return The telemetry Line that was added, or null if the log level was too low to add the line.
+     * @return The telemetry line that was added or null if the log level was too low to add the line.
      */
     Line infoLine(String lineCaption);
 
@@ -213,7 +213,7 @@ public interface TelemetryEx extends Telemetry {
      *  equal to the current log level.  Otherwise, does nothing and returns null.
      *
      * @param lineCaption The caption for the telemetry line.
-     * @return The telemetry Line that was added, or null if the log level was too low to add the line.
+     * @return The telemetry line that was added or null if the log level was too low to add the line.
      */
     Line warningLine(String lineCaption);
 
@@ -221,7 +221,7 @@ public interface TelemetryEx extends Telemetry {
      *  equal to the current log level.  Otherwise, does nothing and returns null.
      *
      * @param lineCaption The caption for the telemetry line.
-     * @return The telemetry Line that was added, or null if the log level was too low to add the line.
+     * @return The telemetry line that was added or null if the log level was too low to add the line.
      */
     Line errorLine(String lineCaption);
 
@@ -230,7 +230,7 @@ public interface TelemetryEx extends Telemetry {
      *
      * @param level       The log level for this telemetry line.
      * @param lineCaption The caption for the telemetry line.
-     * @return The telemetry Line that was added, or null if the log level was too low to add the line.
+     * @return The telemetry line that was added or null if the log level was too low to add the line.
      */
     Line addLine(Level level, String lineCaption);
 

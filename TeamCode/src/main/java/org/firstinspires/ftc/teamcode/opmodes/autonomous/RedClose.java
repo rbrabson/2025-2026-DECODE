@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.opmodes.autonomous.pathing.AutonomousPathi
 import org.firstinspires.ftc.teamcode.opmodes.autonomous.pathing.RedClosePathing;
 
 /**
- * This is the OpMode for the Red Close autonomous routine. It initializes the robot, follower, and path,
+ * This is the OpMode for the Red Close autonomous routine. It initializes the robot, follower, and path
  * and runs the autonomous actions in the loop. The robot will start at a specific pose, follow a series
  * of paths to score preloads and pick up additional game elements, and will also check for motif detection
  * to adjust its behavior accordingly.

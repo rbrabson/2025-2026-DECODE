@@ -47,7 +47,7 @@ public class ShootArtifacts implements Node {
      * This method is called to execute the node's behavior. It checks if the intake is empty,
      * and if so, it sets the status to SUCCESS. If the intake is not empty, it calls the
      * transferArtifactToShooter method on the intake to attempt to transfer an artifact to the
-     * shooter, and sets the status to RUNNING while the transfer is in progress.
+     *  shooter and sets the status to RUNNING while the transfer is in progress.
      *
      * @return SUCCESS if there are no more artifacts to shoot, RUNNING otherwise.
      */
@@ -75,7 +75,7 @@ public class ShootArtifacts implements Node {
         shooter.setTurretTargetPosition(follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
 
         // If the artifact transfer is in progress, finish it. Otherwise, initiate the transfer if
-        // both the turret is in target position, and the flywheel is at the target velocity.
+        // both the turret is in the target position and the flywheel is at the target velocity.
         if (transferInProgress || shooter.isReadyToShoot()) {
             Status transferStatus = transfer.transferArtifact();
             if (transferStatus == Status.SUCCESS) {

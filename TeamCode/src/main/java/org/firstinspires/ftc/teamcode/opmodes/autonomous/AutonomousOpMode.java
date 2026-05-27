@@ -20,7 +20,7 @@ import java.util.List;
 
 /**
  * This abstract class serves as a base for autonomous OpModes that follow a path using the PedroPathFollower.
- * It initializes the robot, follower, and path, and provides abstract methods for subclasses to specify
+ * It initializes the robot, follower, and path and provides abstract methods for subclasses to specify
  * the flywheel velocity, starting pose, and turret base values. The loop method updates the follower and
  * path, checks for motif detection, and updates the blackboard with the robot's pose and turret position.
  */

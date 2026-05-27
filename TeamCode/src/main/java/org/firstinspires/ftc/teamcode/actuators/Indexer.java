@@ -217,7 +217,7 @@ public class Indexer implements AutoCloseable{
     // -------- Private helper methods --------
 
     /**
-     * Wait for the indexer to rotate to the correct position for intaking an artifact.
+     * Wait for the indexer to rotate to the correct position to intake an artifact.
      *
      * @return RUNNING if still waiting for rotation, SUCCESS if rotation is complete,
      *         or FAILURE if there was an error during rotation.
@@ -246,7 +246,7 @@ public class Indexer implements AutoCloseable{
     }
 
     /**
-     * Uses the color sensor to detect the color of the artifact being picked up, and stores
+     * Uses the color sensor to detect the color of the artifact being picked up and stores
      * that color in the artifactColors array at the index corresponding to the current intake
      * position.
      *

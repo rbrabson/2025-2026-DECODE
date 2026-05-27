@@ -12,10 +12,10 @@ import org.firstinspires.ftc.teamcode.decode.Alliance;
  * ShooterController manages flywheel RPM, hood position, and predictive turret lead angle.
  * <p>
  * Features:
- * - Distance-based regression for RPM + hood
+ * - Distance-based regression for RPM and hood
  * - Radial velocity compensation (forward/back motion)
  * - Lateral velocity compensation (strafing)
- * - Predictive turret aiming (robot + target motion)
+ * - Predictive turret aiming (robot and target motion)
  * - Shot feedback auto-tuning
  */
 public class ShooterController {
@@ -186,8 +186,8 @@ public class ShooterController {
     }
 
     /**
-     * Predicts turret lead angle with strafing compensation. The method predicts the future
-     * positions of both the robot and the target after the flight time of the projectile, and
+     * Predicts a turret lead angle with strafing compensation. The method predicts the future
+     * positions of both the robot and the target after the flight time of the projectile and
      * then calculates the angle from the future robot position to the future target position.
      * This allows for accurate aiming even when both the robot and the target are in motion,
      * including strafing (lateral movement).

@@ -58,7 +58,7 @@ public class Limelight {
 
     /**
      * Initializes the Limelight camera by setting the transmission interval,
-     * switching to the motif detection pipeline and starting the camera.
+     * switching to the motif detection pipeline, and starting the camera.
      */
     private void initializeLimelight() {
         switchToDetectMotif();

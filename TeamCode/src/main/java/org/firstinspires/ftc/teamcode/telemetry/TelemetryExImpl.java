@@ -42,9 +42,9 @@ public class TelemetryExImpl implements TelemetryEx {
      * level is less than or equal to the current log level. Otherwise, does nothing and returns null.
      *
      * @param caption The caption for the telemetry data item.
-     * @param format  The format string for the value, using String.format syntax.
+     * @param format  The format string for the value, using String format syntax.
      * @param args    The arguments to be formatted into the value string.
-     * @return The telemetry Item that was added, or null if the log level was too low to add the item.
+     * @return The telemetry item that was added or null if the log level was too low to add the item.
      */
     public Item debugData(String caption, String format, Object... args) {
         return addData(Level.DEBUG, caption, format, args);
@@ -55,9 +55,9 @@ public class TelemetryExImpl implements TelemetryEx {
      * level is less than or equal to the current log level. Otherwise, does nothing and returns null.
      *
      * @param caption The caption for the telemetry data item.
-     * @param format  The format string for the value, using String.format syntax.
+     * @param format  The format string for the value, using String format syntax.
      * @param args    The arguments to be formatted into the value string.
-     * @return The telemetry Item that was added, or null if the log level was too low to add the item.
+     * @return The telemetry item that was added or null if the log level was too low to add the item.
      */
     public Item infoData(String caption, String format, Object... args) {
         return addData(Level.INFO, caption, format, args);
@@ -68,9 +68,9 @@ public class TelemetryExImpl implements TelemetryEx {
      * level is less than or equal to the current log level. Otherwise, does nothing and returns null.
      *
      * @param caption The caption for the telemetry data item.
-     * @param format  The format string for the value, using String.format syntax.
+     * @param format  The format string for the value, using String format syntax.
      * @param args    The arguments to be formatted into the value string.
-     * @return The telemetry Item that was added, or null if the log level was too low to add the item.
+     * @return The telemetry item that was added or null if the log level was too low to add the item.
      */
     public Item warningData(String caption, String format, Object... args) {
         return addData(Level.WARNING, caption, format, args);
@@ -81,9 +81,9 @@ public class TelemetryExImpl implements TelemetryEx {
      * level is less than or equal to the current log level. Otherwise, does nothing and returns null.
      *
      * @param caption The caption for the telemetry data item.
-     * @param format  The format string for the value, using String.format syntax.
+     * @param format  The format string for the value, using String format syntax.
      * @param args    The arguments to be formatted into the value string.
-     * @return The telemetry Item that was added, or null if the log level was too low to add the item.
+     * @return The telemetry item that was added or null if the log level was too low to add the item.
      */
     public Item errorData(String caption, String format, Object... args) {
         return addData(Level.ERROR, caption, format, args);
@@ -95,9 +95,9 @@ public class TelemetryExImpl implements TelemetryEx {
      *
      * @param level   The log level for this telemetry data item.
      * @param caption The caption for the telemetry data item.
-     * @param format  The format string for the value, using String.format syntax.
+     * @param format  The format string for the value, using String format syntax.
      * @param args    The arguments to be formatted into the value string.
-     * @return The telemetry Item that was added, or null if the log level was too low to add the item.
+     * @return The telemetry item that was added or null if the log level was too low to add the item.
      */
     public Item addData(Level level, String caption, String format, Object... args) {
         if (this.level.compareTo(level) <= 0) {
@@ -111,7 +111,7 @@ public class TelemetryExImpl implements TelemetryEx {
      *
      * @param caption The caption for the telemetry data item.
      * @param value   The value for the telemetry data item.
-     * @return The telemetry Item that was added, or null if the log level was too low to add the item.
+     * @return The telemetry item that was added or null if the log level was too low to add the item.
      */
     public Item debugData(String caption, Object value) {
         return addData(Level.DEBUG, caption, value);
@@ -122,7 +122,7 @@ public class TelemetryExImpl implements TelemetryEx {
      *
      * @param caption The caption for the telemetry data item.
      * @param value   The value for the telemetry data item.
-     * @return The telemetry Item that was added, or null if the log level was too low to add the item.
+     * @return The telemetry item that was added or null if the log level was too low to add the item.
      */
     public Item infoData(String caption, Object value) {
         return addData(Level.INFO, caption, value);
@@ -133,7 +133,7 @@ public class TelemetryExImpl implements TelemetryEx {
      *
      * @param caption The caption for the telemetry data item.
      * @param value   The value for the telemetry data item.
-     * @return The telemetry Item that was added, or null if the log level was too low to add the item.
+     * @return The telemetry item that was added or null if the log level was too low to add the item.
      */
     public Item warningData(String caption, Object value) {
         return addData(Level.WARNING, caption, value);
@@ -144,7 +144,7 @@ public class TelemetryExImpl implements TelemetryEx {
      *
      * @param caption The caption for the telemetry data item.
      * @param value   The value for the telemetry data item.
-     * @return The telemetry Item that was added, or null if the log level was too low to add the item.
+     * @return The telemetry item that was added or null if the log level was too low to add the item.
      */
     public Item errorData(String caption, Object value) {
         return addData(Level.ERROR, caption, value);
@@ -156,7 +156,7 @@ public class TelemetryExImpl implements TelemetryEx {
      * @param level   The log level for this telemetry data item.
      * @param caption The caption for the telemetry data item.
      * @param value   The value for the telemetry data item.
-     * @return The telemetry Item that was added, or null if the log level was too low to add the item.
+     * @return The telemetry item that was added or null if the log level was too low to add the item.
      */
     public Item addData(Level level, String caption, Object value) {
         if (this.level.compareTo(level) <= 0) {
@@ -171,7 +171,7 @@ public class TelemetryExImpl implements TelemetryEx {
      *
      * @param caption       The caption for the telemetry data item.
      * @param valueProducer A function that produces the value for the telemetry data item when called.
-     * @return The telemetry Item that was added, or null if the log level was too low to add the item.
+     * @return The telemetry item that was added or null if the log level was too low to add the item.
      */
     public <T> Item debugData(String caption, Func<T> valueProducer) {
         return addData(Level.DEBUG, caption, valueProducer);
@@ -183,7 +183,7 @@ public class TelemetryExImpl implements TelemetryEx {
      *
      * @param caption       The caption for the telemetry data item.
      * @param valueProducer A function that produces the value for the telemetry data item when called.
-     * @return The telemetry Item that was added, or null if the log level was too low to add the item.
+     * @return The telemetry item that was added or null if the log level was too low to add the item.
      */
     public <T> Item infoData(String caption, Func<T> valueProducer) {
         return addData(Level.INFO, caption, valueProducer);
@@ -195,7 +195,7 @@ public class TelemetryExImpl implements TelemetryEx {
      *
      * @param caption       The caption for the telemetry data item.
      * @param valueProducer A function that produces the value for the telemetry data item when called.
-     * @return The telemetry Item that was added, or null if the log level was too low to add the item.
+     * @return The telemetry item that was added or null if the log level was too low to add the item.
      */
     public <T> Item warningData(String caption, Func<T> valueProducer) {
         return addData(Level.WARNING, caption, valueProducer);
@@ -207,7 +207,7 @@ public class TelemetryExImpl implements TelemetryEx {
      *
      * @param caption       The caption for the telemetry data item.
      * @param valueProducer A function that produces the value for the telemetry data item when called.
-     * @return The telemetry Item that was added, or null if the log level was too low to add the item.
+     * @return The telemetry item that was added or null if the log level was too low to add the item.
      */
     public <T> Item errorData(String caption, Func<T> valueProducer) {
         return addData(Level.ERROR, caption, valueProducer);
@@ -220,7 +220,7 @@ public class TelemetryExImpl implements TelemetryEx {
      * @param level         The log level for this telemetry data item.
      * @param caption       The caption for the telemetry data item.
      * @param valueProducer A function that produces the value for the telemetry data item when called.
-     * @return The telemetry Item that was added, or null if the log level was too low to add the item.
+     * @return The telemetry item that was added or null if the log level was too low to add the item.
      */
     public <T> Item addData(Level level, String caption, Func<T> valueProducer) {
         if (this.level.compareTo(level) <= 0) {
@@ -233,7 +233,7 @@ public class TelemetryExImpl implements TelemetryEx {
      *  equal to the current log level.  Otherwise, does nothing and returns null.
      *
      * @param lineCaption The caption for the telemetry line.
-     * @return The telemetry Line that was added, or null if the log level was too low to add the line.
+     * @return The telemetry line that was added or null if the log level was too low to add the line.
      */
     public Line debugLine(String lineCaption) {
         return addLine(Level.DEBUG, lineCaption);
@@ -243,7 +243,7 @@ public class TelemetryExImpl implements TelemetryEx {
      *  equal to the current log level.  Otherwise, does nothing and returns null.
      *
      * @param lineCaption The caption for the telemetry line.
-     * @return The telemetry Line that was added, or null if the log level was too low to add the line.
+     * @return The telemetry line that was added or null if the log level was too low to add the line.
      */
     public Line infoLine(String lineCaption) {
         return addLine(Level.INFO, lineCaption);
@@ -253,7 +253,7 @@ public class TelemetryExImpl implements TelemetryEx {
      *  equal to the current log level.  Otherwise, does nothing and returns null.
      *
      * @param lineCaption The caption for the telemetry line.
-     * @return The telemetry Line that was added, or null if the log level was too low to add the line.
+     * @return The telemetry line that was added or null if the log level was too low to add the line.
      */
     public Line warningLine(String lineCaption) {
         return addLine(Level.WARNING, lineCaption);
@@ -263,7 +263,7 @@ public class TelemetryExImpl implements TelemetryEx {
      *  equal to the current log level.  Otherwise, does nothing and returns null.
      *
      * @param lineCaption The caption for the telemetry line.
-     * @return The telemetry Line that was added, or null if the log level was too low to add the line.
+     * @return The telemetry line that was added or null if the log level was too low to add the line.
      */
     public Line errorLine(String lineCaption) {
         return addLine(Level.ERROR, lineCaption);
@@ -274,7 +274,7 @@ public class TelemetryExImpl implements TelemetryEx {
      *
      * @param level       The log level for this telemetry line.
      * @param lineCaption The caption for the telemetry line.
-     * @return The telemetry Line that was added, or null if the log level was too low to add the line.
+     * @return The telemetry line that was added or null if the log level was too low to add the line.
      */
     public Line addLine(Level level, String lineCaption) {
         if (this.level.compareTo(level) <= 0) {

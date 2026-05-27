@@ -54,7 +54,7 @@ public class PedroFollower {
      *                    with the Pinpoint localizer for improved accuracy.
      * @param mode        The mode of the fused localizer, which determines how the data from the
      *                    Pinpoint localizer and the Limelight camera are combined for position tracking.
-     * @return A configured Follower instance ready for use in autonomous routines, utilizing the
+     * @return A configured Follower instance ready for use in autonomous routines, using the
      *         fused localizer for enhanced localization accuracy and reliability.
      */
     @NonNull
@@ -68,7 +68,7 @@ public class PedroFollower {
     *
     * @param hardwareMap The hardware map used to initialize the localizer and drivetrain components
     *                    of the follower.
-    * @return A configured Follower instance ready for use in autonomous routines, utilizing the
+    * @return A configured Follower instance ready for use in autonomous routines, using the
     *         default Pinpoint localizer for position tracking.
     */
     @NonNull

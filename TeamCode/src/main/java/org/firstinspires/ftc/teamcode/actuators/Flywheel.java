@@ -57,7 +57,7 @@ public class Flywheel {
     private double pidOutput = 0;
 
     /**
-     * Constructor for Flywheel subsystem with telemetry.
+     * Constructor for a Flywheel subsystem with telemetry.
      *
      * @param hardwareMap HardwareMap to access motors
      * @param telemetry   Telemetry for debugging
@@ -108,7 +108,7 @@ public class Flywheel {
      * Calculates the motor power for a given target RPM and dt.
      *
      * @param rpmTarget Target RPM for the flywheel
-     * @param dt        Time delta in seconds since last update
+     * @param dt        Time delta in seconds since the last update
      * @return Clipped motor power [-1, 1]
      */
     private double calculatePower(double rpmTarget, double dt) {

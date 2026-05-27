@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.inputprocessors;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.hardware.Gamepad;

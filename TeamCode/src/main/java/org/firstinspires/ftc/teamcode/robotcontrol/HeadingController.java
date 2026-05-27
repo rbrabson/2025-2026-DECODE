@@ -6,7 +6,7 @@ import com.rbrabson.control.pid.PID;
 import org.firstinspires.ftc.teamcode.utils.MathEx;
 
 /**
- * Maintains heading whenever the driver is not actively commanding turn. Translation control is
+ * Maintains heading whenever the driver is not actively commanding a turn. Translation control is
  * handled separately by TranslationController.
  */
 public class HeadingController {
@@ -65,7 +65,7 @@ public class HeadingController {
     }
 
     /**
-     * Resets the heading controller, unlocking it and clearing PID state.
+     * Resets the heading controller, unlocking it and clearing the PID state.
      */
     public void reset() {
         locked = false;

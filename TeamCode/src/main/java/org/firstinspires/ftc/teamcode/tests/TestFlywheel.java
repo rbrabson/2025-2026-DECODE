@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.tests;
 
+import androidx.annotation.NonNull;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -32,13 +33,13 @@ public class TestFlywheel extends TestItem {
      * Runs the test for the flywheel mechanism. When turned on, the user can control the target RPM
      * using the dpad up and down buttons on gamepad1, and reset to zero RPM using the A button.
      *
-     * @param active    A boolean indicating whether the test should be turned on or off    .
+     * @param active    A boolean indicating whether the test should be turned on or off.
      * @param gamepad1  The first gamepad, which can be used for controlling the test if needed.
      * @param gamepad2  The second gamepad, which can also be used for controlling the test if needed.
      * @param telemetry The Telemetry object for logging test results and status updates.
      */
     @Override
-    public void run(boolean active, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry) {
+    public void run(boolean active, Gamepad gamepad1, Gamepad gamepad2, @NonNull Telemetry telemetry) {
         if (!active) {
             targetRpm = 0.0;
             flywheel.setVelocity(0.0);

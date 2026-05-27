@@ -71,7 +71,7 @@ public class Shooter implements Mechanism {
      * providing flexibility in how the shooter is initialized and configured.
      *
      * @param alliance     The alliance color (BLUE or RED) to determine which goal to target
-     * @param startingPose The initial pose of the robot, used to calculate the initial distance and angle to the goal for setting the initial smoothed values in the ShooterController
+     * @param startingPose The initial pose of the robot, used to calculate the initial distance and angle to the goal for setting the smoothed values in the ShooterController
      * @return The Shooter instance with the updated shooter model based on the specified alliance and starting pose, allowing for method chaining.
      */
     @NonNull
@@ -311,7 +311,7 @@ public class Shooter implements Mechanism {
      * Main update loop for the shooter mechanism. This method should be called periodically
      * (e.g., in a main loop) to update the shooter's state based on the current robot pose,
      * velocity, and the target goal position. It calculates the necessary flywheel RPM,
-     * hood position, and turret angle to aim at the target, and applies these settings to the
+     * hood position, and turret angle to aim at the target and applies these settings to the
      * hardware. The calculations are based on the current distance to the target and the robot's
      * motion, allowing for dynamic adjustments to improve shooting accuracy.
      */
