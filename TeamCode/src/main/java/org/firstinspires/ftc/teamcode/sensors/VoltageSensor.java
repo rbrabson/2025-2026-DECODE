@@ -52,5 +52,4 @@ public class VoltageSensor {
 
         return result;
     }
-
 }

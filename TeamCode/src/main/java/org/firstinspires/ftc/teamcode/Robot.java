@@ -24,7 +24,7 @@ public class Robot{
 
     // Public fields for each mechanism and subsystem of the robot.
     public final Intake intake;
-    public Shooter shooter;
+    public final Shooter shooter;
     public final Transfer transfer;
     public final Limelight limelight;
     public final Light light;
